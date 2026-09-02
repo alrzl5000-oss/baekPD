@@ -799,7 +799,7 @@ const ITEMS={
  book:{n:'인맥 수첩',r:1,p:1800,d:'섭외 성장 +50%',e:{g:{cast:1.5}}},
  card:{n:'법인카드',r:2,p:3200,d:'섭외 성장 +35% · 월 +80만',e:{g:{cast:1.35},moneyAdd:80}},
  drone:{n:'촬영용 드론',r:2,p:2600,d:'완성도 +12% · 시청률 +6%',e:{qMul:1.12,ratingMul:1.06}},
- lawyer:{n:'변호사 명함',r:2,p:3800,d:'의혹 감소 2.5배 · 수사 1회 방어',e:{riskMul:2.5,shield:1}},
+ lawyer:{n:'변호사 명함',r:2,p:3800,d:'의혹 감소 2.5배 · 감사/수사 1회 방어 (사용 시 소모)',e:{riskMul:2.5,shield:1}},
  data:{n:'시청률 예측 AI',r:3,p:6500,d:'방영 전 예상 시청률 표시 · 시청률 +4%',e:{peek:1,ratingMul:1.04}},
  pr:{n:'전담 홍보팀',r:3,p:8000,d:'스캔들 피해 -60% · 승진 확률 +5%',e:{prShield:1,promo:5}},
  /* 노말 드롭 */
@@ -836,7 +836,7 @@ const ITEMS={
  gold:{n:'황금 슬레이트',r:4,d:'모든 능력 성장 +35% · 운 +25',e:{gAll:1.35,luk:25}},
  schedule:{n:'편성표를 지배하는 자',r:4,d:'시청률 +45%',e:{ratingMul:1.45}},
  timemachine:{n:'타임머신 편집기',r:4,d:'폭망하면 시청률을 한 번 다시 뽑는다',e:{reroll:1}},
- resign:{n:'무적의 사직서',r:4,d:'수사·스캔들 3회 방어',e:{shield:3}},
+ resign:{n:'무적의 사직서',r:4,d:'수사·스캔들 3회 방어 (3회 다 쓰면 소모)',e:{shield:3}},
  clock:{n:'사장님 하사품 벽시계',r:1,d:'평판 성장 +30% · 체력 소모 +18%. 눈치가 보여 못 뗀다.',e:{g:{rep:1.30},staCost:1.18},warn:1},
  oldpc:{n:'중고 편집 데스크탑',r:0,d:'완성도 +16% · 멘탈 회복 -14%. 팬 소리가 비행기 같다.',e:{qMul:1.16,menGain:.86},warn:1},
  upper:{n:'약국에서 산 각성제',r:1,d:'경험치 +32% · 멘탈 회복 -28%. 심장이 조금 빨리 뛴다.',e:{expMul:1.32,menGain:.72},warn:1},
@@ -1074,7 +1074,9 @@ const EVENTS=[
 {id:'crime4',u:1,fail:S=>{g(S,{rep:-28,men:-20,risk:14});return '2차 폭로까지 터졌다. 아무 대응도 하지 않은 게 기사 제목이 됐다.';},img:'tv',t:'폭로 영상',c:S=>S.flags.gapjil,s:'"○○ PD 갑질 녹취"라는 제목의 영상이 올라왔다.\n조회수가 이미 80만이다.',
  o:[{t:'즉시 사과문',f:S=>{const m=S.items.pr?.4:1;S.scandal++;g(S,{rep:-Math.round(22*m),men:-Math.round(18*m),risk:10});delete S.flags.gapjil;
    return '고개 숙인 사진이 기사에 박혔다. 6개월은 조용히 살아야 한다.';}},
-  {t:'법적 대응',f:S=>{S.scandal++;if(S.items.lawyer||S.rep>=90){g(S,{rep:-8,men:-10,money:-400});delete S.flags.gapjil;return '악의적 편집이라는 게 밝혀졌다. 절반만 회복됐다.';}
+  {t:'법적 대응',d:'방어 아이템 소모 · 없으면 평판 90 이상 필요',f:S=>{S.scandal++;
+   if(useShield(S)){g(S,{rep:-8,men:-10,money:-400});delete S.flags.gapjil;return '악의적 편집이라는 게 밝혀졌다. 절반만 회복됐다.\n'+LASTSH;}
+   if(S.rep>=90){g(S,{rep:-8,men:-10,money:-400});delete S.flags.gapjil;return '악의적 편집이라는 게 밝혀졌다. 쌓아둔 평판이 방패가 됐다.';}
    g(S,{rep:-30,men:-24,risk:20});return '2차 폭로가 터졌다. 이번엔 영상이 세 개였다.';}}]},
 {id:'crime5',cd:60,img:'car',t:'회식 후 대리 호출',c:S=>tr(S)>=4,s:'2차까지 갔다. 대리를 부르려는데 20분 대기라고 뜬다.\n집까지는 10분 거리다.',
  o:[{t:'그냥 간다',d:'적발 확률 35%',f:S=>{
@@ -1083,13 +1085,13 @@ const EVENTS=[
    g(S,{men:-6,risk:6,luk:4});return '무사히 도착했다. 주차하고 나서 손이 떨렸다.';}},
   {t:'20분 기다린다',f:S=>{g(S,{sta:-2,men:2});return '편의점 앞에서 20분 서 있었다. 그게 전부였다.';}}]},
 {id:'crime6',u:1,fail:S=>{g(S,{risk:26,rep:-16,men:-14});return '자료 제출 기한을 넘겼다. 감사가 전면 조사로 확대됐다.';},cd:42,img:'police',t:'감사팀 내사',c:S=>S.risk>=45,s:'감사팀에서 자료 제출 요청이 왔다.\n지난 2년치 제작비 집행 내역 전부.',
- o:[{t:'변호사를 부른다',f:S=>{if(useShield(S)){g(S,{risk:-32,money:-500,men:-8});return '전화 한 통으로 정리됐다. 방어 카드를 한 장 썼다.';}
+ o:[{t:'변호사를 부른다',d:'방어 아이템 보유 시 소모하고 무마',f:S=>{if(useShield(S)){g(S,{risk:-32,money:-500,men:-8});return '전화 한 통으로 정리됐다.\n'+LASTSH;}
    g(S,{risk:-12,money:-800,men:-14});return '선임비가 나갔다. 일단 시간은 벌었다.';}},
   {t:'정면 돌파',f:S=>{if(S.rep>=80||S.risk<60){g(S,{risk:-20,rep:4,men:-12});return '"다 드리겠습니다." 배짱이 통했다. 내사가 종결됐다.';}
    g(S,{risk:18,rep:-12,men:-18});return '누락된 영수증 40건이 나왔다. 감사가 확대됐다.';}}]},
 {id:'crime7',cd:60,u:1,fail:S=>{demote(S,1);g(S,{rep:-34,risk:-25,men:-26,money:-1800});S.scandal++;return '출석요구에 불응했다. 체포영장이 나왔고 직급이 한 단계 내려갔다.';},img:'police',t:'검찰 소환',c:S=>S.risk>=80,s:'출석요구서가 왔다.\n포토라인이라는 단어를 처음으로 실감했다.',
- o:[{t:'끝까지 간다',f:S=>{
-   if(useShield(S)){g(S,{risk:-55,money:-1500,men:-20,rep:-10});return '무혐의. 방어 카드를 한 장 썼다.';}
+ o:[{t:'끝까지 간다',d:'방어 아이템 보유 시 소모하고 무혐의',f:S=>{
+   if(useShield(S)){g(S,{risk:-55,money:-1500,men:-20,rep:-10});return '무혐의.\n'+LASTSH;}
    if(Math.random()<Math.min(.75,S.risk/120)){
      demote(S,2);g(S,{risk:-70,rep:-45,men:-30,money:-3000});S.scandal++;ach(S,'jail');
      return '집행유예. 회사로 돌아왔지만 직급이 두 단계 내려갔다.';}
@@ -1423,7 +1425,36 @@ function mods(){
   }
   return M;
 }
-function useShield(S){const M=mods();if((M.shield-(S.shieldUsed||0))>0){S.shieldUsed=(S.shieldUsed||0)+1;return true;}return false;}
+let LASTSH='';
+function shieldList(St){
+  const a=[];
+  for(const id in St.items){const e=(ITEMS[id]||{}).e||{};if(e.shield)a.push([id,e.shield]);}
+  a.sort((x,y)=>x[1]-y[1]);   /* 방어 횟수 적은 것부터 소모 */
+  return a;
+}
+function useShield(St){
+  const list=shieldList(St);
+  if(!list.length){LASTSH='';return false;}
+  St.shieldUse=St.shieldUse||{};
+  for(let i=0;i<list.length;i++){
+    const id=list[i][0],max=list[i][1],used=(St.shieldUse[id]||0)+1;
+    if(used>max)continue;
+    const nm=(ITEMS[id]||{}).n||'방어 카드';
+    if(used>=max){
+      delete St.items[id];delete St.shieldUse[id];
+      LASTSH='['+nm+'] 소모 — 다 써버려서 가방에서 사라졌다.';
+      pushLog(nm+' 소모 — 방어에 사용되어 사라졌다','bad');
+      toast('<b>'+nm+'</b> 소모 · 인벤토리에서 사라졌다','');
+    }else{
+      St.shieldUse[id]=used;
+      LASTSH='['+nm+'] 사용 — 남은 방어 '+(max-used)+'회.';
+      pushLog(nm+' 방어 사용 ('+used+'/'+max+')','');
+      toast('<b>'+nm+'</b> 사용 · 남은 방어 '+(max-used)+'회','');
+    }
+    return true;
+  }
+  LASTSH='';return false;
+}
 
 function g(S,d){
   const soft=mods().negSoft;
@@ -1582,7 +1613,7 @@ function newGame(name){
     lv:1,exp:0,sp:0,dir:6,plan:5,sense:9,cast:4,rep:5,luk:5,
     sta:82,men:78,risk:0,money:r(150,400),
     hype:0,act:'edit',prog:null,hits:0,smash:0,flops:0,streakFlop:0,awards:0,idleM:0,
-    mark:0,dirty:0,scandal:0,shieldUsed:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
+    mark:0,dirty:0,scandal:0,shieldUsed:0,shieldUse:{},promoFail:0,promoCd:0,pause:0,nextSlot:0,
     items:{},flags:{},ach:{},cool:{},seen:{intern:1},hist:[],log:[],inbox:[],pity:0,gacha:0,busy:false,saved:Date.now()};
 }
 function save(){if(!S)return;S.saved=Date.now();try{localStorage.setItem('bpd_save',JSON.stringify(S));}catch(e){}}
@@ -2049,8 +2080,13 @@ function renderShowTab(){
 /* ── 탭: 가방 / 상점 ── */
 function itemCard(id,shop){
   const it=ITEMS[id],own=!!S.items[id];
+  let extra='';
+  if(own&&it.e&&it.e.shield){
+    const left=it.e.shield-((S.shieldUse||{})[id]||0);
+    extra='<div class="d" style="color:var(--onair)">남은 방어 '+left+'회 · 다 쓰면 사라짐</div>';
+  }
   const body='<div class="rr">'+RN[it.r]+(it.warn?' · 양날':'')+'</div><div class="n">'+it.n+'</div>'+
-    '<div class="d'+(it.warn?' warn':'')+'">'+it.d+'</div>';
+    '<div class="d'+(it.warn?' warn':'')+'">'+it.d+'</div>'+extra;
   if(!shop)return '<div class="icard r'+it.r+'"><div class="sitem"><div>'+body+'</div>'+
     '<button class="sellbtn" data-sell="'+id+'">'+num(sellPrice(id))+'만<br><span>처분</span></button></div></div>';
   return '<div class="icard r'+it.r+(own?' empty':'')+'"><div class="sitem"><div>'+body+'</div>'+
