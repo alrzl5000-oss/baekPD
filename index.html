@@ -55,7 +55,21 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:900;
 .title-main em{font-style:normal;color:var(--onair-soft)}
 .title-sub{margin-top:20px;color:var(--ink-2);font-size:15px;line-height:1.85}
 .title-rule{width:44px;height:3px;background:var(--onair);margin:22px auto}
-.name-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.name-row{display:flex;flex-direction:column;gap:10px;align-items:stretch;max-width:340px;margin:0 auto}
+.name-row input[type=text]{width:100%;text-align:center}
+#btn-continue{padding:17px 0;font-size:19px;line-height:1.2}
+#btn-continue .csub{display:block;font-size:12px;font-weight:400;opacity:.9;margin-top:4px;letter-spacing:.02em}
+#btn-start.small{background:transparent;border:1px solid var(--line);color:var(--ink-3);
+  padding:9px 0;font-size:13px;box-shadow:none;font-weight:700}
+#btn-start.small:hover{border-color:var(--onair);color:var(--onair)}
+#wipewarn{border:1px solid var(--onair);background:linear-gradient(180deg,#201416,#12161A);padding:14px 15px;text-align:left}
+#wipewarn .wt{font-size:15px;font-weight:700;color:var(--onair)}
+#wipewarn .wd{font-size:12.5px;color:var(--ink-2);line-height:1.65;margin-top:6px}
+#wipewarn .wb{display:flex;gap:8px;margin-top:12px}
+#wipewarn .wb button{flex:1;border:1px solid var(--line);background:#141A21;color:var(--ink-2);
+  padding:9px 0;font-size:13px;font-weight:700;border-radius:2px}
+#wipewarn .wb #wipe-yes{border-color:var(--onair);color:#fff;background:linear-gradient(180deg,#FF5A4C,#D9382C)}
+#wipewarn .wb button:hover{border-color:var(--onair)}
 input[type=text]{font-family:inherit;font-size:15px;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);padding:9px 12px;width:160px;border-radius:2px}
 .btn-primary{background:linear-gradient(180deg,#FF5A4C,#D9382C);color:#fff;border:1px solid #FF6A5C;padding:9px 26px;font-weight:700;border-radius:2px;
   box-shadow:0 0 18px rgba(255,74,61,.35)}
@@ -565,8 +579,13 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
       </div>
       <div class="name-row" id="gate" hidden>
         <input type="text" id="inp-name" maxlength="8" placeholder="이름" value="백PD" aria-label="PD 이름">
+        <button class="btn-primary" id="btn-continue" hidden>이어하기<span class="csub" id="c-sub2"></span></button>
         <button class="btn-primary" id="btn-start">새로 시작</button>
-        <button class="btn-cont" id="btn-continue" hidden>이어하기</button>
+        <div id="wipewarn" hidden>
+          <div class="wt">지금까지의 기록이 사라집니다</div>
+          <div class="wd">직급, 근속, 능력치, 아이템, 업적이 전부 처음으로 돌아갑니다.<br>되돌릴 수 없습니다.</div>
+          <div class="wb"><button id="wipe-no">취소</button><button id="wipe-yes">정말 새로 시작</button></div>
+        </div>
       </div>
       <p class="title-note" id="gatenote" hidden>
         승진 <span class="num">3</span>갈래 분기 · 아이템 <span class="num">41</span>종 (노말~레전더리) · 업적 <span class="num">40</span>종<br>
@@ -2698,7 +2717,13 @@ function offlineRun(st){
   }
   S=sv;return months;
 }
-$('btn-start').onclick=()=>{if(!SBUID){amsg('로그인이 필요합니다.','err');return;}begin(newGame(SBNICK||'백PD'),0);};
+function reallyStart(){if(!SBUID){amsg('로그인이 필요합니다.','err');return;}begin(newGame(SBNICK||'백PD'),0);}
+$('btn-start').onclick=()=>{
+  if(load()){$('wipewarn').hidden=false;$('btn-start').hidden=true;return;}
+  reallyStart();
+};
+$('wipe-no').onclick=()=>{$('wipewarn').hidden=true;$('btn-start').hidden=false;};
+$('wipe-yes').onclick=()=>{try{localStorage.removeItem('bpd_save');}catch(e){}$('wipewarn').hidden=true;$('btn-start').hidden=false;reallyStart();};
 $('btn-continue').onclick=()=>{if(!SBUID){amsg('로그인이 필요합니다.','err');return;}const st=load();if(!st)return;if(SBNICK)st.name=SBNICK;const mo=offlineRun(st);begin(st,mo);};
 $('inp-name').addEventListener('keydown',e=>{if(e.key==='Enter')$('btn-start').click();});
 $('acts').addEventListener('click',e=>{const b=e.target.closest('.act');if(!b||!S)return;
@@ -2777,7 +2802,7 @@ $('btn-reset').onclick=()=>{
   if(!confirm('저장을 지우고 처음부터 시작할까요?'))return;
   try{localStorage.removeItem('bpd_save');}catch(e){}
   S=null;$('inbox').hidden=true;$('screen-game').hidden=true;$('screen-title').hidden=false;
-  $('btn-reset').hidden=true;$('btn-continue').hidden=true;$('sysmeta').textContent='세션 대기';
+  $('btn-reset').hidden=true;$('sysmeta').textContent='세션 대기';showSaveInfo();
 };
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.preventDefault();toggleDisguise();return;}
@@ -2789,6 +2814,19 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 window.addEventListener('beforeunload',save);
 setInterval(()=>{if(S&&!S.busy)save();},15000);
+function showSaveInfo(){
+  const st=load();
+  const c=$('btn-continue'),b=$('btn-start');
+  if(st){
+    c.hidden=false;b.classList.add('small');b.textContent='새로 시작';
+    const nd=TREE[st.rank]||TREE.intern;
+    const nm=(nd.star&&st.star>0)?nd.n+' ★'+(st.star+1):nd.n;
+    $('c-sub2').textContent=(st.name||'백PD')+' · '+nm+' · Lv.'+st.lv+' · 근속 '+Math.floor(st.m/12)+'년 '+(st.m%12)+'개월';
+    $('inp-name').value=st.name||'백PD';
+  }else{
+    c.hidden=true;b.classList.remove('small');
+  }
+}
 
 /* ══ 계정 (Supabase REST) ══ */
 function amsg(t,cls){const e=$('a-msg');if(e){e.textContent=t;e.className='amsg'+(cls?' '+cls:'');}}
@@ -2890,8 +2928,7 @@ $('a-signup').onclick=async()=>{
 })();
 
 (function init(){
-  const st=load();
-  if(st){$('btn-continue').hidden=false;$('inp-name').value=st.name||'백PD';}
+  showSaveInfo();
   requestAnimationFrame(loop);
 })();
 })();
