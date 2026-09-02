@@ -491,6 +491,22 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
 .setcard.danger button{border-color:var(--onair);color:var(--onair)}
 .setcard.danger button:hover{background:var(--onair);color:#fff}
 
+.stage{cursor:pointer}
+.hypewrap{position:absolute;left:0;right:0;bottom:0;pointer-events:none}
+.hypebar{height:5px;background:rgba(6,8,12,.66);border-top:1px solid #262E38;position:relative;overflow:hidden}
+.hypebar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#C8641E,#FFB03A,#FFE066);
+  box-shadow:0 0 12px rgba(255,176,58,.65);transition:width .12s}
+.hypelab{position:absolute;left:12px;bottom:32px;display:flex;gap:8px;font-size:10.5px;letter-spacing:.16em;
+  font-weight:700;color:#C08A44;text-shadow:0 1px 4px #000;white-space:nowrap}
+.hypelab b{font-family:'Nanum Gothic Coding',monospace}
+.hypelab.hot{color:#FFD24A}
+.stage.hot{box-shadow:0 0 0 1px rgba(0,0,0,.7) inset,0 0 40px rgba(255,176,58,.22) inset,0 10px 30px rgba(0,0,0,.5)}
+.spark{position:absolute;pointer-events:none;font-family:'Nanum Gothic Coding',monospace;
+  font-size:13px;font-weight:700;color:#FFD24A;text-shadow:0 1px 4px #000;transform:translate(-50%,-50%)}
+@media (prefers-reduced-motion:no-preference){.spark{animation:spk .7s ease-out forwards}}
+@keyframes spk{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}20%{opacity:1;transform:translate(-50%,-70%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-160%) scale(.9)}}
+.chip.hype b{color:#FFD24A}
+
 #authpanel{max-width:450px;margin:0 auto 18px;border:1px solid var(--line);background:linear-gradient(180deg,#141A22,#0E1218);padding:16px;display:none;text-align:left}
 #authpanel.on{display:block}
 #authpanel .ahead{font-size:10px;letter-spacing:.22em;color:var(--onair);font-weight:700;margin-bottom:11px}
@@ -567,6 +583,8 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
         <div class="clock num" id="c-clock">1년차 1월</div>
         <div class="nowdoing" id="c-doing">편집실 밤샘</div>
         <button class="pausebtn" id="btn-pause">❚❚ 일시정지</button>
+        <div class="hypelab" id="hype-lab"><span>열 정</span><b id="hype-n">효율 +0%</b></div>
+        <div class="hypewrap"><div class="hypebar"><i id="hype-fill" style="width:0%"></i></div></div>
         <div class="fx" id="fx"></div>
       </div>
       <div class="acts" id="acts"></div>
@@ -1336,6 +1354,7 @@ let BOARD=null,BOARDSORT='total',_lastBoard=0;
 const SB_URL='https://tytgthyaskhjmtzumqxz.supabase.co',SB_KEY='sb_publishable_U6t9_uxTTaAGMbhZOs46-Q_NQHyOxJc';
 let TOKEN=null,RTOKEN=null,SBUID=null,SBNICK=null;
 function sbH(a){const h={'apikey':SB_KEY,'Content-Type':'application/json'};if(a&&TOKEN)h['Authorization']='Bearer '+TOKEN;return h;}
+let HYPET=0;
 let S=null,paused=false,lastT=0,acc=0,disguised=false,tab='stat';
 
 /* ── 아이템 효과 합산 ── */
@@ -1505,14 +1524,15 @@ async function loadBoard(){
   }catch(e){BOARD=[];}
   if(tab==='rank')renderRankTab();
 }
-function perfNow(){return S?0.30+0.70*((S.sta+S.men)/200):1;}
+function hypeBonus(){return S?(1+0.5*(S.hype||0)/100):1;}
+function perfNow(){return S?(0.30+0.70*((S.sta+S.men)/200))*hypeBonus():1;}
 
 /* ══════════════ 상태 ══════════════ */
 function newGame(name){
   return {v:7,name:name||'백PD',m:0,rank:'intern',line:null,bias:null,star:0,
     lv:1,exp:0,sp:0,dir:6,plan:5,sense:9,cast:4,rep:5,luk:5,
     sta:82,men:78,risk:0,money:r(150,400),
-    act:'edit',prog:null,hits:0,smash:0,flops:0,streakFlop:0,awards:0,idleM:0,
+    hype:0,act:'edit',prog:null,hits:0,smash:0,flops:0,streakFlop:0,awards:0,idleM:0,
     dirty:0,scandal:0,shieldUsed:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
     items:{},flags:{},ach:{},cool:{},seen:{intern:1},hist:[],log:[],inbox:[],pity:0,gacha:0,busy:false,saved:Date.now()};
 }
@@ -1803,7 +1823,8 @@ function renderStrip(){
     '<span class="chip">체력'+bar(S.sta,'f-sta')+'<b>'+Math.round(S.sta)+'</b></span>'+
     '<span class="chip">멘탈'+bar(S.men,'f-men')+'<b>'+Math.round(S.men)+'</b></span>'+
     '<span class="chip">의혹'+bar(S.risk,'f-risk')+'<b>'+Math.round(S.risk)+'</b></span>'+
-    '<span class="chip">효율 <b style="color:'+(pf<.6?'var(--onair)':'var(--rate)')+'">'+Math.round(pf*100)+'%</b></span>'+
+    '<span class="chip'+((S.hype||0)>0?' hype':'')+'">효율 <b style="color:'+(pf<.6?'var(--onair)':(pf>1?'#FFD24A':'var(--rate)'))+'">'+Math.round(pf*100)+'%</b>'+
+      ((S.hype||0)>0?'<span style="font-size:10.5px;color:#C08A44">열정 +'+Math.round((S.hype||0)*0.5)+'</span>':'')+'</span>'+
     '<span class="chip">자산 <b>'+money(S.money)+'</b></span>'+
     (S.sp>0?'<span class="chip alert" data-go="stat">스탯 포인트 <b>'+S.sp+'</b></span>':'')+
     (ready?'<span class="chip alert" data-go="promo">승진 심사 가능</span>':'')+
@@ -1838,7 +1859,7 @@ function renderStatTab(){
     '<div class="sub num">근속 '+Math.floor(S.m/12)+'년 '+(S.m%12)+'개월 · '+(24+Math.floor(S.m/12))+'세 · 월급 '+num(n.pay)+'만</div>'+
     '<div class="expbar"><i style="width:'+Math.min(100,S.exp/need(S.lv)*100)+'%"></i></div>'+
     '<div class="expnum"><span>EXP</span><span class="num">'+Math.floor(S.exp)+' / '+need(S.lv)+'</span></div></div>'+
-    '<div class="pnote" style="margin-top:12px">체력·멘탈이 낮으면 <b>업무 효율</b>(현재 '+Math.round(perfNow()*100)+'%)이 떨어져 모든 성장이 느려집니다. 의혹은 감사·수사를 부르지만 범죄 라인 승진 확률은 올려줍니다. 수치는 위쪽 상태바에서 실시간으로 볼 수 있습니다.</div>'+
+    '<div class="pnote" style="margin-top:12px">체력·멘탈이 낮으면 <b>업무 효율</b>(현재 '+Math.round(perfNow()*100)+'%)이 떨어져 모든 성장이 느려집니다. 위쪽 <b>업무 화면을 계속 두드리면</b> 열정이 차올라 효율이 최대 <b>150%</b>까지 올라갑니다. 의혹은 감사·수사를 부르지만 범죄 라인 승진 확률은 올려줍니다. 수치는 위쪽 상태바에서 실시간으로 볼 수 있습니다.</div>'+
     '<div class="sec-label mt">월 수 지</div>'+
     '<div class="prow"><span>월급 ('+node().n+')</span><b class="num" style="color:var(--rate)">+'+num(node().pay)+'만</b></div>'+
     '<div class="prow"><span>생활비'+(S.flags.love?' · 연애':'')+(S.flags.inlaw||S.flags.open?' · 가정':'')+(S.flags.kid?' · 육아':'')+'</span><b class="num" style="color:var(--onair)">−'+num(livingCost())+'만</b></div>'+
@@ -2108,6 +2129,7 @@ function renderSetTab(){
 const TUT=[
  {t:'여기는 방송국이야',d:'너는 오늘부터 막내 PD야.\n일을 하나씩 하다 보면 점점 높은 자리로 올라가.\n\n어렵지 않아. 천천히 알려줄게.'},
  {el:'.stage',t:'이게 너야',d:'화면 속에서 일하고 있는 사람이 바로 너야.\n무슨 일을 고르느냐에 따라 그림이 바뀌어.\n\n술자리를 고르면 술을 마시고, 쉬기를 고르면 엎드려 자.'},
+ {el:'.stage .hypewrap',t:'화면을 두드려 봐',d:'일하는 화면을 손가락으로 마구 두드리면\n<열정>이 차올라.\n\n열정이 가득하면 일이 최대 1.5배 빨라져.\n손을 멈추면 천천히 식어.'},
  {el:'#acts',t:'일을 하나만 골라',d:'여기 여덟 개 중에 하나만 누르면 돼.\n그러면 알아서 그 일을 계속 해.\n\n아무것도 안 눌러도 시간은 계속 흘러가. 그냥 놔둬도 돼.'},
  {el:'#strip',t:'힘들면 쉬어야 해',d:'체력이랑 멘탈이 줄어들면 일이 느려져.\n숫자가 낮아지면 <휴식>이나 <체력 관리>를 골라줘.\n\n의혹은 나쁜 짓을 하면 올라가. 너무 높으면 경찰이 와.'},
  {el:'.tabbar button[data-t="stat"]',tab:'stat',t:'능력치 키우기',d:'레벨이 오르면 점수를 받아.\n그 점수를 여기서 원하는 능력에 부어주면 돼.'},
@@ -2185,7 +2207,7 @@ function renderTab(){
   else if(tab==='set')renderSetTab();
   else renderLogTab();
 }
-function refresh(){renderHead();renderStrip();renderActs();renderTabs();renderTab();renderInbox();}
+function refresh(){renderHead();renderStrip();renderActs();renderTabs();renderTab();renderInbox();renderHype();}
 
 /* ══════════════ 진행 ══════════════ */
 function tick(){
@@ -2207,6 +2229,7 @@ function tick(){
   g(S,d);
   if(a.id==='idle'){S.idleM++;if(S.idleM>=60)ach(S,'idle60');}
   S.money+=node().pay-livingCost()+M.moneyAdd;
+  S.hype=Math.max(0,(S.hype||0)-9);
   if(S.sta<25)g(S,{men:-2});
   if(S.men<20)g(S,{sta:-2});
   S.risk=Math.max(0,Math.min(100,S.risk-0.3*M.riskMul+M.riskAdd));
@@ -2629,7 +2652,7 @@ function loop(t){
     acc+=dt;let guard=0;
     while(acc>=MONTH_MS&&guard<20){acc-=MONTH_MS;guard++;tick();if(S.busy)break;}
   }
-  if(S)drawScene(t);
+  if(S){HYPET+=dt*((S.hype||0)/100)*1.25;drawScene(t+HYPET);}
   requestAnimationFrame(loop);
 }
 function renderPause(){const b=$('btn-pause');b.textContent=paused?'▶  재개':'❚❚ 일시정지';b.classList.toggle('on',paused);}
@@ -2719,6 +2742,31 @@ document.querySelector('.panelwrap').addEventListener('click',e=>{
     if(!S.items[k]&&S.money>=it.p){S.money-=it.p;give(S,k);refresh();save();}}
 });
 $('btn-pause').onclick=()=>{paused=!paused;renderPause();};
+let _clk=[];
+document.querySelector('.stage').addEventListener('pointerdown',e=>{
+  if(!S||S.busy||e.target.closest('#btn-pause'))return;
+  const now=Date.now();
+  _clk=_clk.filter(t=>now-t<1000);
+  if(_clk.length>=12)return;
+  _clk.push(now);
+  const before=S.hype||0;
+  S.hype=Math.min(100,before+3);
+  const st=document.querySelector('.stage').getBoundingClientRect();
+  const sp=document.createElement('span');
+  sp.className='spark';
+  sp.textContent=(S.hype>=100)?'MAX':'+3';
+  sp.style.left=(e.clientX-st.left)+'px';
+  sp.style.top=(e.clientY-st.top)+'px';
+  $('fx').appendChild(sp);setTimeout(()=>sp.remove(),750);
+  renderHype();renderStrip();
+});
+function renderHype(){
+  const h=Math.round(S?(S.hype||0):0);
+  const f=$('hype-fill');if(f)f.style.width=h+'%';
+  const n=$('hype-n');if(n)n.textContent='효율 +'+Math.round(h*0.5)+'%';
+  const l=$('hype-lab');if(l)l.classList.toggle('hot',h>=70);
+  const stg=document.querySelector('.stage');if(stg)stg.classList.toggle('hot',h>=50);
+}
 $('btn-tut').onclick=()=>{if(!S){toast('게임을 시작한 뒤에 볼 수 있습니다','');return;}tutStart();};
 $('tut-next').onclick=()=>{if(TSTEP>=TUT.length-1){tutEnd();return;}TSTEP++;tutShow();};
 $('tut-prev').onclick=()=>{if(TSTEP>0){TSTEP--;tutShow();}};
