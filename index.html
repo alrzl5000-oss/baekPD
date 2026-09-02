@@ -462,12 +462,13 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
 .rme .g b{color:var(--ink);font-family:'Nanum Gothic Coding',monospace}
 @media (max-width:640px){.rrow{grid-template-columns:38px minmax(0,1fr) 92px;gap:8px}.rrow .rsub{display:none}}
 
-#authpanel{max-width:440px;margin:0 auto 20px;border:1px solid var(--line);background:#11161C;padding:14px;display:none;text-align:left}
+#authpanel{max-width:450px;margin:0 auto 18px;border:1px solid var(--line);background:linear-gradient(180deg,#141A22,#0E1218);padding:16px;display:none;text-align:left}
 #authpanel.on{display:block}
+#authpanel .ahead{font-size:10px;letter-spacing:.22em;color:var(--onair);font-weight:700;margin-bottom:11px}
 #authpanel .arow{display:flex;gap:7px;margin-bottom:8px}
 #authpanel input{flex:1;width:auto;min-width:0}
-#authpanel .arow:last-of-type button{flex:1;padding:9px 0}
-.amsg{font-size:12px;color:var(--ink-3);line-height:1.6;margin-top:6px}
+#authpanel .arow:last-of-type button{flex:1;padding:10px 0}
+.amsg{font-size:12px;color:var(--ink-3);line-height:1.65;margin-top:8px}
 .amsg.err{color:var(--onair)} .amsg.ok{color:var(--rate)}
 .sysbar #who{color:var(--rate);font-weight:700}
 </style>
@@ -486,7 +487,6 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
     <span class="meta num" id="sysmeta">세션 대기</span>
     <span class="spacer"></span>
     <span class="meta" id="who"></span>
-    <button class="ghost" id="btn-auth">로그인 · 회원가입</button>
     <button class="ghost" id="btn-logout" hidden>로그아웃</button>
     <button class="ghost" id="btn-reset" hidden>초기화</button>
   </div>
@@ -496,18 +496,19 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
       <div class="slate"><div class="eyebrow">TAKE 01 · SCENE 1</div><h1 class="title-main han">백<em>PD</em> 키우기</h1></div>
       <p class="title-sub">24세 인턴으로 들어가서 끝없이 위로 올라가는 방치형 RPG.<br>어떻게 키우느냐에 따라 올라가는 길이 갈립니다.</p>
       <div class="title-rule"></div>
-      <div id="authpanel">
-        <div class="arow"><input type="text" id="a-nick" maxlength="12" placeholder="닉네임 (랭킹 표시명)"></div>
+      <div id="authpanel" class="on">
+        <div class="ahead">계 정 으 로 시 작 하 기</div>
+        <div class="arow"><input type="text" id="a-nick" maxlength="12" placeholder="닉네임 (랭킹 표시명 · 가입 시에만)"></div>
         <div class="arow"><input type="email" id="a-email" placeholder="이메일" autocomplete="email"><input type="password" id="a-pw" placeholder="비밀번호 6자 이상" autocomplete="current-password"></div>
-        <div class="arow"><button class="btn-primary" id="a-signup">회원가입</button><button class="btn-cont" id="a-login">로그인</button><button class="btn-cont" id="a-close">닫기</button></div>
-        <div class="amsg" id="a-msg">가입하면 종합·자본·업적 랭킹에 내 기록이 올라갑니다. 로그인 없이도 바로 플레이할 수 있습니다.</div>
+        <div class="arow"><button class="btn-primary" id="a-signup">회원가입</button><button class="btn-cont" id="a-login">로그인</button></div>
+        <div class="amsg" id="a-msg">계정이 있어야 플레이할 수 있습니다. 진행 상황이 이 계정에 묶이고, 종합·자본·업적 랭킹에 기록이 올라갑니다.</div>
       </div>
-      <div class="name-row">
+      <div class="name-row" id="gate" hidden>
         <input type="text" id="inp-name" maxlength="8" placeholder="이름" value="백PD" aria-label="PD 이름">
         <button class="btn-primary" id="btn-start">새로 시작</button>
         <button class="btn-cont" id="btn-continue" hidden>이어하기</button>
       </div>
-      <p class="title-note">
+      <p class="title-note" id="gatenote" hidden>
         승진 <span class="num">3</span>갈래 분기 · 아이템 <span class="num">41</span>종 (노말~레전더리) · 업적 <span class="num">40</span>종<br>
         <kbd>1</kbd>~<kbd>8</kbd> 업무 전환 · <kbd>Space</kbd> 일시정지 · <kbd>Esc</kbd> 위장 화면
       </p>
@@ -1997,12 +1998,6 @@ function renderRankTab(){
     '<div class="g"><span>자산 <b>'+money(me.money)+'</b></span><span>업적 <b>'+me.ach+'</b></span>'+
     '<span>히트 <b>'+me.hits+'</b> / 대박 <b>'+me.smash+'</b></span><span>근속 <b>'+Math.floor(me.months/12)+'년</b></span>'+
     '<span>종합점수 <b>'+num(me.score)+'</b></span></div></div>'):'';
-  if(!SBUID){
-    setHTML('tab-rank',head+mine+
-      '<div class="pnote"><b>로그인하면 내 기록이 이 순위표에 올라갑니다.</b> 오른쪽 위 · 또는 첫 화면에서 회원가입하세요. 로그인 없이도 순위표는 볼 수 있습니다.</div>'+
-      boardTable());
-    return;
-  }
   setHTML('tab-rank',head+mine+boardTable());
 }
 function boardTable(){
@@ -2534,8 +2529,8 @@ function offlineRun(st){
   }
   S=sv;return months;
 }
-$('btn-start').onclick=()=>{const n=($('inp-name').value||'').trim().slice(0,8)||'백PD';begin(newGame(n),0);};
-$('btn-continue').onclick=()=>{const st=load();if(!st)return;const mo=offlineRun(st);begin(st,mo);};
+$('btn-start').onclick=()=>{if(!SBUID){amsg('로그인이 필요합니다.','err');return;}begin(newGame(SBNICK||'백PD'),0);};
+$('btn-continue').onclick=()=>{if(!SBUID){amsg('로그인이 필요합니다.','err');return;}const st=load();if(!st)return;if(SBNICK)st.name=SBNICK;const mo=offlineRun(st);begin(st,mo);};
 $('inp-name').addEventListener('keydown',e=>{if(e.key==='Enter')$('btn-start').click();});
 $('acts').addEventListener('click',e=>{const b=e.target.closest('.act');if(!b||!S)return;
   S.act=ACTIONS[+b.dataset.i].id;renderActs();save();});
@@ -2587,36 +2582,42 @@ function saveTok(){try{localStorage.setItem('bpd_tok',JSON.stringify({a:TOKEN,r:
 function clearTok(){try{localStorage.removeItem('bpd_tok');}catch(e){}}
 function setAuthUI(){
   const w=$('who');if(w)w.textContent=SBUID?('◉ '+(SBNICK||'플레이어')):'';
-  $('btn-auth').hidden=!!SBUID;$('btn-logout').hidden=!SBUID;
-  if(SBUID)$('authpanel').classList.remove('on');
+  $('btn-logout').hidden=!SBUID;
+  $('gate').hidden=!SBUID;
+  $('gatenote').hidden=!SBUID;
+  $('authpanel').classList.toggle('on',!SBUID);
+  if(SBUID&&SBNICK){$('inp-name').value=SBNICK;$('inp-name').readOnly=true;}
 }
 async function fetchNick(){
   try{
     const res=await fetch(SB_URL+'/rest/v1/leaderboard?select=nickname&user_id=eq.'+SBUID,{headers:sbH(true)});
     const d=res.ok?await res.json():[];
-    if(d&&d[0]&&d[0].nickname){SBNICK=d[0].nickname;$('inp-name').value=SBNICK;if(S){S.name=SBNICK;refresh();}}
+    if(d&&d[0]&&d[0].nickname){SBNICK=d[0].nickname;if(S){S.name=SBNICK;refresh();}}
   }catch(e){}
 }
 async function onSession(j){
   TOKEN=j.access_token;RTOKEN=j.refresh_token;SBUID=(j.user&&j.user.id)||j.user_id||SBUID;
   UID=SBUID;saveTok();await fetchNick();setAuthUI();loadBoard();if(S)pushBoard(true);
 }
-$('btn-auth').onclick=()=>{$('authpanel').classList.toggle('on');};
-$('a-close').onclick=()=>{$('authpanel').classList.remove('on');};
-$('btn-logout').onclick=()=>{TOKEN=RTOKEN=SBUID=SBNICK=null;clearTok();UID=uid();setAuthUI();loadBoard();};
+$('btn-logout').onclick=()=>{
+  TOKEN=RTOKEN=SBUID=SBNICK=null;clearTok();UID=uid();
+  S=null;$('screen-game').hidden=true;$('screen-title').hidden=false;
+  $('btn-reset').hidden=true;$('inp-name').readOnly=false;
+  setAuthUI();loadBoard();amsg('로그아웃했습니다.','');
+};
 $('a-login').onclick=async()=>{
   amsg('로그인 중…');
   try{
     const res=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:sbH(false),
       body:JSON.stringify({email:($('a-email').value||'').trim(),password:$('a-pw').value||''})});
     const j=await res.json();
-    if(!res.ok){amsg('로그인 실패 · '+(j.error_description||j.msg||j.message||'확인해주세요'),'err');return;}
-    amsg('로그인 완료.','ok');await onSession(j);
-  }catch(e){amsg('네트워크 오류','err');}
+    if(!res.ok){amsg('로그인 실패 · '+(j.error_description||j.msg||j.message||'이메일과 비밀번호를 확인해주세요'),'err');return;}
+    amsg('로그인 완료. 아래에서 시작하세요.','ok');await onSession(j);
+  }catch(e){amsg('네트워크 오류. 잠시 후 다시 시도해주세요.','err');}
 };
 $('a-signup').onclick=async()=>{
   const nick=($('a-nick').value||'').trim().slice(0,12);
-  if(!nick){amsg('닉네임을 입력하세요.','err');return;}
+  if(!nick){amsg('닉네임을 입력하세요. 랭킹에 표시될 이름입니다.','err');return;}
   amsg('가입 중…');
   try{
     const res=await fetch(SB_URL+'/auth/v1/signup',{method:'POST',headers:sbH(false),
@@ -2633,9 +2634,9 @@ $('a-signup').onclick=async()=>{
       if(/23505|duplicate|unique/i.test(t)){amsg('이미 쓰는 닉네임입니다. 다른 닉네임으로 다시 시도하세요.','err');return;}
       amsg('닉네임 등록 실패 · 잠시 후 다시 시도하세요.','err');return;
     }
-    SBNICK=nick;saveTok();$('inp-name').value=nick;if(S){S.name=nick;refresh();}
-    setAuthUI();amsg('가입 완료. 랭킹에 등록되었습니다.','ok');pushBoard(true);loadBoard();
-  }catch(e){amsg('네트워크 오류','err');}
+    SBNICK=nick;saveTok();if(S)S.name=nick;
+    setAuthUI();amsg('가입 완료. 아래에서 시작하세요.','ok');pushBoard(true);loadBoard();
+  }catch(e){amsg('네트워크 오류. 잠시 후 다시 시도해주세요.','err');}
 };
 (async function restore(){
   let t=null;try{t=JSON.parse(localStorage.getItem('bpd_tok')||'null');}catch(e){}
@@ -2646,7 +2647,7 @@ $('a-signup').onclick=async()=>{
         body:JSON.stringify({refresh_token:t.r})});
       if(res.ok){await onSession(await res.json());return;}
     }catch(e){}
-    clearTok();
+    clearTok();SBNICK=null;
   }
   setAuthUI();loadBoard();
 })();
