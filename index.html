@@ -462,6 +462,35 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
 .rme .g b{color:var(--ink);font-family:'Nanum Gothic Coding',monospace}
 @media (max-width:640px){.rrow{grid-template-columns:38px minmax(0,1fr) 92px;gap:8px}.rrow .rsub{display:none}}
 
+/* 튜토리얼 */
+#tut{position:fixed;inset:0;z-index:960}
+#tut[hidden]{display:none}
+#tut-hole{position:absolute;border-radius:4px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(3,5,9,.84), 0 0 0 2px var(--onair), 0 0 30px rgba(255,74,61,.55);
+  transition:left .25s,top .25s,width .25s,height .25s}
+#tut-box{position:absolute;max-width:352px;width:calc(100% - 32px);
+  background:linear-gradient(180deg,#171E28,#0D1218);border:1px solid var(--onair);
+  padding:16px 17px;box-shadow:0 20px 56px rgba(0,0,0,.75);border-radius:3px}
+#tut-box .tstep{font-size:10px;letter-spacing:.2em;color:var(--onair);font-weight:700}
+#tut-box .tt{font-size:19px;font-weight:700;margin-top:5px;line-height:1.3}
+#tut-box .td{font-size:14px;color:var(--ink-2);line-height:1.75;margin-top:8px;white-space:pre-line}
+#tut-box .tb{display:flex;gap:7px;margin-top:15px}
+#tut-box .tb button{flex:1;border:1px solid var(--line);background:#141A21;color:var(--ink-2);
+  padding:9px 0;font-size:13px;font-weight:700;border-radius:2px}
+#tut-box .tb button.go{background:linear-gradient(180deg,#FF5A4C,#D9382C);border-color:#FF6A5C;color:#fff;flex:1.4}
+#tut-box .tb button:hover{border-color:var(--onair);color:var(--onair)}
+#tut-box .tb button.go:hover{color:#fff}
+.setgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:10px}
+.setcard{border:1px solid var(--line);background:linear-gradient(180deg,#161C24,#101419);padding:13px 14px}
+.setcard .n{font-size:15px;font-weight:700}
+.setcard .d{font-size:12px;color:var(--ink-3);line-height:1.6;margin-top:4px;min-height:3.2em}
+.setcard button{width:100%;margin-top:11px;border:1px solid var(--line);background:#141A21;color:var(--ink);
+  padding:9px 0;font-weight:700;font-size:13.5px;border-radius:2px}
+.setcard button:hover{border-color:var(--onair);color:var(--onair)}
+.setcard.danger{border-color:#5A2A24}
+.setcard.danger button{border-color:var(--onair);color:var(--onair)}
+.setcard.danger button:hover{background:var(--onair);color:#fff}
+
 #authpanel{max-width:450px;margin:0 auto 18px;border:1px solid var(--line);background:linear-gradient(180deg,#141A22,#0E1218);padding:16px;display:none;text-align:left}
 #authpanel.on{display:block}
 #authpanel .ahead{font-size:10px;letter-spacing:.22em;color:var(--onair);font-weight:700;margin-bottom:11px}
@@ -486,6 +515,7 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
     <span class="brand">편성제작본부 인재육성 시뮬레이터</span><span class="sep"></span>
     <span class="meta num" id="sysmeta">세션 대기</span>
     <span class="spacer"></span>
+    <button class="ghost" id="btn-tut">튜토리얼</button>
     <span class="meta" id="who"></span>
     <button class="ghost" id="btn-logout" hidden>로그아웃</button>
     <button class="ghost" id="btn-reset" hidden>초기화</button>
@@ -537,6 +567,7 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
       <div class="tabpane" id="tab-bag" hidden></div>
       <div class="tabpane" id="tab-shop" hidden></div>
       <div class="tabpane" id="tab-rank" hidden></div>
+      <div class="tabpane" id="tab-set" hidden></div>
       <div class="tabpane" id="tab-log" hidden></div>
     </div>
   </section>
@@ -578,6 +609,19 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
   <span class="txt"><b id="inbox-label">새 소식</b><span id="inbox-sub">클릭해서 확인</span></span>
   <span class="badge num" id="inbox-n">1</span>
 </button>
+<div id="tut" hidden>
+  <div id="tut-hole"></div>
+  <div id="tut-box">
+    <div class="tstep" id="tut-step">1 / 12</div>
+    <div class="tt" id="tut-t"></div>
+    <div class="td" id="tut-d"></div>
+    <div class="tb">
+      <button id="tut-skip">그만 보기</button>
+      <button id="tut-prev">이전</button>
+      <button id="tut-next" class="go">다음</button>
+    </div>
+  </div>
+</div>
 <div id="toasts"></div>
 
 <script>
@@ -1724,7 +1768,7 @@ function drawIllust(kind,host){
 }
 
 /* ══════════════ 렌더 ══════════════ */
-const TABS=[['stat','능력치'],['promo','승진'],['show','작품'],['bag','가방'],['shop','상점'],['rank','랭킹'],['log','일지']];
+const TABS=[['stat','능력치'],['promo','승진'],['show','작품'],['bag','가방'],['shop','상점'],['rank','랭킹'],['log','일지'],['set','설정']];
 function renderTabs(){
   const nxt=readyPromos().length>0;
   setHTML('tabbar',TABS.map(x=>{
@@ -2019,6 +2063,91 @@ function boardTable(){
     '<div class="pnote">종합점수는 직급 · 명예 승급 · 레벨 · 업적 · 대박작 · 히트작 · 수상 · 자산을 합산하고 폭망을 감점해 계산합니다.<br>'+
     '기록은 승진·방영 때와 2년마다 자동으로 갱신됩니다.</div>');
 }
+function renderSetTab(){
+  setHTML('tab-set',
+    '<div class="sec-label">설 정</div><div class="setgrid">'+
+    '<div class="setcard"><div class="n">튜토리얼 다시 보기</div>'+
+      '<div class="d">화면을 하나씩 짚어가며 처음부터 다시 알려줍니다. 언제든 다시 볼 수 있습니다.</div>'+
+      '<button data-set="tut">튜토리얼 시작</button></div>'+
+    '<div class="setcard"><div class="n">강제 새로고침</div>'+
+      '<div class="d">화면이 멈추거나 이상하게 보일 때 씁니다. 진행 상황은 저장된 뒤 다시 불러옵니다.</div>'+
+      '<button data-set="reload">새로고침</button></div>'+
+    '<div class="setcard"><div class="n">지금 저장</div>'+
+      '<div class="d">평소에도 자동으로 저장되지만, 확실히 해두고 싶을 때 누르세요.</div>'+
+      '<button data-set="save">저장하기</button></div>'+
+    '<div class="setcard"><div class="n">랭킹 기록 올리기</div>'+
+      '<div class="d">지금 성적을 순위표에 바로 반영합니다. 평소에는 승진·방영 때 자동으로 올라갑니다.</div>'+
+      '<button data-set="push">지금 올리기</button></div>'+
+    '<div class="setcard danger"><div class="n">데이터 초기화</div>'+
+      '<div class="d">지금까지의 진행·업적·아이템이 전부 사라지고 인턴부터 다시 시작합니다. 되돌릴 수 없습니다.</div>'+
+      '<button data-set="wipe">전부 지우고 처음부터</button></div>'+
+    '</div>'+
+    '<div class="sec-label mt">현 재 상 태</div>'+
+    '<div class="prow"><span>근속</span><b class="num">'+Math.floor(S.m/12)+'년 '+(S.m%12)+'개월</b></div>'+
+    '<div class="prow"><span>직급 · 라인</span><b>'+rankName()+' · '+(S.line?LINES[S.line].n:'공통')+'</b></div>'+
+    '<div class="prow"><span>보유 아이템</span><b class="num">'+Object.keys(S.items).length+' / '+Object.keys(ITEMS).length+'</b></div>'+
+    '<div class="prow"><span>업적</span><b class="num">'+Object.keys(S.ach).length+' / '+Object.keys(ACHS).length+'</b></div>'+
+    '<div class="pnote">진행 상황은 이 브라우저에 저장됩니다. 다른 기기에서는 이어지지 않습니다.</div>');
+}
+
+/* ══ 튜토리얼 ══ */
+const TUT=[
+ {t:'여기는 방송국이야',d:'너는 오늘부터 막내 PD야.\n일을 하나씩 하다 보면 점점 높은 자리로 올라가.\n\n어렵지 않아. 천천히 알려줄게.'},
+ {el:'.stage',t:'이게 너야',d:'화면 속에서 일하고 있는 사람이 바로 너야.\n무슨 일을 고르느냐에 따라 그림이 바뀌어.\n\n술자리를 고르면 술을 마시고, 쉬기를 고르면 엎드려 자.'},
+ {el:'#acts',t:'일을 하나만 골라',d:'여기 여덟 개 중에 하나만 누르면 돼.\n그러면 알아서 그 일을 계속 해.\n\n아무것도 안 눌러도 시간은 계속 흘러가. 그냥 놔둬도 돼.'},
+ {el:'#strip',t:'힘들면 쉬어야 해',d:'체력이랑 멘탈이 줄어들면 일이 느려져.\n숫자가 낮아지면 <휴식>이나 <체력 관리>를 골라줘.\n\n의혹은 나쁜 짓을 하면 올라가. 너무 높으면 경찰이 와.'},
+ {el:'.tabbar button[data-t="stat"]',tab:'stat',t:'능력치 키우기',d:'레벨이 오르면 점수를 받아.\n그 점수를 여기서 원하는 능력에 부어주면 돼.'},
+ {el:'#tab-stat .st2 .rt',tab:'stat',t:'한 번에 많이 올리기',d:'+1은 조금, +10은 열 번, +100은 백 번을 한 번에 부어.\n\n어디에 붓느냐에 따라 나중에 가는 길이 달라져.'},
+ {el:'.tabbar button[data-t="promo"]',tab:'promo',t:'출세 지도',d:'여기가 네가 올라갈 길이야.\n아직 안 가본 길은 ???로 가려져 있어.\n\n조건을 다 채우면 편지가 오고, 그때 도전하면 돼.'},
+ {el:'.tabbar button[data-t="show"]',tab:'show',t:'네 프로그램',d:'PD가 되면 네 방송을 만들어.\n일을 할수록 완성도가 올라가고,\n다 만들면 시청률이 나와.\n\n시청률이 높으면 승진이 빨라져.'},
+ {el:'.tabbar button[data-t="shop"]',tab:'shop',t:'돈으로 장비 사기',d:'모은 돈으로 좋은 장비를 살 수 있어.\n뽑기도 있어서 운이 좋으면 아주 좋은 걸 얻어.'},
+ {el:'.tabbar button[data-t="rank"]',tab:'rank',t:'다른 사람과 겨루기',d:'네 점수가 다른 사람들과 나란히 줄을 서.\n종합, 돈, 업적 세 가지로 볼 수 있어.'},
+ {el:'.tabbar button[data-t="set"]',tab:'set',t:'설정',d:'처음부터 다시 하고 싶거나\n화면이 이상할 때 여기로 오면 돼.'},
+ {el:'#btn-tut',t:'다 됐어!',d:'이 단추를 누르면 언제든 다시 볼 수 있어.\n\n이제 일을 하나 고르고 기다리기만 하면 돼.\n편지가 오면 꼭 눌러줘!'}
+];
+let TSTEP=0;
+function tutStart(){
+  if(!S)return;
+  TSTEP=0;paused=true;renderPause();
+  $('tut').hidden=false;tutShow();
+}
+function tutEnd(){
+  $('tut').hidden=true;paused=false;renderPause();
+  try{localStorage.setItem('bpd_tut','1');}catch(e){}
+}
+function tutShow(){
+  const st=TUT[TSTEP];
+  if(st.tab&&tab!==st.tab){tab=st.tab;refresh();}
+  $('tut-step').textContent=(TSTEP+1)+' / '+TUT.length;
+  $('tut-t').textContent=st.t;
+  $('tut-d').textContent=st.d;
+  $('tut-prev').style.visibility=TSTEP===0?'hidden':'visible';
+  $('tut-next').textContent=(TSTEP===TUT.length-1)?'시작하기':'다음';
+  const hole=$('tut-hole'),box=$('tut-box');
+  let el=st.el?document.querySelector(st.el):null;
+  if(el)el.scrollIntoView({block:'center'});
+  requestAnimationFrame(()=>{
+    const vw=window.innerWidth,vh=window.innerHeight;
+    let r=el?el.getBoundingClientRect():null;
+    if(r&&(r.width<4||r.height<4))r=null;
+    if(r){
+      const pad=8;
+      hole.style.display='block';
+      hole.style.left=(r.left-pad)+'px';hole.style.top=(r.top-pad)+'px';
+      hole.style.width=(r.width+pad*2)+'px';hole.style.height=(r.height+pad*2)+'px';
+      const bw=Math.min(352,vw-32);
+      const bh=box.offsetHeight||210;
+      let bx=Math.min(Math.max(12,r.left+r.width/2-bw/2),vw-bw-12);
+      let by=(r.bottom+16+bh<vh)?(r.bottom+16):(r.top-bh-16);
+      if(by<12)by=Math.min(vh-bh-12,r.bottom+16);
+      box.style.left=bx+'px';box.style.top=Math.max(12,by)+'px';
+    }else{
+      hole.style.display='none';
+      const bw=Math.min(352,vw-32),bh=box.offsetHeight||210;
+      box.style.left=((vw-bw)/2)+'px';box.style.top=Math.max(12,(vh-bh)/2)+'px';
+    }
+  });
+}
 function renderLogTab(){
   const keys=Object.keys(ACHS),got=keys.filter(k=>S.ach[k]).length;
   setHTML('tab-log',
@@ -2039,6 +2168,7 @@ function renderTab(){
   else if(tab==='bag')renderBagTab();
   else if(tab==='shop')renderShopTab();
   else if(tab==='rank')renderRankTab();
+  else if(tab==='set')renderSetTab();
   else renderLogTab();
 }
 function refresh(){renderHead();renderStrip();renderActs();renderTabs();renderTab();renderInbox();}
@@ -2513,6 +2643,8 @@ function begin(state,offMonths){
   else if(S.m===0)pushLog('예능국 인턴으로 배치됐다. 첫 업무는 프리뷰 20시간 분량.','hi');
   else pushLog('복귀했다.','hi');
   refresh();save();
+  let seenTut=false;try{seenTut=!!localStorage.getItem('bpd_tut');}catch(e){}
+  if(!seenTut)setTimeout(tutStart,600);
 }
 function offlineRun(st){
   const el=Date.now()-(st.saved||Date.now());
@@ -2546,6 +2678,21 @@ document.querySelector('.panelwrap').addEventListener('click',e=>{
     refresh();save();return;}
   const pr=e.target.closest('[data-promo]');
   if(pr&&!pr.disabled&&!S.busy){judgePromo(pr.dataset.promo);return;}
+  const sc=e.target.closest('[data-set]');
+  if(sc){
+    const k=sc.dataset.set;
+    if(k==='tut')tutStart();
+    else if(k==='reload'){save();location.reload();}
+    else if(k==='save'){save();toast('저장했습니다','blue');}
+    else if(k==='push'){if(typeof pushBoard==='function')pushBoard(true);toast('랭킹에 올렸습니다','blue');}
+    else if(k==='wipe'){
+      if(confirm('정말 전부 지우고 처음부터 시작할까요?\n진행·업적·아이템이 모두 사라집니다.')){
+        try{localStorage.removeItem('bpd_save');}catch(e){}
+        location.reload();
+      }
+    }
+    return;
+  }
   const so=e.target.closest('[data-sort]');
   if(so){BOARDSORT=so.dataset.sort;BOARD=null;renderRankTab();loadBoard();return;}
   if(e.target.closest('[data-refresh]')){BOARD=null;renderRankTab();pushBoard(true);loadBoard();return;}
@@ -2558,6 +2705,11 @@ document.querySelector('.panelwrap').addEventListener('click',e=>{
     if(!S.items[k]&&S.money>=it.p){S.money-=it.p;give(S,k);refresh();save();}}
 });
 $('btn-pause').onclick=()=>{paused=!paused;renderPause();};
+$('btn-tut').onclick=()=>{if(!S){toast('게임을 시작한 뒤에 볼 수 있습니다','');return;}tutStart();};
+$('tut-next').onclick=()=>{if(TSTEP>=TUT.length-1){tutEnd();return;}TSTEP++;tutShow();};
+$('tut-prev').onclick=()=>{if(TSTEP>0){TSTEP--;tutShow();}};
+$('tut-skip').onclick=tutEnd;
+window.addEventListener('resize',()=>{if(!$('tut').hidden)tutShow();});
 $('inbox').onclick=openInbox;
 $('btn-reset').onclick=()=>{
   if(!confirm('저장을 지우고 처음부터 시작할까요?'))return;
