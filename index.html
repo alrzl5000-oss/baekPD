@@ -521,6 +521,18 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
 @keyframes spk{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}20%{opacity:1;transform:translate(-50%,-70%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-160%) scale(.9)}}
 .chip.hype b{color:#FFD24A}
 
+.deltas{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px;padding-top:11px;border-top:1px dashed var(--line)}
+.deltas .lb{width:100%;font-size:10px;letter-spacing:.18em;color:var(--ink-3);font-weight:700;margin-bottom:1px}
+.dl{font-size:11.5px;font-family:'Nanum Gothic Coding',monospace;font-weight:700;
+  padding:2px 8px;border:1px solid;border-radius:2px;white-space:nowrap}
+.dl.up{color:var(--rate);border-color:rgba(63,214,160,.42);background:rgba(63,214,160,.08)}
+.dl.dn{color:var(--onair);border-color:rgba(255,74,61,.42);background:rgba(255,74,61,.08)}
+.dl.big{font-size:12.5px}
+
+#rv-delta{margin-top:14px}
+#rv-delta .deltas{justify-content:center;border-top-color:#2E3742;padding-top:12px}
+#rv-delta .deltas .lb{text-align:center;color:#7C8694}
+
 #authpanel{max-width:450px;margin:0 auto 18px;border:1px solid var(--line);background:linear-gradient(180deg,#141A22,#0E1218);padding:16px;display:none;text-align:left}
 #authpanel.on{display:block}
 #authpanel .ahead{font-size:10px;letter-spacing:.22em;color:var(--onair);font-weight:700;margin-bottom:11px}
@@ -648,6 +660,7 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
     <div class="big han" id="rv-num">0.0<small>%</small></div>
     <div class="tier han" id="rv-tier"></div>
     <div class="msg" id="rv-msg"></div>
+    <div id="rv-delta"></div>
     <button class="go" id="rv-go">계속</button>
   </div>
 </div>
@@ -943,6 +956,8 @@ const ACHS={
  y10:{t:'10년차',d:'근속 10년'},
  y20:{t:'20년차',d:'근속 20년'},
  y30:{t:'30년차',d:'근속 30년'},
+ marked:{t:'낙인',d:'강등되어 오점이 남다'},
+ comeback:{t:'명예 회복',d:'오점을 전부 지우다'},
  gacha10:{t:'첫 10연차',d:'뽑기 10회 달성'},
  gachaL:{t:'천운',d:'뽑기로 레전더리 획득'}
 };
@@ -1366,8 +1381,21 @@ function seenCount(){return S.seen?Object.keys(S.seen).length:0;}
 function tr(S){return TREE[S.rank]?TREE[S.rank].t:0;}
 function node(){return TREE[S.rank]||TREE.intern;}
 function rankName(){const n=node();return (n.star&&S.star>0)?n.n+' ★'+(S.star+1):n.n;}
-function demote(S,steps){for(let i=0;i<steps;i++){const p=PARENT[S.rank];if(p)S.rank=p;}
-  S.line=TREE[S.rank].l==='com'?null:TREE[S.rank].l;}
+function demote(S,steps){
+  let moved=0;
+  for(let i=0;i<steps;i++){const p=PARENT[S.rank];if(p){S.rank=p;moved++;}}
+  if(!moved)return;
+  S.line=TREE[S.rank].l==='com'?null:TREE[S.rank].l;
+  S.mark=(S.mark||0)+moved;
+  GROW.forEach(k=>{S[k]=Math.max(0,S[k]*0.85);});
+  S.money=Math.round(S.money*0.6);
+  S.promoCd=Math.max(S.promoCd||0,24);
+  S.promoFail=0;
+  pushLog('강등 · 능력치 15% 소실 · 자산 40% 추징 · 재심사 24개월 금지 · 오점 '+S.mark+'개','bad');
+  toast('<b>강등</b> · 오점 '+S.mark+'개가 남았다','');
+  flash('red',600);shake(true);
+  alarm('인사 기록에 오점이 남았다','능력치와 자산을 잃었고, 앞으로 승진 확률이 오점 1개당 20% 깎입니다');
+}
 
 let BOARD=null,BOARDSORT='total',_lastBoard=0;
 const SB_URL='https://tytgthyaskhjmtzumqxz.supabase.co',SB_KEY='sb_publishable_U6t9_uxTTaAGMbhZOs46-Q_NQHyOxJc';
@@ -1411,8 +1439,10 @@ function g(S,d){
   }
 }
 function need(lv){return 26+lv*8;}
+let EXPGAIN=0;
 function addExp(S,v){
-  S.exp+=v*mods().expMul;
+  const gv=v*mods().expMul;EXPGAIN+=gv;
+  S.exp+=gv;
   while(S.exp>=need(S.lv)){S.exp-=need(S.lv);S.lv++;S.sp+=5;
     toast('<b>Lv.'+S.lv+'</b> 달성 · 스탯 포인트 +5','blue');
     if(S.lv>=20)ach(S,'lv20');if(S.lv>=40)ach(S,'lv40');if(S.lv>=60)ach(S,'lv60');}
@@ -1512,7 +1542,7 @@ function score(){
   if(!S)return 0;
   const achN=Object.keys(S.ach).length;
   return Math.round(tr(S)*1200 + (S.star||0)*900 + S.lv*45 + achN*70 + S.smash*120 + S.hits*40
-    + S.awards*80 + Math.max(0,Math.log10(Math.max(1,S.money)))*300 - S.flops*20);
+    + S.awards*80 + Math.max(0,Math.log10(Math.max(1,S.money)))*300 - S.flops*20 - (S.mark||0)*400);
 }
 function myRecord(){
   return {name:(S.name||'백PD').slice(0,8),job:rankName(),line:(S.line?LINES[S.line].n:'공통'),
@@ -1552,7 +1582,7 @@ function newGame(name){
     lv:1,exp:0,sp:0,dir:6,plan:5,sense:9,cast:4,rep:5,luk:5,
     sta:82,men:78,risk:0,money:r(150,400),
     hype:0,act:'edit',prog:null,hits:0,smash:0,flops:0,streakFlop:0,awards:0,idleM:0,
-    dirty:0,scandal:0,shieldUsed:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
+    mark:0,dirty:0,scandal:0,shieldUsed:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
     items:{},flags:{},ach:{},cool:{},seen:{intern:1},hist:[],log:[],inbox:[],pity:0,gacha:0,busy:false,saved:Date.now()};
 }
 function save(){if(!S)return;S.saved=Date.now();try{localStorage.setItem('bpd_save',JSON.stringify(S));}catch(e){}}
@@ -1845,6 +1875,7 @@ function renderStrip(){
     '<span class="chip'+((S.hype||0)>0?' hype':'')+'">효율 <b style="color:'+(pf<.6?'var(--onair)':(pf>1?'#FFD24A':'var(--rate)'))+'">'+Math.round(pf*100)+'%</b>'+
       ((S.hype||0)>0?'<span style="font-size:10.5px;color:#C08A44">열정 +'+Math.round((S.hype||0)*0.5)+'</span>':'')+'</span>'+
     '<span class="chip">자산 <b>'+money(S.money)+'</b></span>'+
+    ((S.mark||0)>0?'<span class="chip alert" data-go="promo">오점 <b>'+S.mark+'</b> · 승진 −'+Math.min(60,S.mark*20)+'%</span>':'')+
     (S.sp>0?'<span class="chip alert" data-go="stat">스탯 포인트 <b>'+S.sp+'</b></span>':'')+
     (ready?'<span class="chip alert" data-go="promo">승진 심사 가능</span>':'')+
     '<span class="spacer"></span>'+
@@ -1892,6 +1923,7 @@ function renderStatTab(){
     '<div class="prow"><span>검은 거래 / 논란</span><b class="num">'+S.dirty+' / '+S.scandal+'</b></div>'+
     '<div class="prow"><span>딴짓</span><b class="num">'+S.idleM+'개월</b></div>'+
     '<div class="prow"><span>승진 심사 실패</span><b class="num">'+S.promoFail+'회</b></div>'+
+    '<div class="prow"><span>인사 기록 오점</span><b class="num" style="color:'+((S.mark||0)>0?'var(--onair)':'var(--ink)')+'">'+(S.mark||0)+'개</b></div>'+
    '</div><div>'+
     '<div class="sec-label">능 력 치 '+(S.sp>0?'<span class="spbadge">SP '+S.sp+'</span>':'')+'</div>'+
     GROW.map(k=>
@@ -1931,6 +1963,7 @@ function promoChance(id){
   if(nd2.l==='crime')c+=S.risk/6;
   if(nd2.l==='meme')c+=S.scandal*2;
   if(S.risk>=55&&nd2.l!=='crime')c-=14;
+  c-=Math.min(60,(S.mark||0)*20);
   if(nd2.star)c=Math.max(5,Math.min(55,20+S.lv/5+S.smash*1.4-(S.star||0)*5));
   return Math.max(5,Math.min(95,c));
 }
@@ -1969,7 +2002,11 @@ function renderPromoTab(){
   };
   const total=Object.keys(TREE).length;
   setHTML('tab-promo',
-    '<div class="sec-label">다 음 단 계'+(S.promoFail>0?' · 실패 보정 +'+(S.promoFail*6)+'%':'')+'</div>'+
+    '<div class="sec-label">다 음 단 계'+(S.promoFail>0?' · 실패 보정 +'+(S.promoFail*6)+'%':'')+
+      ((S.mark||0)>0?' · <span style="color:var(--onair)">오점 '+S.mark+'개 −'+Math.min(60,S.mark*20)+'%</span>':'')+'</div>'+
+    ((S.mark||0)>0?'<div class="pnote" style="border:1px solid #5A2A24;background:#1A1214;padding:10px 12px;margin:0 0 11px">'+
+      '<b style="color:var(--onair)">인사 기록에 오점이 '+S.mark+'개 있습니다.</b> 승진 확률이 '+Math.min(60,S.mark*20)+'% 깎입니다.<br>'+
+      '시청률 <b>히트(8.5%) 이상</b>인 작품을 내면 오점이 하나씩 지워집니다.</div>':'')+
     '<div class="promo-grid">'+(cards||'<div class="prow">더 오를 곳이 없다.</div>')+'</div>'+
     '<div class="pnote">조건을 채우면 <b>인사 발령 통지</b>가 편지로 옵니다. 도전할지 미룰지는 직접 정합니다.<br>'+
     '두 갈래 이상이 동시에 열리면 그 자리에서 <b>진로를 고릅니다.</b> 어떤 스탯을 찍었는지가 곧 갈래를 정합니다.</div>'+
@@ -2346,6 +2383,8 @@ function checkAch(){
   if(S.promoFail>=5)ach(S,'fail5');
   if(S.promoFail>=12)ach(S,'fail12');
   if(S.streakFlop>=3)ach(S,'flop3');
+  if((S.mark||0)>0)S.everMark=1;
+  if(S.everMark){ach(S,'marked');if((S.mark||0)===0)ach(S,'comeback');}
 }
 
 /* ── 승진 심사 ── */
@@ -2435,6 +2474,7 @@ function predict(){
 }
 function airShow(){
   S.busy=true;
+  const AIRSNAP=snapS();
   const p=S.prog,gn=p.g;let v=calcRating(),t=tierOf(v),extra='';
   if(t.k==='flop'&&mods().reroll&&!S.rerollUsed){S.rerollUsed=1;
     const v2=calcRating();if(v2>v){v=v2;t=tierOf(v);extra='\n\n타임머신 편집기가 발동했다. 다시 뽑았다.';}}
@@ -2445,6 +2485,9 @@ function airShow(){
     if(Math.random()<0.35)S.dropNow=rollDrop(S,1);}
   else if(t.k==='hit'){g(S,{rep:9,cast:4,men:14,money:r(150,380),exp:115});S.hits++;S.streakFlop=0;
     msg='시즌 2가 확정됐다.\n회식 자리에서 처음으로 상석에 앉았다.';}
+  if((t.k==='hit'||t.k==='smash')&&(S.mark||0)>0){
+    S.mark--;msg+='\n\n▶ 성과로 오점 하나가 지워졌다. (남은 오점 '+S.mark+'개)';
+    toast('오점 하나가 지워졌다 · 남은 '+S.mark+'개','blue');}
   else if(t.k==='mid'){g(S,{rep:2,men:3,money:r(30,110),exp:65});S.streakFlop=0;
     msg='무난하다. 잘렸다는 소식도, 잘됐다는 소식도 없다.';}
   else if(t.k==='low'){g(S,{rep:-4,men:-11,exp:60});S.streakFlop=0;
@@ -2462,6 +2505,7 @@ function airShow(){
   $('rv-title').textContent=p.title;$('rv-genre').textContent=gn.n;
   $('rv-tier').textContent=t.n;$('rv-tier').className='tier han '+t.c;
   $('rv-msg').textContent=msg;$('rv-num').innerHTML='0.0<small>%</small>';
+  $('rv-delta').innerHTML=deltaHTML(AIRSNAP);
   $('reveal').hidden=false;countTo(v);refresh();
   pushBoard(false);
   $('rv-go').onclick=()=>{$('reveal').hidden=true;S.busy=false;renderInbox();
@@ -2580,6 +2624,43 @@ function startTimer(sec,onEnd){
     _timerRAF=requestAnimationFrame(step);
   })();
 }
+const DIFFK=[['dir','연출'],['plan','기획'],['sense','감각'],['cast','섭외'],['rep','평판'],['luk','운'],
+             ['sta','체력'],['men','멘탈'],['risk','의혹']];
+const BADUP={'의혹':1,'오점':1,'논란':1,'검은 거래':1};
+function snapS(){
+  if(!S)return null;
+  const o={money:S.money,q:S.prog?S.prog.q:null,rank:S.rank,lv:S.lv,
+    hits:S.hits,smash:S.smash,dirty:S.dirty,scandal:S.scandal,mark:S.mark||0,awards:S.awards,
+    items:Object.keys(S.items).length,hype:S.hype||0};
+  DIFFK.forEach(k=>o[k[0]]=S[k[0]]);
+  EXPGAIN=0;
+  return o;
+}
+function deltaHTML(b){
+  if(!b||!S)return '';
+  const out=[];
+  DIFFK.forEach(k=>{const d=Math.round(S[k[0]]-b[k[0]]);if(d)out.push([k[1],d,'']);});
+  const dm=Math.round(S.money-b.money);if(dm)out.push(['자산',dm,'money']);
+  if(S.prog&&b.q!=null){const dq=Math.round(S.prog.q-b.q);if(dq)out.push(['완성도',dq,'']);}
+  if(EXPGAIN>=1)out.push(['경험치',Math.round(EXPGAIN),'']);
+  [['hits','히트작'],['smash','대박작'],['awards','수상'],['dirty','검은 거래'],['scandal','논란'],['mark','오점']]
+    .forEach(x=>{const d=(S[x[0]]||0)-(b[x[0]]||0);if(d)out.push([x[1],d,'n']);});
+  const di=Object.keys(S.items).length-b.items;if(di)out.push(['장비',di,'n']);
+  if(S.lv!==b.lv)out.push(['레벨',S.lv-b.lv,'n']);
+  let head='';
+  if(S.rank!==b.rank){
+    const now=TREE[S.rank],was=TREE[b.rank];
+    head='<span class="dl '+(now.t<was.t?'dn':'up')+' big">직급 '+(now.t<was.t?'강등':'변경')+' · '+was.n+' → '+now.n+'</span>';
+  }
+  if(!out.length&&!head)return '';
+  return '<div class="deltas"><span class="lb">이 선 택 의 결 과</span>'+head+out.map(x=>{
+    const pos=x[1]>0, good=BADUP[x[0]]?!pos:pos;
+    let v;
+    if(x[2]==='money')v=(pos?'+':'−')+money(Math.abs(x[1])).replace('−','');
+    else v=(pos?'+':'−')+Math.abs(x[1])+(x[2]==='n'?'':'');
+    return '<span class="dl '+(good?'up':'dn')+'">'+x[0]+' '+v+'</span>';
+  }).join('')+'</div>';
+}
 function showModal(cfg){
   stopTimer();
   $('m-tag').textContent=cfg.tag||'사건';
@@ -2594,18 +2675,19 @@ function showModal(cfg){
     b.innerHTML='<span class="ot">'+esc(o.t)+'</span>'+(o.d?'<span class="od'+(/의혹|적발|도박|확률/.test(o.d)?' risky':'')+'">'+esc(o.d)+'</span>':'');
     b.onclick=()=>{
       stopTimer();
+      const snap0=snapS();
       if(o.mini){
         $('m-story').textContent=o.md||cfg.story;
         runMini(o.mini,o,(win,extra)=>{
           let res='';
           try{res=win?(o.win?o.win(S,extra):''):(o.lose?o.lose(S,extra):'');}catch(err){res='';}
-          finishOpt(cfg,res,win);
+          finishOpt(cfg,res,win,snap0);
         });
         return;
       }
       const res=o.f(S);
       refresh();
-      if(res){$('m-result').textContent=res;$('m-result').hidden=false;pushLog('['+cfg.title+'] '+res,'');}
+      if(res){$('m-result').innerHTML=esc(res).replace(/\n/g,'<br>')+deltaHTML(snap0);$('m-result').hidden=false;pushLog('['+cfg.title+'] '+res,'');}
       if(S.dropNow!==undefined&&S.dropNow){const it=ITEMS[S.dropNow];S.dropNow=null;S.newItem=1;
         $('m-drop').innerHTML='<div class="dropbox r'+it.r+'"><div class="lb" style="color:var(--r'+['N','R','E','U','L'][it.r]+')">'+RN[it.r]+' 획득</div>'+
           '<div class="nm">'+it.n+'</div><div class="ds">'+it.d+'</div></div>';}
@@ -2620,9 +2702,9 @@ function showModal(cfg){
   const f=box.querySelector('button');if(f)f.focus();
   if(cfg.timer)startTimer(cfg.timer,cfg.onTimeout||closeModal);
 }
-function finishOpt(cfg,res,win){
+function finishOpt(cfg,res,win,snap0){
   refresh();
-  if(res){$('m-result').textContent=res;$('m-result').hidden=false;pushLog('['+cfg.title+'] '+res,win===false?'bad':'');}
+  if(res){$('m-result').innerHTML=esc(res).replace(/\n/g,'<br>')+deltaHTML(snap0);$('m-result').hidden=false;pushLog('['+cfg.title+'] '+res,win===false?'bad':'');}
   if(S.dropNow){const it=ITEMS[S.dropNow];S.dropNow=null;S.newItem=1;
     $('m-drop').innerHTML='<div class="dropbox r'+it.r+'"><div class="lb" style="color:var(--r'+['N','R','E','U','L'][it.r]+')">'+RN[it.r]+' 획득</div>'+
       '<div class="nm">'+it.n+'</div><div class="ds">'+it.d+'</div></div>';}
@@ -2650,9 +2732,9 @@ function runEvent(ev){
   if(ev.u&&ev.fail){
     cfg.timer=10;
     cfg.onTimeout=()=>{
-      const res=ev.fail(S);refresh();
+      const TOSNAP=snapS();const res=ev.fail(S);refresh();
       pushLog('['+ev.t+'] '+res,'bad');
-      $('m-result').textContent='시간 초과. 아무것도 결정하지 못했다.\n\n'+res;
+      $('m-result').innerHTML='시간 초과. 아무것도 결정하지 못했다.<br><br>'+esc(res).replace(/\n/g,'<br>')+deltaHTML(TOSNAP);
       $('m-result').hidden=false;
       const box=$('m-opts');box.innerHTML='';
       const c=document.createElement('button');c.className='opt';c.style.textAlign='center';
