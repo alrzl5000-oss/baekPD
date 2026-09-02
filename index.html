@@ -1,0 +1,2663 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>백PD 키우기</title><meta name="description" content="24세 인턴으로 시작해 승진이 5갈래로 갈라지는 방치형 방송국 육성 RPG."><meta property="og:title" content="백PD 키우기"><meta property="og:description" content="방치형 방송국 육성 RPG · 승진 5갈래 · 랭킹"><style>html{color-scheme:dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>백PD 키우기</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1:wght@400;500;700;900&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --paper:#07080B; --surface:#0F1318; --surface-2:#151A21; --surface-3:#1C232C;
+  --ink:#E6ECF4; --ink-2:#98A4B3; --ink-3:#66707E;
+  --line:#232B35; --line-soft:#181E26;
+  --console:#040508; --onair:#FF4A3D; --onair-soft:#FF7A6B;
+  --rate:#3FD6A0; --exp:#5AA0F0; --risk:#FF8A4C;
+  --rN:#8892A0; --rR:#5AA0F0; --rE:#B57BF5; --rU:#FFA23D; --rL:#FFD24A;
+  --shadow:rgba(0,0,0,.66);
+  --glow:0 0 12px rgba(255,74,61,.30);
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 50% -10%, #141C26 0%, rgba(20,28,38,0) 62%),
+    radial-gradient(90% 60% at 50% 110%, #16121A 0%, rgba(22,18,26,0) 60%),
+    var(--paper);
+  background-attachment:fixed;
+  font-family:'Gothic A1',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.num{font-family:'Nanum Gothic Coding',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.han{font-family:'Black Han Sans','Gothic A1',sans-serif;font-weight:400;letter-spacing:-.01em}
+h1,h2,h3{margin:0;text-wrap:balance}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--onair);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 14px 48px;position:relative;z-index:1}
+body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:900;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
+
+.sysbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border:1px solid var(--line);
+  border-bottom:2px solid var(--onair);background:linear-gradient(180deg,#161C24,#0E1218);padding:8px 12px;
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.4)}
+.onair-dot{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.2em;font-weight:700;color:var(--onair);text-shadow:0 0 10px rgba(255,74,61,.5)}
+.onair-dot i{width:7px;height:7px;border-radius:50%;background:var(--onair);display:block;box-shadow:0 0 8px var(--onair)}
+@media (prefers-reduced-motion:no-preference){.onair-dot i{animation:blip 1.9s ease-in-out infinite}}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.22}}
+.sysbar .brand{font-weight:700;font-size:12.5px}
+.sysbar .sep{width:1px;height:14px;background:var(--line)}
+.sysbar .meta{font-size:12px;color:var(--ink-3)}
+.sysbar .spacer{flex:1}
+.ghost{background:transparent;border:1px solid var(--line);padding:3px 9px;font-size:12px;color:var(--ink-2);border-radius:2px}
+.ghost:hover{border-color:var(--onair);color:var(--onair)}
+
+/* 타이틀 */
+.title-card{border:1px solid var(--line);border-top:none;background:linear-gradient(180deg,#12171E,#0A0E13);padding:46px 24px 38px;text-align:center}
+.slate{display:inline-block;background:var(--console);color:#F2F3F5;padding:16px 26px 18px;position:relative}
+.slate:before{content:'';position:absolute;top:0;left:0;right:0;height:11px;background:repeating-linear-gradient(115deg,#F2F3F5 0 15px,#15181D 15px 30px)}
+.slate .eyebrow{font-size:10px;letter-spacing:.34em;color:#8F98A6;margin:12px 0 6px}
+.title-main{font-size:clamp(38px,8.6vw,64px);line-height:1;color:#fff}
+.title-main em{font-style:normal;color:var(--onair-soft)}
+.title-sub{margin-top:20px;color:var(--ink-2);font-size:15px;line-height:1.85}
+.title-rule{width:44px;height:3px;background:var(--onair);margin:22px auto}
+.name-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+input[type=text]{font-family:inherit;font-size:15px;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);padding:9px 12px;width:160px;border-radius:2px}
+.btn-primary{background:linear-gradient(180deg,#FF5A4C,#D9382C);color:#fff;border:1px solid #FF6A5C;padding:9px 26px;font-weight:700;border-radius:2px;
+  box-shadow:0 0 18px rgba(255,74,61,.35)}
+.btn-primary:hover{background:var(--onair-soft);border-color:var(--onair-soft)}
+.btn-cont{background:var(--surface-2);border:1px solid var(--line);padding:9px 22px;font-weight:700;border-radius:2px}
+.btn-cont:hover{border-color:var(--onair)}
+.title-note{margin-top:24px;font-size:12.5px;color:var(--ink-3);line-height:1.95}
+kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid var(--line);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--surface-2);color:var(--ink-2)}
+
+/* 상단 스테이지 */
+.topstage{border:1px solid var(--line);border-top:none;background:linear-gradient(180deg,#12171E,#0D1116);padding:12px}
+.stage{position:relative;border:1px solid #2A333F;border-radius:3px;background:var(--console);overflow:hidden;line-height:0;
+  box-shadow:0 0 0 1px rgba(0,0,0,.7) inset, 0 0 34px rgba(90,160,240,.07) inset, 0 10px 30px rgba(0,0,0,.5)}
+.stage canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges}
+.stage .tagline{position:absolute;left:12px;top:9px;font-size:10.5px;letter-spacing:.18em;color:#7C8694;font-weight:700;line-height:1.2}
+.stage .clock{position:absolute;right:12px;top:9px;font-size:11px;color:#7C8694;line-height:1.2}
+.stage .nowdoing{position:absolute;left:12px;bottom:9px;font-size:14px;color:#E7EAF0;font-weight:700;text-shadow:0 1px 4px #000;line-height:1.2}
+.pausebtn{position:absolute;right:12px;bottom:9px;background:rgba(20,24,30,.72);border:1px solid #3A424E;color:#C9D2DE;padding:5px 12px;font-size:12px;font-weight:700;border-radius:2px;line-height:1.2}
+.pausebtn:hover{border-color:var(--onair-soft);color:var(--onair-soft)}
+.pausebtn.on{background:var(--onair);border-color:var(--onair);color:#fff}
+.fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.fx span{position:absolute;font-family:'Nanum Gothic Coding',monospace;font-size:12px;font-weight:700;text-shadow:0 1px 3px #000;white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.fx span{animation:rise 1.5s ease-out forwards}}
+@keyframes rise{0%{opacity:0;transform:translateY(6px)}12%{opacity:1}100%{opacity:0;transform:translateY(-34px)}}
+
+/* 업무 */
+.acts{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:11px}
+.act{text-align:left;background:linear-gradient(180deg,#161C24,#101419);border:1px solid var(--line);padding:8px 9px;border-radius:2px;transition:.14s}
+.act:hover{border-color:var(--onair)}
+.act.sel{border-color:var(--onair);background:linear-gradient(180deg,#26191A,#181114);
+  box-shadow:inset 0 0 0 1px var(--onair), 0 0 16px rgba(255,74,61,.22)}
+.act.sel .t{color:var(--onair-soft)}
+.act .t{font-weight:700;font-size:13px;display:block}
+.act .d{font-size:10.5px;color:var(--ink-3);display:block;margin-top:2px;line-height:1.4}
+
+/* 상태 스트립 */
+.strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:11px;padding-top:11px;border-top:1px solid var(--line-soft)}
+.chip{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:#141A21;padding:4px 9px;border-radius:2px;font-size:12px;color:var(--ink-2);white-space:nowrap}
+.chip b{color:var(--ink);font-weight:700}
+.chip .mini{width:52px;height:6px;background:#0A0E13;border:1px solid var(--line);position:relative;display:inline-block;overflow:hidden}
+.chip .mini i{position:absolute;inset:0 auto 0 0;display:block}
+.chip.lv{border-color:var(--exp)}
+.chip.alert{border-color:var(--onair);color:var(--onair);font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(255,74,61,.25)}
+.chip.alert b{color:var(--onair)}
+.strip .spacer{flex:1}
+
+/* 탭 */
+.tabbar{display:flex;border:1px solid var(--line);border-top:none;background:linear-gradient(180deg,#0D1116,#141920);overflow-x:auto}
+.tabbar button{flex:1;min-width:96px;background:transparent;border:none;border-right:1px solid var(--line-soft);
+  padding:11px 6px 10px;font-size:13.5px;font-weight:700;color:var(--ink-3);position:relative;white-space:nowrap}
+.tabbar button:last-child{border-right:none}
+.tabbar button.on{color:var(--ink);background:linear-gradient(180deg,#1A212A,#121820);
+  box-shadow:inset 0 -3px 0 var(--onair), 0 0 18px rgba(255,74,61,.18)}
+.tabbar button:hover{color:var(--ink)}
+.tabbar .dot{position:absolute;top:7px;right:calc(50% - 42px);width:7px;height:7px;border-radius:50%;background:var(--onair)}
+.panelwrap{border:1px solid var(--line);border-top:none;background:linear-gradient(180deg,#11151B,#0C1014);padding:16px 16px 22px;min-height:330px}
+.tabpane[hidden]{display:none}
+
+.sec-label{font-size:10px;letter-spacing:.2em;color:var(--ink-3);font-weight:700;margin-bottom:9px}
+.sec-label.mt{margin-top:18px}
+.cols{display:grid;gap:18px}
+.cols.c2{grid-template-columns:300px minmax(0,1fr)}
+.cols.c2b{grid-template-columns:minmax(0,1fr) 300px}
+
+/* 인사기록 */
+.idcard{border:1px solid var(--line);background:linear-gradient(180deg,#171E27,#11161C);padding:12px 13px;
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset}
+.idcard .row1{display:flex;align-items:baseline;gap:8px}
+.idcard .nm{font-size:24px;line-height:1.15}
+.idcard .lv{font-size:12px;color:var(--onair);font-weight:700}
+.idcard .rk{font-size:14px;color:var(--ink);margin-top:3px;font-weight:700}
+.idcard .lineTag{display:inline-block;font-size:10px;letter-spacing:.12em;border:1px solid var(--line);padding:1px 6px;margin-left:6px;color:var(--ink-3);vertical-align:middle}
+.idcard .sub{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+.expbar{height:8px;background:#0A0E13;border:1px solid var(--line);margin-top:9px;position:relative;overflow:hidden}
+.expbar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#3E7FD0,#5AA0F0);box-shadow:0 0 10px rgba(90,160,240,.55);transition:width .25s}
+.expnum{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-3);margin-top:3px}
+
+.spbadge{display:inline-block;background:var(--onair);color:#fff;font-size:10.5px;font-weight:700;padding:1px 7px;margin-left:6px;border-radius:2px}
+.st{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:8px;padding:4px 0}
+.st .k{font-size:13px;color:var(--ink-2);white-space:nowrap}
+.st .v{font-size:15px;font-weight:700;text-align:right}
+.st .bonus{font-size:11px;color:var(--rate);margin-left:4px}
+.plus{min-width:30px;height:24px;line-height:1;padding:0 5px;border:1px solid var(--line);background:#141A21;color:var(--ink-3);border-radius:2px;font-size:12px;font-weight:700}
+.plus.wide{min-width:38px}
+.plus.on{border-color:var(--onair);color:var(--onair)}
+.plus:disabled{opacity:.25;cursor:default}
+.gauge{display:grid;grid-template-columns:52px 1fr 34px;align-items:center;gap:8px;margin-bottom:7px}
+.gauge .k{font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+.gauge .v{font-size:12.5px;text-align:right}
+.track{height:8px;background:#0A0E13;border:1px solid var(--line);position:relative;overflow:hidden}
+.fill{position:absolute;inset:0 auto 0 0;transition:width .3s}
+.f-sta{background:var(--rate);box-shadow:0 0 8px rgba(63,214,160,.5)}
+.f-men{background:var(--exp);box-shadow:0 0 8px rgba(90,160,240,.5)}
+.f-risk{background:var(--risk);box-shadow:0 0 8px rgba(255,138,76,.55)}
+.prow{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-2);padding:2px 0}
+.prow.ok{color:var(--rate)} .prow.no{color:var(--ink-3)}
+.prow b{color:var(--ink)}
+.panel{border:1px solid var(--line);background:linear-gradient(180deg,#161C24,#12171D);padding:11px 12px;margin-bottom:12px;
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset}
+.panel .h{font-size:10px;letter-spacing:.16em;font-weight:700;color:var(--ink-3);margin-bottom:8px}
+.panel .h.red{color:var(--onair)}
+
+/* 승진 */
+.promo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:10px}
+.pcard{border:1px solid var(--line);background:linear-gradient(180deg,#161C24,#101419);padding:12px 13px;display:flex;flex-direction:column}
+.pcard.ready{border-color:var(--onair);box-shadow:inset 0 0 0 1px var(--onair), 0 0 22px rgba(255,74,61,.2)}
+.pcard .ln{font-size:10px;letter-spacing:.14em;font-weight:700;margin-bottom:3px}
+.pcard .nm{font-size:19px;line-height:1.2}
+.pcard .dsc{font-size:11.5px;color:var(--ink-3);line-height:1.5;margin-top:3px;min-height:2.9em}
+.pcard .reqs{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line)}
+.chance{font-size:30px;line-height:1;margin:9px 0 0;text-align:center}
+.chance small{font-size:.42em}
+.btn-try{width:100%;background:linear-gradient(180deg,#FF5A4C,#D9382C);color:#fff;border:1px solid #FF6A5C;padding:9px 0;font-weight:700;border-radius:2px;margin-top:9px;
+  box-shadow:0 0 16px rgba(255,74,61,.3)}
+.btn-try:disabled{background:var(--surface-3);border-color:var(--line);color:var(--ink-3);cursor:default}
+.ln-dir{color:#C2762A} .ln-mgr{color:#3B72C4} .ln-star{color:#A855C8} .ln-com{color:var(--ink-3)}
+
+/* 커리어 트리 */
+.tree{display:grid;gap:8px;margin-top:6px}
+.trow{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tnode{font-size:11.5px;border:1px solid var(--line);padding:3px 8px;color:var(--ink-3);background:var(--surface-2);white-space:nowrap}
+.tnode.done{color:var(--ink);border-color:var(--ink-3)}
+.tnode.cur{border-color:var(--onair);color:var(--onair);font-weight:700;background:var(--surface);box-shadow:0 0 14px rgba(255,74,61,.25)}
+.tnode.fog{color:#3F4854;border-style:dashed;border-color:#232B35;background:#0C1015;letter-spacing:.12em}
+.tlane{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;align-items:start}
+.tlane .lab{font-size:10.5px;font-weight:700;letter-spacing:.1em;padding-top:5px}
+
+/* 작품 */
+.progtt{font-size:20px;line-height:1.25}
+.proggn{font-size:12px;color:var(--ink-3);margin-top:2px}
+.hist{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.pip{font-size:10.5px;padding:1px 5px;border:1px solid var(--line);color:var(--ink-3)}
+.pip.h{border-color:var(--rate);color:var(--rate)}
+.pip.s{border-color:var(--onair);color:var(--onair);font-weight:700}
+.pip.f{opacity:.45;text-decoration:line-through}
+
+/* 가방 / 상점 */
+.rarbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.rarchip{font-size:11px;border:1px solid var(--line);padding:2px 8px;color:var(--ink-3)}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:8px}
+.icard{border:1px solid var(--line);background:linear-gradient(180deg,#161C24,#11161C);padding:9px 11px;border-left-width:3px}
+.icard .n{font-weight:700;font-size:13.5px;line-height:1.3}
+.icard .rr{font-size:9.5px;letter-spacing:.14em;font-weight:700;margin-bottom:2px}
+.icard .d{font-size:11.5px;color:var(--ink-2);line-height:1.5;margin-top:3px}
+.icard .warn{color:var(--risk)}
+.icard.empty{opacity:.45;border-left-color:var(--line)}
+.r0{border-left-color:var(--rN)} .r0 .rr{color:var(--rN)}
+.r1{border-left-color:var(--rR)} .r1 .rr{color:var(--rR)}
+.r2{border-left-color:var(--rE)} .r2 .rr{color:var(--rE)}
+.r3{border-left-color:var(--rU)} .r3 .rr{color:var(--rU)}
+.r4{border-left-color:var(--rL)} .r4 .rr{color:var(--rL)}
+.r4 .n{color:var(--rL);text-shadow:0 0 12px rgba(255,210,74,.45)}
+.r4{box-shadow:0 0 18px rgba(255,210,74,.12) inset}
+.r3{box-shadow:0 0 14px rgba(255,162,61,.10) inset}
+.sitem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.sitem>div{min-width:0}
+.sellbtn{border:1px solid var(--line);background:#141A21;color:var(--ink-3);padding:5px 9px;font-size:11.5px;
+  font-weight:700;border-radius:2px;line-height:1.25;white-space:nowrap}
+.sellbtn span{font-size:10px;font-weight:400;opacity:.8}
+.sellbtn:hover{border-color:var(--onair);color:var(--onair-soft)}
+.sitem button{border:1px solid var(--onair);background:var(--onair);color:#fff;padding:5px 12px;font-size:12px;font-weight:700;border-radius:2px;white-space:nowrap}
+.sitem button:disabled{background:var(--surface-3);border-color:var(--line);color:var(--ink-3);cursor:default}
+
+/* 일지 */
+.log{border:1px solid var(--line);background:#0B0F14;height:300px;overflow-y:auto;padding:10px 12px}
+.log p{margin:0 0 5px;font-size:12.5px;line-height:1.6;color:var(--ink-2)}
+.log .mo{color:var(--ink-3);font-size:11px;margin-right:6px}
+.log p.hi{color:var(--ink);font-weight:500}
+.log p.bad{color:var(--onair)}
+.log p.up{color:var(--rate);font-weight:700}
+.log p.gold{color:var(--rL);font-weight:700}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:7px}
+.ach{border:1px solid var(--line);background:var(--surface-2);padding:8px 10px}
+.ach .t{font-size:13.5px;font-weight:700}
+.ach .d{font-size:11px;color:var(--ink-3);line-height:1.45;margin-top:1px}
+.ach.lock{opacity:.4}
+.ach.lock .t{color:var(--ink-3)}
+
+/* 모달 */
+.overlay{position:fixed;inset:0;background:rgba(8,10,14,.68);display:flex;align-items:center;justify-content:center;padding:18px;z-index:60}
+.overlay[hidden]{display:none}
+.sheet{background:linear-gradient(180deg,#141A22,#0E1218);border:1px solid #2A333F;box-shadow:0 24px 70px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.03) inset;max-width:560px;width:100%;max-height:88vh;overflow-y:auto}
+.sheet-head{border-bottom:1px solid var(--line);padding:13px 18px;display:flex;align-items:center;gap:9px}
+.sheet-head .tag{font-size:10px;letter-spacing:.2em;color:#fff;background:var(--onair);padding:2px 7px;font-weight:700;box-shadow:0 0 12px rgba(255,74,61,.4)}
+.sheet-head h3{font-size:16px;font-weight:700}
+.sheet-body{padding:16px 18px 18px}
+.story{font-size:14.5px;line-height:1.85;color:var(--ink-2);margin:0 0 14px;white-space:pre-line}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:linear-gradient(180deg,#181F28,#12171E);border:1px solid var(--line);padding:11px 13px;border-radius:2px;font-size:14px;transition:.14s}
+.opt:hover{border-color:var(--onair);background:linear-gradient(180deg,#241A1B,#171114);box-shadow:0 0 14px rgba(255,74,61,.18)}
+.opt .ot{font-weight:700;display:block}
+.opt .od{font-size:11.5px;color:var(--ink-3);display:block;margin-top:2px;line-height:1.5}
+.opt .risky{color:var(--risk);font-weight:700}
+.result{border-left:3px solid var(--onair);background:var(--surface-2);padding:11px 13px;font-size:14px;line-height:1.8;margin-bottom:12px;white-space:pre-line}
+.dropbox{border:1px solid var(--line);border-left-width:3px;background:var(--surface-2);padding:10px 12px;margin-bottom:12px}
+.dropbox .lb{font-size:10px;letter-spacing:.2em;font-weight:700}
+.dropbox .nm{font-size:16px;font-weight:700;margin-top:2px}
+.dropbox .ds{font-size:12px;color:var(--ink-2);margin-top:2px;line-height:1.5}
+
+/* 시청률 발표 */
+#reveal{position:fixed;inset:0;background:var(--console);z-index:80;display:flex;align-items:center;justify-content:center;padding:22px}
+#reveal[hidden]{display:none}
+.rv{text-align:center;color:#F2F3F5;max-width:520px;width:100%}
+.rv .oa{font-size:11px;letter-spacing:.38em;color:var(--onair-soft);font-weight:700}
+.rv .pt{font-size:clamp(21px,5vw,30px);line-height:1.2;margin-top:12px;color:#fff}
+.rv .gn{font-size:12px;color:#8F98A6;margin-top:3px}
+.rv .barline{width:56px;height:2px;background:#3A4049;margin:20px auto}
+.rv .cap{font-size:11px;letter-spacing:.3em;color:#8F98A6}
+.rv .big{font-size:clamp(60px,16vw,116px);line-height:.95;margin-top:4px;color:#fff}
+.rv .big small{font-size:.36em;margin-left:2px}
+.rv .tier{margin-top:12px;font-size:clamp(19px,4.4vw,27px)}
+.rv .msg{margin-top:12px;font-size:14px;color:#AEB6C2;line-height:1.8;white-space:pre-line}
+.rv .go{margin-top:22px;background:transparent;border:1px solid #4A515C;color:#F2F3F5;padding:9px 30px;font-weight:700;border-radius:2px}
+.rv .go:hover{border-color:var(--onair-soft);color:var(--onair-soft)}
+.t-smash{color:var(--onair-soft)} .t-hit{color:#59C79F} .t-mid{color:#D8DCE2} .t-low{color:#9AA2AE} .t-flop{color:#6D7783}
+@media (prefers-reduced-motion:no-preference){
+  #reveal:not([hidden]) .big{animation:pop .5s cubic-bezier(.16,1.3,.4,1) both}
+  #reveal:not([hidden]) .tier{animation:pop .4s .5s cubic-bezier(.16,1.3,.4,1) both}
+}
+@keyframes pop{from{transform:scale(1.45);opacity:0}to{transform:scale(1);opacity:1}}
+
+#toasts{position:fixed;right:16px;bottom:104px;z-index:70;display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none}
+.toast{background:linear-gradient(180deg,#171E27,#10151B);border:1px solid var(--line);border-left:3px solid var(--onair);padding:8px 13px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.6);max-width:290px}
+.toast.gold{border-left-color:var(--rL)}
+.toast.blue{border-left-color:var(--exp)}
+.toast.epic{border-left-color:var(--rE)}
+.toast b{font-weight:700}
+@media (prefers-reduced-motion:no-preference){.toast{animation:tin .3s ease-out both}}
+@keyframes tin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+
+#disguise{position:fixed;inset:0;background:#F7F8FA;color:#14181D;z-index:950;overflow:auto;padding:22px}
+#disguise[hidden]{display:none}
+#disguise h2{font-size:15px;font-weight:700;margin-bottom:2px}
+#disguise .sub{font-size:12px;color:#6B7480;margin-bottom:16px}
+#disguise table{border-collapse:collapse;width:100%;max-width:940px;font-size:12.5px}
+#disguise th,#disguise td{border:1px solid #C9CED6;padding:5px 9px;text-align:right}
+#disguise th{background:#EDEFF3;font-weight:700;text-align:center;color:#4A535F}
+#disguise td:first-child,#disguise th:first-child{text-align:left}
+#disguise .hint{margin-top:20px;font-size:11px;color:#8A929C}
+
+@media (max-width:1080px){ .acts{grid-template-columns:repeat(4,1fr)} }
+@media (max-width:900px){
+  .cols.c2,.cols.c2b{grid-template-columns:1fr}
+  .tlane{grid-template-columns:1fr}
+}
+@media (max-width:600px){ .acts{grid-template-columns:repeat(2,1fr)} .tabbar button{min-width:80px;font-size:12.5px} }
+
+/* 편지함 */
+#inbox{position:fixed;right:16px;bottom:16px;z-index:75;display:flex;align-items:center;gap:11px;
+  background:linear-gradient(180deg,#1B2029,#111519);border:1px solid var(--onair);border-left-width:4px;
+  padding:10px 16px 10px 13px;box-shadow:0 10px 30px rgba(0,0,0,.6), 0 0 22px rgba(255,74,61,.22);text-align:left;border-radius:3px}
+#inbox[hidden]{display:none}
+#inbox .env{font-size:22px;line-height:1;color:var(--onair)}
+#inbox .txt{font-size:12px;color:var(--ink-3);line-height:1.35}
+#inbox .txt b{display:block;font-size:14px;color:var(--ink)}
+#inbox .badge{position:absolute;top:-8px;right:-8px;background:var(--onair);color:#fff;
+  font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:flex;
+  align-items:center;justify-content:center;padding:0 5px}
+#inbox:hover{background:var(--surface-2)}
+@media (prefers-reduced-motion:no-preference){#inbox{animation:wig 2.4s ease-in-out infinite}}
+@keyframes wig{0%,88%,100%{transform:none}90%{transform:rotate(-1.6deg)}94%{transform:rotate(1.6deg)}97%{transform:rotate(-.8deg)}}
+
+/* 스탯 설명 */
+.st2{display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:start;gap:9px;padding:6px 0;border-bottom:1px dashed var(--line-soft)}
+.st2 .k{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;padding-top:1px}
+.st2 .dd{font-size:11.5px;color:var(--ink-3);line-height:1.5}
+.st2 .rt{display:flex;align-items:center;gap:7px;padding-top:1px}
+.st2 .v{font-size:15px;font-weight:700}
+.st2 .bonus{font-size:11px;color:var(--rate)}
+
+/* 가챠 */
+.gbox{border:1px solid #2A333F;background:linear-gradient(160deg,#1B1520,#101419 55%);padding:16px 17px;
+  box-shadow:0 0 30px rgba(181,123,245,.10) inset}
+.gtitle{font-size:18px;line-height:1.2}
+.gsub{font-size:12px;color:var(--ink-3);margin-top:3px;line-height:1.6}
+.grate{display:flex;gap:5px;flex-wrap:wrap;margin-top:11px}
+.grate span{font-size:11px;border:1px solid var(--line);padding:2px 7px}
+.gbtns{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+.gbtns button{flex:1;min-width:130px;border:1px solid #FF6A5C;background:linear-gradient(180deg,#FF5A4C,#D9382C);color:#fff;box-shadow:0 0 18px rgba(255,74,61,.3);
+  padding:10px 8px;font-weight:700;border-radius:2px;font-size:14px}
+.gbtns button.alt{background:transparent;color:var(--onair)}
+.gbtns button:disabled{background:var(--surface-3);border-color:var(--line);color:var(--ink-3);cursor:default}
+.gpity{font-size:11.5px;color:var(--ink-3);margin-top:9px}
+.gres{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}
+.gcard{border:1px solid var(--line);border-left-width:3px;background:var(--surface-2);padding:8px 10px}
+.gcard .rr{font-size:9.5px;letter-spacing:.14em;font-weight:700}
+.gcard .n{font-size:13px;font-weight:700;line-height:1.3;margin-top:1px}
+.gcard .sub{font-size:11px;color:var(--ink-3);margin-top:1px}
+@media (prefers-reduced-motion:no-preference){.gcard{animation:gflip .38s cubic-bezier(.2,1.3,.4,1) both}}
+@keyframes gflip{from{opacity:0;transform:translateY(8px) scale(.9)}to{opacity:1;transform:none}}
+.pnote{font-size:12px;color:var(--ink-3);line-height:1.65;margin-top:10px}
+
+/* ── 화면 연출 ── */
+#fxlayer{position:fixed;inset:0;pointer-events:none;z-index:940;opacity:0;transition:opacity .18s}
+#fxlayer.on{opacity:1}
+#fxlayer.red{background:radial-gradient(120% 90% at 50% 50%,rgba(255,40,30,0) 35%,rgba(255,40,30,.42) 100%);}
+#fxlayer.gold{background:radial-gradient(120% 90% at 50% 50%,rgba(255,214,90,0) 30%,rgba(255,190,60,.40) 100%);}
+#fxlayer.blue{background:radial-gradient(120% 90% at 50% 50%,rgba(90,160,240,0) 35%,rgba(90,160,240,.35) 100%);}
+#fxlayer.white{background:rgba(255,255,255,.55)}
+@media (prefers-reduced-motion:no-preference){
+  .shk{animation:shk .5s cubic-bezier(.36,.07,.19,.97) both}
+  .shk-hard{animation:shk 1s cubic-bezier(.36,.07,.19,.97) both}
+}
+@keyframes shk{
+  10%,90%{transform:translate3d(-2px,0,0)}20%,80%{transform:translate3d(4px,0,0)}
+  30%,50%,70%{transform:translate3d(-7px,1px,0)}40%,60%{transform:translate3d(7px,-1px,0)}}
+
+/* 긴급 배너 */
+#alarm{position:fixed;left:0;right:0;top:0;z-index:945;pointer-events:none;
+  background:linear-gradient(180deg,rgba(190,26,18,.96),rgba(120,16,12,.94));
+  border-bottom:2px solid #FF5A4C;color:#fff;padding:11px 16px;text-align:center;
+  font-weight:700;letter-spacing:.03em;font-size:14.5px;
+  transform:translateY(-110%);visibility:hidden;transition:transform .34s cubic-bezier(.2,1.2,.4,1),visibility 0s linear .34s;
+  box-shadow:0 8px 30px rgba(255,40,30,.35)}
+#alarm.on{transform:none;visibility:visible;transition:transform .34s cubic-bezier(.2,1.2,.4,1),visibility 0s}
+#alarm .sm{display:block;font-weight:400;font-size:12px;opacity:.85;margin-top:2px;letter-spacing:0}
+
+/* 위기 비네트 */
+#danger{position:fixed;inset:0;pointer-events:none;z-index:930;opacity:0;visibility:hidden;transition:opacity .5s,visibility 0s linear .5s;
+  box-shadow:inset 0 0 140px rgba(255,50,36,.45)}
+#danger.on{opacity:1;visibility:visible;transition:opacity .5s,visibility 0s}
+@media (prefers-reduced-motion:no-preference){#danger.on{animation:dpulse 2.4s ease-in-out infinite}}
+@keyframes dpulse{0%,100%{opacity:.45}50%{opacity:.95}}
+
+/* 긴급 편지 */
+#inbox.urgent{border-color:#FF3A2C;background:linear-gradient(180deg,#2A1414,#160D0E)}
+#inbox.urgent .env{color:#FF6A5C}
+#inbox .dl{display:block;font-size:11px;color:var(--onair-soft);font-weight:700;margin-top:1px}
+@media (prefers-reduced-motion:no-preference){#inbox.urgent{animation:wig 1.1s ease-in-out infinite}}
+.opt.danger{border-color:#7A2A22;background:linear-gradient(180deg,#251214,#16100F)}
+.opt.danger:hover{border-color:#FF4A3D}
+.oddz{font-size:11.5px;font-weight:700;color:var(--onair-soft);margin-left:6px}
+.urgtag{font-size:10px;letter-spacing:.18em;background:#B01E16;color:#fff;padding:2px 7px;font-weight:700;margin-left:6px}
+.combo{position:absolute;right:12px;top:34px;font-size:12px;font-weight:700;color:var(--rate);text-shadow:0 1px 4px #000}
+
+#m-timer{margin:-2px 0 14px;border:1px solid #3A2220;background:#160E0E;padding:9px 12px}
+#m-timer[hidden]{display:none}
+#m-timer .row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+#m-timer .lb{font-size:11px;letter-spacing:.18em;font-weight:700;color:var(--onair-soft)}
+#m-timer .sec{font-family:'Nanum Gothic Coding',monospace;font-size:26px;font-weight:700;line-height:1;color:var(--onair-soft)}
+#m-timer .sec small{font-size:.45em;margin-left:2px}
+#m-timer .bar{height:6px;background:#0A0709;border:1px solid #3A2220;margin-top:8px;overflow:hidden}
+#m-timer .bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#8E2018,#FF5A4C);
+  box-shadow:0 0 10px rgba(255,74,61,.6)}
+#m-timer.hot{border-color:#FF4A3D;background:#1E0D0C}
+#m-timer.hot .sec{color:#FF6A5C}
+@media (prefers-reduced-motion:no-preference){#m-timer.hot .sec{animation:tpulse .5s ease-in-out infinite}}
+@keyframes tpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+#inbox .dl{color:var(--onair-soft)}
+
+.minigame{border:1px solid #2A333F;background:linear-gradient(180deg,#12171E,#0A0D12);padding:15px 14px;text-align:center}
+.mtitle{font-size:11px;letter-spacing:.2em;color:var(--onair-soft);font-weight:700;margin-bottom:4px}
+.mdesc{font-size:12.5px;color:var(--ink-2);margin-bottom:12px;line-height:1.55}
+.mbar{position:relative;height:30px;background:#07090C;border:1px solid var(--line);overflow:hidden}
+.mbar .zone{position:absolute;top:0;bottom:0;background:rgba(63,214,160,.22);
+  border-left:2px solid var(--rate);border-right:2px solid var(--rate);box-shadow:0 0 18px rgba(63,214,160,.25) inset}
+.mbar .zone.small{background:rgba(255,210,74,.24);border-color:var(--rL)}
+.mbar .cur{position:absolute;top:0;bottom:0;width:3px;background:#fff;box-shadow:0 0 12px #fff,0 0 26px rgba(255,255,255,.6)}
+.mbar .fillv{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8E2018,#FF5A4C)}
+.mbtn{margin-top:13px;width:100%;background:linear-gradient(180deg,#FF5A4C,#D9382C);border:1px solid #FF6A5C;
+  color:#fff;padding:13px 0;font-weight:700;font-size:16px;border-radius:2px;letter-spacing:.06em;
+  box-shadow:0 0 20px rgba(255,74,61,.32)}
+.mbtn:active{transform:translateY(1px)}
+.mcount{font-family:'Nanum Gothic Coding',monospace;font-size:34px;font-weight:700;line-height:1;margin:6px 0 10px}
+.mcount small{font-size:.42em;color:var(--ink-3)}
+.mcards{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.mcard{height:92px;border:1px solid var(--line);background:linear-gradient(180deg,#1A212A,#0F141A);
+  font-size:30px;font-weight:700;color:var(--ink-3);transition:.14s}
+.mcard:hover{border-color:var(--onair);color:var(--onair-soft);transform:translateY(-2px)}
+.mcard:disabled{opacity:.4;transform:none}
+.mcard.hit{border-color:var(--rate);color:var(--rate);background:#0E1E18}
+.mcard.miss{border-color:#3A2220;color:#5A3A36}
+.mreels{display:flex;gap:9px;justify-content:center;margin:4px 0 6px}
+.mreel{width:70px;height:78px;border:1px solid var(--line);background:#07090C;display:flex;
+  align-items:center;justify-content:center;font-size:34px;color:var(--ink-2);
+  box-shadow:0 0 16px rgba(0,0,0,.6) inset}
+.mreel.spin{color:var(--ink-3)}
+.mreel.stop{border-color:var(--rL);color:var(--rL);text-shadow:0 0 14px rgba(255,210,74,.5)}
+.mhint{font-size:11.5px;color:var(--ink-3);margin-top:9px}
+
+.subtabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.subtabs button{border:1px solid var(--line);background:#141A21;color:var(--ink-3);
+  padding:6px 14px;font-size:12.5px;font-weight:700;border-radius:2px}
+.subtabs button.on{border-color:var(--onair);color:var(--onair);background:#1E1416;box-shadow:0 0 12px rgba(255,74,61,.2)}
+.rtable{border:1px solid var(--line);background:#0B0F14}
+.rrow{display:grid;grid-template-columns:46px minmax(0,1fr) 96px 108px;gap:10px;align-items:center;
+  padding:9px 12px;border-bottom:1px solid var(--line-soft);font-size:13px}
+.rrow:last-child{border-bottom:none}
+.rrow.head{background:#141A21;color:var(--ink-3);font-size:11px;letter-spacing:.14em;font-weight:700}
+.rrow.me{background:linear-gradient(90deg,rgba(255,74,61,.14),rgba(255,74,61,.03));box-shadow:inset 3px 0 0 var(--onair)}
+.rrank{font-family:'Nanum Gothic Coding',monospace;font-weight:700;font-size:15px;color:var(--ink-3);text-align:center}
+.rrow.me .rrank{color:var(--onair)}
+.r1 .rrank{color:#FFD24A;text-shadow:0 0 12px rgba(255,210,74,.5)}
+.r2 .rrank{color:#C9D2DE} .r3 .rrank{color:#D08A4A}
+.rname{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rjob{font-size:11.5px;color:var(--ink-3);font-weight:400;margin-left:6px}
+.rval{text-align:right;font-family:'Nanum Gothic Coding',monospace;font-weight:700}
+.rsub{text-align:right;font-size:11.5px;color:var(--ink-3);font-family:'Nanum Gothic Coding',monospace}
+.rme{border:1px solid var(--onair);background:linear-gradient(180deg,#1C1416,#121618);padding:12px 14px;margin-bottom:13px}
+.rme .t{font-size:10px;letter-spacing:.18em;color:var(--onair);font-weight:700}
+.rme .n{font-size:20px;font-weight:700;margin-top:3px}
+.rme .n .job{font-size:13px;color:var(--ink-2);font-weight:400;margin-left:8px}
+.rme .g{display:flex;gap:16px;flex-wrap:wrap;margin-top:9px;font-size:12.5px;color:var(--ink-3)}
+.rme .g b{color:var(--ink);font-family:'Nanum Gothic Coding',monospace}
+@media (max-width:640px){.rrow{grid-template-columns:38px minmax(0,1fr) 92px;gap:8px}.rrow .rsub{display:none}}
+
+#authpanel{max-width:440px;margin:0 auto 20px;border:1px solid var(--line);background:#11161C;padding:14px;display:none;text-align:left}
+#authpanel.on{display:block}
+#authpanel .arow{display:flex;gap:7px;margin-bottom:8px}
+#authpanel input{flex:1;width:auto;min-width:0}
+#authpanel .arow:last-of-type button{flex:1;padding:9px 0}
+.amsg{font-size:12px;color:var(--ink-3);line-height:1.6;margin-top:6px}
+.amsg.err{color:var(--onair)} .amsg.ok{color:var(--rate)}
+.sysbar #who{color:var(--rate);font-weight:700}
+</style>
+
+<div id="disguise" hidden>
+  <h2>주간 시청률 분석표 (수도권 기준)</h2>
+  <div class="sub">편성전략팀 / 2026-09-02 집계 / 대외비 · 무단반출 금지</div>
+  <table class="num"><thead><tr><th>프로그램</th><th>1주</th><th>2주</th><th>3주</th><th>4주</th><th>평균</th><th>2049</th></tr></thead><tbody id="dg-rows"></tbody></table>
+  <div class="hint">Esc 키로 복귀</div>
+</div>
+
+<div class="wrap">
+  <div class="sysbar">
+    <span class="onair-dot"><i></i>ON AIR</span><span class="sep"></span>
+    <span class="brand">편성제작본부 인재육성 시뮬레이터</span><span class="sep"></span>
+    <span class="meta num" id="sysmeta">세션 대기</span>
+    <span class="spacer"></span>
+    <span class="meta" id="who"></span>
+    <button class="ghost" id="btn-auth">로그인 · 회원가입</button>
+    <button class="ghost" id="btn-logout" hidden>로그아웃</button>
+    <button class="ghost" id="btn-reset" hidden>초기화</button>
+  </div>
+
+  <section id="screen-title">
+    <div class="title-card">
+      <div class="slate"><div class="eyebrow">TAKE 01 · SCENE 1</div><h1 class="title-main han">백<em>PD</em> 키우기</h1></div>
+      <p class="title-sub">24세 인턴으로 들어가서 끝없이 위로 올라가는 방치형 RPG.<br>어떻게 키우느냐에 따라 올라가는 길이 갈립니다.</p>
+      <div class="title-rule"></div>
+      <div id="authpanel">
+        <div class="arow"><input type="text" id="a-nick" maxlength="12" placeholder="닉네임 (랭킹 표시명)"></div>
+        <div class="arow"><input type="email" id="a-email" placeholder="이메일" autocomplete="email"><input type="password" id="a-pw" placeholder="비밀번호 6자 이상" autocomplete="current-password"></div>
+        <div class="arow"><button class="btn-primary" id="a-signup">회원가입</button><button class="btn-cont" id="a-login">로그인</button><button class="btn-cont" id="a-close">닫기</button></div>
+        <div class="amsg" id="a-msg">가입하면 종합·자본·업적 랭킹에 내 기록이 올라갑니다. 로그인 없이도 바로 플레이할 수 있습니다.</div>
+      </div>
+      <div class="name-row">
+        <input type="text" id="inp-name" maxlength="8" placeholder="이름" value="백PD" aria-label="PD 이름">
+        <button class="btn-primary" id="btn-start">새로 시작</button>
+        <button class="btn-cont" id="btn-continue" hidden>이어하기</button>
+      </div>
+      <p class="title-note">
+        승진 <span class="num">3</span>갈래 분기 · 아이템 <span class="num">41</span>종 (노말~레전더리) · 업적 <span class="num">40</span>종<br>
+        <kbd>1</kbd>~<kbd>8</kbd> 업무 전환 · <kbd>Space</kbd> 일시정지 · <kbd>Esc</kbd> 위장 화면
+      </p>
+    </div>
+  </section>
+
+  <section id="screen-game" hidden>
+    <div class="topstage">
+      <div class="stage">
+        <canvas id="cv" aria-label="일하는 모습"></canvas>
+        <div class="tagline">STUDIO CAM 01</div>
+        <div class="clock num" id="c-clock">1년차 1월</div>
+        <div class="nowdoing" id="c-doing">편집실 밤샘</div>
+        <button class="pausebtn" id="btn-pause">❚❚ 일시정지</button>
+        <div class="fx" id="fx"></div>
+      </div>
+      <div class="acts" id="acts"></div>
+      <div class="strip" id="strip"></div>
+    </div>
+
+    <div class="tabbar" id="tabbar"></div>
+    <div class="panelwrap">
+      <div class="tabpane" id="tab-stat" hidden></div>
+      <div class="tabpane" id="tab-promo" hidden></div>
+      <div class="tabpane" id="tab-show" hidden></div>
+      <div class="tabpane" id="tab-bag" hidden></div>
+      <div class="tabpane" id="tab-shop" hidden></div>
+      <div class="tabpane" id="tab-rank" hidden></div>
+      <div class="tabpane" id="tab-log" hidden></div>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <div class="sheet-head"><span class="tag" id="m-tag">사건</span><h3 id="m-title"></h3></div>
+    <div class="sheet-body">
+      <div id="m-timer" hidden><div class="row"><span class="lb">즉시 대응 · 남은 시간</span><span class="sec" id="m-sec">10<small>초</small></span></div><div class="bar"><i id="m-bar"></i></div></div>
+      <div id="m-img" style="margin-bottom:14px"></div>
+      <p class="story" id="m-story"></p>
+      <div class="result" id="m-result" hidden></div>
+      <div id="m-drop"></div>
+      <div class="opts" id="m-opts"></div>
+    </div>
+  </div>
+</div>
+
+<div id="reveal" hidden>
+  <div class="rv">
+    <div class="oa">FIRST BROADCAST</div>
+    <div class="pt han" id="rv-title"></div>
+    <div class="gn" id="rv-genre"></div>
+    <div class="barline"></div>
+    <div class="cap">1회 시청률 (수도권)</div>
+    <div class="big han" id="rv-num">0.0<small>%</small></div>
+    <div class="tier han" id="rv-tier"></div>
+    <div class="msg" id="rv-msg"></div>
+    <button class="go" id="rv-go">계속</button>
+  </div>
+</div>
+
+<div id="fxlayer"></div>
+<div id="danger"></div>
+<div id="alarm"><span id="alarm-t"></span><span class="sm" id="alarm-s"></span></div>
+<button id="inbox" hidden>
+  <span class="env">✉</span>
+  <span class="txt"><b id="inbox-label">새 소식</b><span id="inbox-sub">클릭해서 확인</span></span>
+  <span class="badge num" id="inbox-n">1</span>
+</button>
+<div id="toasts"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ══════════════ 승진 트리 ══════════════ */
+const LINES={
+ com  :{n:'공통',c:'var(--ink-3)',cls:'ln-com'},
+ dir  :{n:'연출',c:'#C2762A',cls:'ln-dir'},
+ mgr  :{n:'관리',c:'#3B72C4',cls:'ln-mgr'},
+ star :{n:'스타',c:'#A855C8',cls:'ln-star'},
+ crime:{n:'범죄',c:'#C0522B',cls:'ln-crime'},
+ meme :{n:'병맛',c:'#2E9B6E',cls:'ln-meme'}
+};
+const TREE={
+ intern:{n:'인턴',l:'com',t:0,pay:120,d:'프리뷰 20시간. 이름 대신 "야"로 불린다.',next:['ad']},
+ ad    :{n:'조연출',l:'com',t:1,pay:200,d:'이제 이름으로 불린다. 일은 세 배가 됐다.',
+         req:{lv:3,dir:12},next:['ad2']},
+ ad2   :{n:'수석 조연출',l:'com',t:2,pay:270,d:'막내를 굴릴 수 있게 됐다. 입봉만 남았다.',
+         req:{lv:7,dir:30,plan:18},next:['pdA','pdB']},
+ pdA   :{n:'정통 입봉 PD',l:'com',t:3,pay:360,d:'기획안 하나로 뚫었다. 연출 라인 승진 확률 +8%.',
+         req:{lv:12,dir:55,plan:38},bias:{dir:8,mgr:-3},next:['d1','m1','s1','c1','b1']},
+ pdB   :{n:'특채 PD',l:'com',t:3,pay:360,d:'윗선이 밀어줬다. 관리·스타 라인 승진 확률 +8%.',
+         req:{lv:12,cast:48,rep:45},bias:{mgr:8,star:8,dir:-4},next:['d1','m1','s1','c1','b1']},
+
+ /* 연출 라인 */
+ d1:{n:'메인 PD',l:'dir',t:4,pay:520,d:'내 이름이 연출 크레딧 맨 위에 박힌다.',
+     req:{lv:17,dir:78,plan:55,hit:1},next:['d2']},
+ d2:{n:'크리에이티브 디렉터',l:'dir',t:5,pay:700,d:'포맷을 설계하는 사람. 남이 내 틀 위에서 만든다.',
+     req:{lv:23,dir:118,plan:88,hit:2},next:['d3']},
+ d3:{n:'스타 PD',l:'dir',t:6,pay:950,d:'프로그램보다 내 이름이 먼저 나온다.',
+     req:{lv:30,dir:160,sense:120,smash:1},next:['d4']},
+ d4:{n:'거장',l:'dir',t:7,pay:1300,d:'후배들이 내 연출을 교과서로 뜯어본다.',
+     req:{lv:38,dir:210,plan:160,smash:3},next:['d5a','d5b']},
+ d5a:{n:'연출본부장',l:'dir',t:8,pay:2100,d:'사내 잔류. 이제 모든 연출이 내 손을 거친다.',
+     req:{lv:44,dir:265,rep:180,smash:5},next:['legend']},
+ d5b:{n:'독립 감독',l:'dir',t:8,pay:2400,d:'방송국을 나갔다. 시청률 대신 스크린과 상.',
+     req:{lv:44,dir:275,sense:210,smash:4,money:30000},next:['legend']},
+
+ /* 관리 라인 */
+ m1:{n:'선임 PD',l:'mgr',t:4,pay:530,d:'팀을 맡았다. 이제 내가 밤을 새우진 않는다.',
+     req:{lv:17,rep:75,plan:52,hit:1},next:['m2']},
+ m2:{n:'책임 PD (CP)',l:'mgr',t:5,pay:710,d:'세 개 프로그램의 예산과 목숨이 내 결재란에 있다.',
+     req:{lv:23,rep:112,cast:75,hit:3},next:['m3']},
+ m3:{n:'국장',l:'mgr',t:6,pay:980,d:'슬롯을 나눠주는 사람. 후배들이 내 방 앞에서 기다린다.',
+     req:{lv:30,rep:158,cast:115,smash:1},next:['m4']},
+ m4:{n:'편성제작본부장',l:'mgr',t:7,pay:1400,d:'편성표가 곧 나다.',
+     req:{lv:38,rep:205,plan:150,smash:2},next:['m5a','m5b']},
+ m5a:{n:'대표이사',l:'mgr',t:8,pay:2900,d:'사내 최상위. 이름 뒤에 아무것도 안 붙는다.',
+     req:{lv:45,rep:275,cast:210,smash:4},next:['legend']},
+ m5b:{n:'방송협회장',l:'mgr',t:8,pay:2300,d:'업계 원로. 방송국 하나가 아니라 판 전체를 본다.',
+     req:{lv:45,rep:290,plan:200,awards:2},next:['legend']},
+
+ /* 스타 라인 */
+ s1:{n:'캐스팅 총괄',l:'star',t:4,pay:515,d:'누구를 앉히느냐가 곧 시청률이다.',
+     req:{lv:17,cast:82,sense:58,hit:1},next:['s2']},
+ s2:{n:'예능 기획위원',l:'star',t:5,pay:690,d:'톱스타가 내 번호를 먼저 저장한다.',
+     req:{lv:23,cast:122,sense:98,hit:2},next:['s3']},
+ s3:{n:'브랜드 총괄',l:'star',t:6,pay:960,d:'프로그램이 아니라 IP를 판다.',
+     req:{lv:30,cast:165,sense:138,smash:1,money:8000},next:['s4']},
+ s4:{n:'스타메이커',l:'star',t:7,pay:1350,d:'내가 찍으면 뜬다는 소문이 사실이 됐다.',
+     req:{lv:38,cast:215,sense:180,smash:3},next:['s5a','s5b']},
+ s5a:{n:'콘텐츠사업본부장',l:'star',t:8,pay:2400,d:'사내 잔류. 돈줄을 쥔 자리.',
+     req:{lv:44,cast:270,rep:190,money:40000},next:['legend']},
+ s5b:{n:'미디어그룹 총수',l:'star',t:8,pay:3400,d:'제작사를 차려 방송국을 사버렸다.',
+     req:{lv:46,cast:285,sense:230,smash:5,money:120000},next:['legend']},
+
+ /* 범죄 라인 */
+ c1:{n:'브로커 PD',l:'crime',t:4,pay:600,d:'섭외비와 실제 지급액 사이에 내 몫이 있다.',
+     req:{lv:16,cast:65,dirty:1,risk:20},next:['c2']},
+ c2:{n:'스폰서 관리자',l:'crime',t:5,pay:900,d:'봉투가 오는 게 아니라, 봉투를 배분한다.',
+     req:{lv:22,cast:105,money:12000,dirty:3},next:['c3']},
+ c3:{n:'비선 실세',l:'crime',t:6,pay:1400,d:'직급표에 없는 자리. 국장이 내 눈치를 본다.',
+     req:{lv:29,cast:150,rep:90,money:40000,risk:45},next:['c4']},
+ c4:{n:'그림자 회장',l:'crime',t:7,pay:2200,d:'명함이 없다. 명함이 필요 없어서.',
+     req:{lv:37,cast:200,money:120000,dirty:8},next:['c5a','c5b']},
+ c5a:{n:'무혐의 신화',l:'crime',t:8,pay:3000,d:'일곱 번 소환됐고 일곱 번 걸어나왔다.',
+     req:{lv:44,rep:200,money:200000,risk:70},next:['legend']},
+ c5b:{n:'해외 도피 거물',l:'crime',t:8,pay:4200,d:'인터폴 적색수배. 대신 통장은 무사하다.',
+     req:{lv:44,money:400000,risk:90},next:['legend']},
+
+ /* 병맛 라인 */
+ b1:{n:'짤 제조기',l:'meme',t:4,pay:430,d:'내가 만든 장면이 짤로만 돌아다닌다.',
+     req:{lv:16,luk:40,idle:14,sense:60},next:['b2']},
+ b2:{n:'논란의 아이콘',l:'meme',t:5,pay:600,d:'실시간 검색어에 이번 달만 세 번 올랐다.',
+     req:{lv:22,luk:75,sense:100,scandal:2},next:['b3']},
+ b3:{n:'국민 밉상',l:'meme',t:6,pay:880,d:'다들 욕하면서 본다. 그게 시청률이다.',
+     req:{lv:29,luk:120,sense:145,idle:40},next:['b4']},
+ b4:{n:'밈교주',l:'meme',t:7,pay:1250,d:'이제 유행어를 만드는 게 아니라 유행어가 된다.',
+     req:{lv:37,luk:175,sense:190,smash:2},next:['b5a','b5b']},
+ b5a:{n:'예능계 마스코트',l:'meme',t:8,pay:2000,d:'출연자보다 PD가 더 유명한 초유의 사태.',
+     req:{lv:44,luk:230,rep:170,smash:3},next:['legend']},
+ b5b:{n:'전설의 흑역사',l:'meme',t:8,pay:2600,d:'10년 뒤에도 짤로 살아남는다. 본인은 괴롭다.',
+     req:{lv:44,luk:250,idle:80,scandal:6},next:['legend']},
+
+ legend:{n:'명예의 전당',l:'com',t:12,pay:4000,d:'더 올라갈 직급이 없다. 대신 ★이 붙기 시작한다.',
+     req:{lv:50,smash:6},star:true,next:['legend']}
+};
+const LANES={dir:['d1','d2','d3','d4','d5a','d5b'],mgr:['m1','m2','m3','m4','m5a','m5b'],
+ star:['s1','s2','s3','s4','s5a','s5b'],crime:['c1','c2','c3','c4','c5a','c5b'],meme:['b1','b2','b3','b4','b5a','b5b']};
+
+/* ══════════════ 아이템 ══════════════ */
+const RN=['노말','레어','에픽','유니크','레전더리'];
+const ITEMS={
+ /* 상점 */
+ head:{n:'노이즈캔슬링 헤드폰',r:1,p:500,d:'편집실 밤샘 완성도 +30%',e:{editQ:1.30}},
+ mon:{n:'4K 레퍼런스 모니터',r:1,p:1200,d:'모든 완성도 +14%',e:{qMul:1.14}},
+ hongsam:{n:'홍삼 정과 세트',r:0,p:400,d:'체력 소모 -25%',e:{staCost:.75}},
+ vape:{n:'전자담배',r:0,p:300,d:'멘탈 회복 +22%',e:{menGain:1.22}},
+ book:{n:'인맥 수첩',r:1,p:1800,d:'섭외 성장 +50%',e:{g:{cast:1.5}}},
+ card:{n:'법인카드',r:2,p:3200,d:'섭외 성장 +35% · 월 +80만',e:{g:{cast:1.35},moneyAdd:80}},
+ drone:{n:'촬영용 드론',r:2,p:2600,d:'완성도 +12% · 시청률 +6%',e:{qMul:1.12,ratingMul:1.06}},
+ lawyer:{n:'변호사 명함',r:2,p:3800,d:'의혹 감소 2.5배 · 수사 1회 방어',e:{riskMul:2.5,shield:1}},
+ data:{n:'시청률 예측 AI',r:3,p:6500,d:'방영 전 예상 시청률 표시 · 시청률 +4%',e:{peek:1,ratingMul:1.04}},
+ pr:{n:'전담 홍보팀',r:3,p:8000,d:'스캔들 피해 -60% · 승진 확률 +5%',e:{prShield:1,promo:5}},
+ /* 노말 드롭 */
+ kimbap:{n:'편의점 삼각김밥(참치마요)',r:0,d:'체력 소모 -4%. 맛은 있다.',e:{staCost:.96}},
+ ticket:{n:'구내식당 식권 뭉치',r:0,d:'월 +12만. 유효기간은 안 봤다.',e:{moneyAdd:12}},
+ pen:{n:'창사기념 로고 볼펜',r:0,d:'경험치 +3%. 잉크는 안 나온다.',e:{expMul:1.03}},
+ socks:{n:'짝짝이 양말',r:0,d:'운 +2. 왠지 그날 일이 잘 풀렸다.',e:{luk:2}},
+ tshirt:{n:'목 늘어난 회사 티셔츠',r:0,d:'멘탈 회복 +6%. 잠옷이 됐다.',e:{menGain:1.06}},
+ battery:{n:'다 쓴 건전지',r:0,d:'효과 없음. 왜 아직 서랍에 있는지 모른다.',e:{}},
+ vitamin:{n:'유통기한 3년 지난 비타민',r:0,d:'체력 소모 -7%. 가끔 배가 아프다.',e:{staCost:.93}},
+ mug:{n:'신년회 경품 머그컵',r:0,d:'멘탈 회복 +5%. 손잡이가 깨졌다.',e:{menGain:1.05}},
+ /* 레어 드롭 */
+ lighter:{n:'국장님이 두고 간 라이터',r:1,d:'평판 성장 +14%. 돌려줄 타이밍을 놓쳤다.',e:{g:{rep:1.14}}},
+ slipper:{n:'편집실 전용 삼선 슬리퍼',r:1,d:'편집 완성도 +12%. 발이 편하면 컷도 편하다.',e:{editQ:1.12}},
+ tumbler:{n:'카페인 과다 텀블러',r:1,d:'경험치 +14% · 멘탈 회복 -8%',e:{expMul:1.14,menGain:.92}},
+ letter:{n:'스태프가 준 손편지',r:1,d:'멘탈 회복 +26%. 세 번 읽었다.',e:{menGain:1.26}},
+ fakewatch:{n:'짝퉁 명품 시계',r:1,d:'섭외 성장 +13%. 아무도 모른다. 아마도.',e:{g:{cast:1.13}}},
+ script:{n:'10년 전 시청률 1위 대본',r:1,d:'기획 성장 +20%. 종이가 누렇다.',e:{g:{plan:1.2}}},
+ badge:{n:'구형 사원증 목걸이',r:1,d:'승진 확률 +3%. 사진 속 내가 젊다.',e:{promo:3}},
+ /* 에픽 드롭 */
+ font:{n:'전설의 자막 폰트',r:2,d:'완성도 +18% · 감각 성장 +12%',e:{qMul:1.18,g:{sense:1.12}}},
+ coffee:{n:'무한리필 법인 커피머신',r:2,d:'체력 소모 -28%',e:{staCost:.72}},
+ envelope:{n:'책상 서랍의 검은 봉투',r:2,d:'월 +260만 · 의혹 매달 +0.6',e:{moneyAdd:260,riskAdd:.6},warn:1},
+ masterkey:{n:'방송국 마스터키',r:2,d:'모든 능력 성장 +11%',e:{gAll:1.11}},
+ rolodex:{n:'섭외의 신 명함첩',r:2,d:'섭외 성장 +45%',e:{g:{cast:1.45}}},
+ aiedit:{n:'AI 편집 어시스턴트',r:2,d:'완성도 +26% · 연출 성장 -7%',e:{qMul:1.26,g:{dir:.93}}},
+ /* 유니크 드롭 */
+ conti:{n:'전설 PD의 콘티 노트',r:3,d:'연출 성장 +50% · 시청률 +8%',e:{g:{dir:1.5},ratingMul:1.08}},
+ remote:{n:'시청률 조작 리모컨',r:3,d:'시청률 +28% · 의혹 매달 +2.2',e:{ratingMul:1.28,riskAdd:2.2},warn:1},
+ golfball:{n:'회장님 골프공',r:3,d:'승진 확률 +15%',e:{promo:15}},
+ ginseng:{n:'무한동력 홍삼',r:3,d:'체력 소모 -50% · 멘탈 회복 +32%',e:{staCost:.5,menGain:1.32}},
+ trophy:{n:'방송대상 트로피',r:3,d:'평판 성장 +55%',e:{g:{rep:1.55}}},
+ /* 레전더리 드롭 */
+ gold:{n:'황금 슬레이트',r:4,d:'모든 능력 성장 +35% · 운 +25',e:{gAll:1.35,luk:25}},
+ schedule:{n:'편성표를 지배하는 자',r:4,d:'시청률 +45%',e:{ratingMul:1.45}},
+ timemachine:{n:'타임머신 편집기',r:4,d:'폭망하면 시청률을 한 번 다시 뽑는다',e:{reroll:1}},
+ resign:{n:'무적의 사직서',r:4,d:'수사·스캔들 3회 방어',e:{shield:3}},
+ clock:{n:'사장님 하사품 벽시계',r:1,d:'평판 성장 +30% · 체력 소모 +18%. 눈치가 보여 못 뗀다.',e:{g:{rep:1.30},staCost:1.18},warn:1},
+ oldpc:{n:'중고 편집 데스크탑',r:0,d:'완성도 +16% · 멘탈 회복 -14%. 팬 소리가 비행기 같다.',e:{qMul:1.16,menGain:.86},warn:1},
+ upper:{n:'약국에서 산 각성제',r:1,d:'경험치 +32% · 멘탈 회복 -28%. 심장이 조금 빨리 뛴다.',e:{expMul:1.32,menGain:.72},warn:1},
+ loan:{n:'사채업자 명함',r:2,d:'월 +520만 · 의혹 매달 +1.6. 이자는 안 물어봤다.',e:{moneyAdd:520,riskAdd:1.6},warn:1},
+ ghost:{n:'유령작가 계약서',r:2,d:'기획 성장 +50% · 평판 성장 -22% · 의혹 +0.7. 이름은 내 것이다.',e:{g:{plan:1.5,rep:.78},riskAdd:.7},warn:1},
+ faketro:{n:'짝퉁 방송대상 트로피',r:1,d:'평판 성장 +28% · 의혹 +0.4. 바닥의 각인만 안 보면 된다.',e:{g:{rep:1.28},riskAdd:.4},warn:1},
+ lipservice:{n:'만능 립서비스 매뉴얼',r:2,d:'섭외 성장 +45% · 평판 성장 -18%. 다들 한 번은 속는다.',e:{g:{cast:1.45,rep:.82}},warn:1},
+ corpphone:{n:'회사 법인폰',r:0,d:'월 +45만 · 멘탈 회복 -14%. 새벽 2시에도 울린다.',e:{moneyAdd:45,menGain:.86},warn:1},
+ luckcoin:{n:'낡은 행운의 동전',r:3,d:'운 +32 · 월 −80만. 왜 돈이 새는지는 모른다.',e:{luk:32,moneyAdd:-80},warn:1},
+ vip:{n:'VIP 룸 회원권',r:3,d:'섭외 성장 +55% · 월 −190만 · 의혹 +0.5. 회비가 만만치 않다.',e:{g:{cast:1.55},moneyAdd:-190,riskAdd:.5},warn:1},
+ notebook:{n:'PD수첩 (진짜 수첩)',r:4,d:'나쁜 결과의 평판·멘탈 피해 -40% · 운 +15',e:{negSoft:.6,luk:15}}
+};
+const DROPS={0:[],1:[],2:[],3:[],4:[]};
+Object.keys(ITEMS).forEach(k=>{if(!ITEMS[k].p)DROPS[ITEMS[k].r].push(k);});
+
+/* ══════════════ 업무 ══════════════ */
+const GKEY={dir:'연출',plan:'기획',sense:'감각',cast:'섭외',rep:'평판',luk:'운'};
+const GROW=['dir','plan','sense','cast','rep','luk'];
+const GDESC={
+ dir:'완성도의 뼈대. 편집·연출 품질이 곧 시청률의 기본값이 된다.',
+ plan:'포맷의 힘. 다큐·코미디처럼 구성이 무거운 장르에서 크게 작용한다.',
+ sense:'트렌드 적중률. 시청률 상한을 밀어올리고 화제성을 만든다.',
+ cast:'출연진의 급. 음악쇼·아이돌 장르에서 결정적이고, 섭외 사고를 막는다.',
+ rep:'사내 신뢰도. 모든 승진 심사 확률에 직접 더해진다.',
+ luk:'대박과 뽑기. 시청률 상방, 아이템 등급, 로또·도박 결과에 개입한다.'
+};
+const ACTIONS=[
+ {id:'edit',t:'편집실 밤샘',d:'연출↑ 완성도↑↑',mode:'edit',
+  e:{dir:0.95,q:4.4,sta:-3.4,men:-2.6,exp:12,money:14},
+  l:['새벽 4시에 컷을 다시 갈았다.','자막 폰트를 열 번 바꿨다.','편집실 소파에서 두 시간 잤다.','타임라인을 통째로 갈아엎었다.']},
+ {id:'plan',t:'기획 회의',d:'기획↑ 완성도↑',mode:'plan',
+  e:{plan:0.95,q:3.4,sta:-1.2,men:-2.0,exp:11},
+  l:['포스트잇 마흔 장 중 두 장이 살아남았다.','작가가 던진 아이템 하나가 괜찮았다.','회의실에서 세 시간 떠들고 한 줄 남겼다.']},
+ {id:'trend',t:'트렌드 리서치',d:'감각↑↑',mode:'trend',
+  e:{sense:1.2,q:1.7,men:-0.8,exp:11,money:-3},
+  l:['해외 포맷 여섯 편을 몰아봤다.','릴스를 두 시간 봤다. 이것도 업무다.','알고리즘이 요즘 뭘 미는지 파악했다.']},
+ {id:'cast',t:'섭외·술자리',d:'섭외↑↑ 인맥',mode:'cast',
+  e:{cast:1.15,q:2.2,sta:-3.0,men:0.8,exp:11,money:-9},
+  l:['매니저 형이랑 3차까지 갔다.','캐스팅 디렉터에게 커피 열 잔을 샀다.','소속사 대표가 "생각해볼게"라고 했다.']},
+ {id:'pol',t:'사내 정치',d:'평판↑ 라인 관리',mode:'pol',
+  e:{rep:1.05,cast:0.35,men:-2.2,exp:10,money:-4},
+  l:['국장 방에 커피를 들고 세 번 들어갔다.','편성팀장과 점심을 먹었다. 계산은 내가.','인사팀 후배에게 밥을 샀다.']},
+ {id:'fit',t:'체력 관리',d:'체력↑↑',mode:'fit',
+  e:{sta:5.6,men:1.0,exp:6,money:-5},
+  l:['헬스장 6개월 끊고 3번 갔다. 이번 달은 갔다.','계단으로 12층을 올라갔다.','아침에 한강을 뛰었다. 딱 한 번.']},
+ {id:'rest',t:'휴식',d:'멘탈↑↑',mode:'rest',
+  e:{men:7.8,sta:2.6,exp:5,rep:-0.2,money:-8},
+  l:['연차를 썼다. 폰은 못 껐다.','하루 종일 누워 있었다.','아무것도 안 했다. 아무것도.']},
+ {id:'idle',t:'딴짓',d:'멘탈↑ 운↑',mode:'idle',
+  e:{men:3.6,luk:0.5,exp:7,q:0.6},
+  l:['프리뷰 노트를 띄워놓고 딴짓을 했다.','스튜디오 점검한다고 나가서 40분 걸었다.','조연출한테 시켜놓고 커피를 마셨다.','타임코드만 만지작거리다 오전이 갔다.']}
+];
+
+/* ══════════════ 장르 ══════════════ */
+const GENRES=[
+ {id:'obs',n:'관찰 예능',d:'요즘 제일 잘 팔리는 안전빵',mult:1.15,w:{q:.45,sense:.32,dir:.22,cast:.18,plan:.15},vol:.9,
+  names:['나 혼자 잘 산다','옆집은 왜 저래','관찰의 신','우리 집 CCTV']},
+ {id:'surv',n:'서바이벌',d:'터지면 크게, 망해도 크게',mult:1.05,w:{q:.42,sense:.30,dir:.28,cast:.22,plan:.20},vol:1.6,
+  names:['최후의 1인','피지컬 서열전','오디션 제로','살아남아라 100']},
+ {id:'love',n:'연애 리얼리티',d:'시청률보다 화제성',mult:.92,w:{q:.38,sense:.42,dir:.15,cast:.18,plan:.14},vol:1.25,buzz:1,
+  names:['환승의 계절','썸의 지옥','솔로라서 죄송','연애 못하는 남자들']},
+ {id:'doc',n:'정통 다큐',d:'시청률은 포기, 상을 노린다',mult:.55,w:{q:.55,sense:.12,dir:.42,cast:.05,plan:.34},vol:.6,award:1,
+  names:['공장의 시간','바다를 걷는 사람들','기록: 30년','마지막 장인']},
+ {id:'music',n:'음악 쇼',d:'섭외가 8할이다',mult:.88,w:{q:.34,sense:.22,dir:.20,cast:.48,plan:.12},vol:.9,
+  names:['불후의 무대','미드나잇 라이브','싱어게인어게인','전국노래자랑 리부트']},
+ {id:'travel',n:'여행 예능',d:'그림이 반은 먹고 들어간다',mult:1.05,w:{q:.45,sense:.33,dir:.26,cast:.14,plan:.18},vol:.85,
+  names:['어쩌다 유럽','밥 먹으러 갑니다','국경 없는 백반','걸어서 지구 끝까지']},
+ {id:'com',n:'코미디·시트콤',d:'연출력 없으면 대참사',mult:.95,w:{q:.40,sense:.26,dir:.46,cast:.10,plan:.28},vol:1.35,
+  names:['출근하지 마세요','3층 사람들','웃기면 지는 거다','회사생활 백서']},
+ {id:'talk',n:'토크쇼',d:'무난한 게 장점이자 단점',mult:.95,w:{q:.42,sense:.22,dir:.24,cast:.34,plan:.16},vol:.7,
+  names:['새벽 두 시의 대화','솔직히 말해서','백투백 토크','게스트하우스']},
+ {id:'idol',n:'아이돌 서바이벌',d:'팬덤이 시청률을 만든다',mult:1.10,w:{q:.40,sense:.34,dir:.20,cast:.44,plan:.14},vol:1.45,
+  names:['데뷔 아니면 죽음','소년정상회담','아이돌스쿨 리부트','최종 데뷔조']},
+ {id:'crime',n:'범죄 추적 다큐',d:'무겁지만 고정 시청층이 있다',mult:.78,w:{q:.52,sense:.18,dir:.40,cast:.12,plan:.36},vol:.8,award:1,
+  names:['그날의 기록','미제 사건 파일','추적: 7년','목격자들']}
+];
+
+/* ══════════════ 업적 ══════════════ */
+const ACHS={
+ first:{t:'첫 입봉',d:'입봉 PD가 되다'},
+ hit1:{t:'첫 히트',d:'시청률 8.5% 돌파'},
+ smash1:{t:'국민 예능',d:'시청률 14% 돌파'},
+ r20:{t:'20% 클럽',d:'시청률 20% 돌파'},
+ r25:{t:'전설의 시청률',d:'시청률 25% 돌파'},
+ flop3:{t:'3연속 폭망',d:'연속으로 세 번 말아먹다'},
+ lv20:{t:'중견',d:'Lv.20 달성'},
+ lv40:{t:'베테랑',d:'Lv.40 달성'},
+ lv60:{t:'장인',d:'Lv.60 달성'},
+ lineDir:{t:'연출의 길',d:'연출 라인 진입'},
+ lineMgr:{t:'조직의 길',d:'관리 라인 진입'},
+ lineStar:{t:'스타의 길',d:'스타 라인 진입'},
+ lineCrime:{t:'검은 길',d:'범죄 라인 진입'},
+ lineMeme:{t:'병맛의 길',d:'병맛 라인 진입'},
+ t6:{t:'중간 관리자',d:'6단계 직급 도달'},
+ t8:{t:'꼭대기',d:'8단계 직급 도달'},
+ legend:{t:'명예의 전당',d:'최종 직급 도달'},
+ star3:{t:'명예 PD ★3',d:'무한 승급 2회'},
+ fail5:{t:'그래도 다시',d:'승진 심사 5회 실패'},
+ fail12:{t:'포기를 모르는',d:'승진 심사 12회 실패'},
+ love:{t:'사내 연애',d:'연애를 시작하다'},
+ wed:{t:'결혼',d:'상견례를 통과하다'},
+ inlaw:{t:'회장님의 사위',d:'상대가 창업주의 자녀였다'},
+ div:{t:'이혼',d:'서류에 사인하다'},
+ dirty:{t:'검은 돈',d:'처음으로 손을 대다'},
+ dui:{t:'음주운전 적발',d:'그냥 대리를 부르지 그랬나'},
+ jail:{t:'집행유예',d:'검찰 조사 끝에 유죄'},
+ clean:{t:'청렴 결백',d:'의혹 0으로 10년 근속'},
+ rich1:{t:'1억',d:'순자산 1억 돌파'},
+ rich10:{t:'10억',d:'순자산 10억 돌파'},
+ rich100:{t:'100억',d:'순자산 100억 돌파'},
+ lotto:{t:'로또 1등',d:'그런 일이 실제로 일어났다'},
+ legendary:{t:'전설 등급',d:'레전더리 아이템 획득'},
+ collector:{t:'수집가',d:'아이템 20종 보유'},
+ allshop:{t:'풀템',d:'상점 장비 전부 구매'},
+ award3:{t:'3관왕',d:'방송대상 3회 수상'},
+ idle60:{t:'월급 루팡',d:'딴짓 60개월'},
+ y10:{t:'10년차',d:'근속 10년'},
+ y20:{t:'20년차',d:'근속 20년'},
+ y30:{t:'30년차',d:'근속 30년'},
+ gacha10:{t:'첫 10연차',d:'뽑기 10회 달성'},
+ gachaL:{t:'천운',d:'뽑기로 레전더리 획득'}
+};
+
+/* ══════════════ 이벤트 ══════════════ */
+const EVENTS=[
+/* ─ 일상 ─ */
+{id:'newbie',cd:60,img:'crowd',t:'막내가 들어왔다',s:'내 옆자리에 스물넷이 앉았다.\n눈이 반짝인다. 아직은.',
+ o:[{t:'제대로 가르친다',f:S=>{g(S,{rep:6,dir:3,men:-6,exp:60});return '두 달 뒤 내 일을 절반 가져갔다. 나쁘지 않다.';}},
+    {t:'알아서 하게 둔다',f:S=>{g(S,{cast:3,rep:-4,men:3});return '"선배는 좀 차가우세요"를 건너 건너 들었다.';}}]},
+{id:'crash',u:1,fail:S=>{g(S,{men:-12,q:-14});return '복구를 미루다 결국 그 상태로 방송에 나갔다.';},cd:50,img:'crash',t:'파일이 날아갔다',c:S=>S.prog,s:'저장 안 된 프로젝트가 통째로 날아갔다.\n어제 12시간 작업분.',
+ o:[{t:'다시 한다',f:S=>{g(S,{sta:-14,men:-12,dir:5,q:3,exp:70});return '기억으로 복원했다. 두 번째가 더 나았다.';}},
+    {t:'남은 걸로 간다',f:S=>{g(S,{men:-3,q:-9});return '어제 것보다 못한 버전으로 갔다. 나만 안다.';}}]},
+{id:'blackout',cd:60,img:'phone',t:'새벽 3시, 장애 발생',s:'폰이 울린다. 담당은 내가 아니지만\n지금 깨어 있는 사람도 나뿐이다.',
+ o:[{t:'노트북을 켠다',f:S=>{g(S,{dir:4,rep:9,sta:-13,men:-5,exp:80});return '아침 7시에 복구했다. 국장이 처음으로 "고맙다"고 했다.';}},
+    {t:'폰을 뒤집는다',f:S=>{g(S,{rep:-8,men:4,sta:5});return '아침에 다들 눈이 빨갰다. 나만 멀쩡한 게 더 티가 났다.';}}]},
+{id:'mentor',cd:80,img:'party',t:'전설의 선배',s:'국민 예능을 세 개 만든 선배가 퇴사한다.\n마지막 날 담배 한 대 피우자고 한다.',
+ o:[{t:'조언을 듣는다',f:S=>{g(S,{dir:8,plan:6,men:8,exp:110});return '"시청률은 네가 못 만들어. 네가 만드는 건 딱 한 장면이야."';}},
+    {t:'술을 산다',f:S=>{g(S,{cast:9,sta:-8,men:6,exp:70});return '새벽 3시까지 마셨다. 그날 이후 내 전화를 항상 받는다.';}}]},
+{id:'boss',cd:70,img:'clash',t:'국장 교체',s:'새 국장이 왔다. 첫 회의에서 이렇게 말했다.\n"저는 숫자만 봅니다."',
+ o:[{t:'확인',f:S=>{if(S.hits>=1){g(S,{rep:8,cast:4,men:5});return '실적 있는 사람에게 유리한 판이 됐다.';}g(S,{cast:-9,men:-8});return '쌓아온 라인이 리셋됐다. 처음부터 다시다.';}}]},
+{id:'award',cd:40,img:'trophy',t:'연말 시상식',c:S=>S.hits>=1,s:'방송대상 후보에 이름이 올랐다.\n좌석표에서 내 자리는 뒤에서 네 번째다.',
+ o:[{t:'기다린다',f:S=>{
+   const p=Math.min(.75,.18+S.smash*.15+S.rep/450);
+   if(Math.random()<p){S.awards++;give(S,'trophy');g(S,{rep:16,cast:8,men:14,money:300,exp:150});
+     return '내 이름이 불렸다. 무대까지 걸어가는 20초 동안 아무 생각도 안 났다.';}
+   g(S,{men:-6,rep:2});return '옆 테이블이 받았다. 박수를 치면서 손바닥이 아팠다.';}}]},
+{id:'budget',cd:45,img:'doc',t:'예산 삭감',c:S=>S.prog,s:'전사 비용 절감. 제작비 22% 컷.\n짜놓은 촬영 스케줄이 세 개 있다.',
+ o:[{t:'스케일을 줄인다',f:S=>{g(S,{men:-8,dir:4,q:-7});return '해외 촬영을 접고 스튜디오로 돌렸다. 티 안 나게 하는 게 실력이다.';}},
+    {t:'사비를 턴다',f:S=>{g(S,{money:-r(200,500),rep:6,men:-6,q:4});return '스태프 밥값은 내가 냈다. 다들 알았다.';}}]},
+{id:'noshow',u:1,fail:S=>{g(S,{men:-18,sta:-8,money:-380,q:-16});return '촬영이 통째로 엎어졌다. 취소 비용 청구서가 날아왔다.';},cd:50,img:'crowd',t:'출연자 잠수',c:S=>S.prog,s:'촬영 당일 아침, 메인 출연자가 연락이 안 된다.\n스튜디오에 스태프 40명이 대기 중이다.',
+ o:[{t:'대타를 급구한다',f:S=>{if(S.cast>=45){g(S,{cast:5,men:-9,sta:-7,q:4,exp:60});return '두 시간 만에 후배 배우를 앉혔다. 인맥이 밥값을 했다.';}
+      g(S,{men:-16,sta:-8,money:-160,q:-10});return '아무도 안 잡혔다. 취소 비용만 1600만.';}},
+    {t:'강행한다',f:S=>{g(S,{dir:6,men:-11,sta:-9,q:r(-5,8)});return '남은 사람들로 구성을 뒤집었다. 결과는 방송 나가봐야 안다.';}}]},
+{id:'ai',cd:70,img:'tv',t:'AI 편집 툴 도입',s:'회사가 AI 편집 툴을 전사 도입했다.\n러프컷을 3분 만에 뽑는다.',
+ o:[{t:'적극 활용',f:S=>{g(S,{sense:7,men:9,sta:5,dir:-3,q:5});return '밤샘이 줄었다. "손맛이 없다"는 말을 들었다.';}},
+    {t:'손으로 한다',f:S=>{g(S,{dir:8,men:-7,sta:-5,q:7,exp:60});return '고집을 부렸다. 결과물은 확실히 달랐다.';}}]},
+{id:'health',cd:48,img:'health',t:'건강검진',s:'봉투가 왔다. 두껍다.',
+ o:[{t:'열어본다',f:S=>{if(S.sta<40){g(S,{men:-14,money:-90,sta:-3});return '재검 항목이 네 개다. 의사가 "PD세요?"라고 물었다.';}
+   g(S,{men:10,rep:2});return '전 항목 정상. 이 업계에서 이건 자랑이다.';}}]},
+{id:'clip',cd:40,img:'tv',t:'유튜브 클립 떡상',c:S=>S.prog,s:'2분짜리 클립 하나가 알고리즘을 탔다.\n조회수가 하루에 400만.',
+ o:[{t:'확인한다',f:S=>{g(S,{sense:6,rep:8,cast:4,men:9,q:6,exp:90});return '본방은 그대로인데 구독자가 8만 늘었다. 국장이 처음으로 칭찬했다.';}}]},
+{id:'sim',u:1,fail:S=>{g(S,{rep:-12,risk:9,men:-8});return '소명 기한을 놓쳤다. 경고 처분이 확정됐다.';},cd:40,img:'doc',t:'방송통신심의위원회',c:S=>S.prog,s:'심의에서 연락이 왔다.\n지난주 방송 중 한 장면이 문제가 됐다.',
+ o:[{t:'소명한다',f:S=>{g(S,{men:-10,rep:-2,dir:3,exp:40});return '의견서를 냈다. 행정지도로 끝났다. 사흘을 날렸다.';}},
+    {t:'인정하고 사과',f:S=>{g(S,{rep:-6,men:-3,risk:3});return '자막 고지 후 종결. 국장이 "다음엔 조심"이라고 했다.';}}]},
+{id:'plagiar',cd:50,img:'clash',t:'표절 시비',c:S=>S.prog,s:'해외 포맷과 비슷하다는 글이 올라왔다.\n솔직히 참고는 했다. 많이.',
+ o:[{t:'정식 포맷을 산다',f:S=>{g(S,{money:-r(400,900),rep:6,men:6,q:4});return '판권을 샀다. 돈은 나갔지만 뒷말이 사라졌다.';}},
+    {t:'무시한다',f:S=>{if(Math.random()<.45){g(S,{rep:-14,men:-16,risk:8,q:-7});S.scandal++;return '기사가 났다. 해명 자료를 쓰는 데 이틀이 걸렸다.';}
+     g(S,{men:-4});return '일주일 뒤 아무도 기억하지 않았다.';}}]},
+{id:'parents',cd:60,img:'phone',t:'집에서 온 전화',s:'어머니가 "방송 잘 봤다"고 하신다.\n내가 만든 건 다른 요일인데.',
+ o:[{t:'주말에 내려간다',f:S=>{g(S,{men:16,sta:-3,money:-50,rep:-1});return '오랜만에 밥을 같이 먹었다. 반찬을 다섯 통 싸주셨다.';}},
+    {t:'편성표를 보내드린다',f:S=>{g(S,{men:-4});return '"이거 봐요, 목요일 11시." 어머니는 그날 졸다 놓치셨다.';}}]},
+{id:'burnout',cd:40,img:'health',t:'몸이 안 일어난다',c:S=>S.men<=25,s:'알람이 여섯 번 울렸다.\n아픈 데는 없는데 몸이 침대에서 안 떨어진다.',
+ o:[{t:'병가를 낸다',f:S=>{g(S,{men:45,sta:20,rep:-8,money:-200});S.pause=3;return '3개월 병가를 냈다. 돌아올 자리는 있다고 했다.';}},
+    {t:'약을 먹고 나간다',f:S=>{g(S,{men:8,sta:-12,dir:3});return '카페인 두 알로 버텼다. 이게 몇 번째인지는 안 센다.';}}]},
+{id:'sidejob',cd:44,img:'money',t:'외주 제안',c:S=>tr(S)>=3,s:'친구가 외주 건을 물어왔다. 주말만 쓰면 된다고 한다.\n주말만 쓰면 되는 일은 세상에 없다.',
+ o:[{t:'받는다',f:S=>{g(S,{money:r(250,650),men:-11,sta:-7,dir:4,exp:60});return '통장 숫자를 세 번 봤다. 그리고 주말을 잃었다.';}},
+    {t:'거절한다',f:S=>{g(S,{men:6,sta:4});return '주말에 늦잠을 잤다. 이것도 수익이다.';}}]},
+{id:'headhunt',cd:60,img:'phone',t:'헤드헌터',c:S=>tr(S)>=3,s:'모르는 번호. 받았더니 회사 이름을 안다.\n"연봉 30% 정도는 맞춰드립니다."',
+ o:[{t:'협상 카드로 쓴다',f:S=>{g(S,{money:r(300,900),rep:5,cast:5,men:5});return '국장에게 슬쩍 흘렸다. 다음 달 연봉이 올랐다.';}},
+    {t:'조용히 거절',f:S=>{g(S,{rep:4,men:3});return '전화를 끊고 20분쯤 창밖을 봤다.';}}]},
+{id:'export',cd:60,img:'trophy',t:'포맷 수출 문의',c:S=>S.smash>=1,s:'해외 배급사에서 우리 포맷을 사고 싶다고 한다.\n계약되면 크레딧에 내 이름이 남는다.',
+ o:[{t:'직접 협상한다',f:S=>{if(S.cast>=70){g(S,{money:r(900,2200),rep:14,cast:8,men:-8,exp:160});
+     return '3개국에 팔았다. 명함에 "포맷 크리에이터"가 붙었다.';}
+   g(S,{men:-10,rep:3});return '조건이 안 맞아 무산됐다. 영어 공부를 할까 생각했다.';}},
+  {t:'회사에 넘긴다',f:S=>{g(S,{rep:7,money:150,men:4});return '사업팀이 가져갔다. 크레딧에는 회사 이름만 남았다.';}}]},
+{id:'coin',cd:50,img:'money',t:'코인 정보',s:'조연출이 담배 피우다 말했다.\n"선배, 이거 진짜예요. 저 적금 깼어요."',
+ o:[{t:'지른다',d:'도박',f:S=>{const b=Math.max(150,Math.min(4000,Math.floor(S.money*.4)));
+   if(Math.random()<.42+S.luk/1200){g(S,{money:b*2,men:12});return '3주 만에 두 배가 됐다. (+'+num(b*2)+'만원)';}
+   g(S,{money:-b,men:-15});return '상장폐지. 조연출은 휴직했다. (−'+num(b)+'만원)';}},
+  {t:'안 한다',f:S=>{g(S,{men:2});return '"난 시청률로도 충분히 도박해."';}}]},
+{id:'lotto',cd:36,img:'lotto',t:'로또',s:'편의점 앞에서 발이 멈췄다.',
+ o:[{t:'5천 원어치',f:S=>{g(S,{money:-1});
+   const p=.008+S.luk/2600;
+   if(Math.random()<p){g(S,{money:180000,men:30});ach(S,'lotto');return '1등이다. 종이를 세 번 떨어뜨렸다. (+18억)';}
+   if(Math.random()<.22){g(S,{money:5});return '5등. 본전.';}
+   return '꽝. 알면서도 확인은 했다.';}},
+  {t:'지나친다',f:S=>'어차피 안 될 걸 안다. 알면서도 한 번 돌아봤다.'}]},
+
+/* ─ 연애 라인 ─ */
+{id:'love1',img:'love',t:'같은 팀 사람',c:S=>!S.flags.love&&S.m>=20,s:'편집실에서 매일 새벽까지 같이 있던 사람이 먼저 물었다.\n"우리 밥은 언제 밖에서 먹어요?"',
+ o:[{t:'만난다',f:S=>{S.flags.love=1;g(S,{men:20,sta:4,rep:-2,money:-60});ach(S,'love');return '처음으로 정시에 퇴근하고 싶어졌다.';}},
+    {t:'같은 팀은 좀',f:S=>{g(S,{men:-5,dir:3});return '원칙을 지켰다. 편집실이 그날부터 조용해졌다.';}}]},
+{id:'love2',img:'love',t:'배우와의 열애설',c:S=>S.cast>=70&&!S.flags.scandal2,s:'같이 일하던 배우와 찍힌 사진이 돌고 있다.\n연예부 기자에게서 확인 전화가 왔다.',
+ o:[{t:'열애 인정',d:'화제성 폭발, 평판은 도박',f:S=>{S.flags.scandal2=1;S.scandal++;
+   if(Math.random()<.5){g(S,{rep:14,cast:12,men:-8,luk:6});return '"응원합니다"가 대세가 됐다. 인지도가 배우급이 됐다.';}
+   g(S,{rep:-18,men:-16,risk:8});return '"사심 캐스팅 아니냐"는 글이 베스트로 갔다.';}},
+  {t:'전면 부인',f:S=>{g(S,{men:-12,risk:6,rep:-4});return '"친분일 뿐"이라고 냈다. 사진은 계속 돌아다닌다.';}},
+  {t:'홍보팀에 맡긴다',c:S=>S.items.pr,f:S=>{g(S,{rep:4,men:-3});return '홍보팀이 하루 만에 정리했다. 돈값을 했다.';}}]},
+{id:'love3',img:'love',t:'파파라치',c:S=>S.flags.love&&S.m>=60,s:'주차장에서 사진이 찍혔다.\n상대는 사내 사람이다.',
+ o:[{t:'공개 연애 선언',f:S=>{S.flags.open=1;g(S,{men:16,rep:5,cast:5});return '사내 게시판에 축하 댓글이 40개 달렸다.';}},
+    {t:'숨긴다',f:S=>{g(S,{men:-10,risk:5});return '한동안 따로 퇴근했다. 피곤한 건 일보다 이쪽이었다.';}}]},
+{id:'love4',img:'love',t:'상견례',c:S=>S.flags.love&&S.m>=90,s:'결혼 이야기가 나왔다.\n식당 이름이 어딘가 익숙하다.',
+ o:[{t:'인사드린다',f:S=>{
+   if(Math.random()<.15){S.flags.inlaw=1;g(S,{cast:35,rep:20,men:10});ach(S,'inlaw');
+     return '상대의 아버지가 우리 그룹 창업주였다. 밥이 목으로 안 넘어갔다.';}
+   g(S,{men:18,money:-600,rep:6});ach(S,'wed');return '좋은 분들이었다. 예식장 계약금이 비쌌다.';}},
+  {t:'좀 더 있다가',f:S=>{g(S,{men:-9,rep:-2});return '"일이 좀 바빠서." 그 말을 세 번째 했다.';}}]},
+{id:'love5',img:'doc',t:'이혼 서류',c:S=>(S.flags.inlaw||S.flags.open)&&S.m>=140,s:'상대가 서류를 내밀었다.\n"당신은 늘 편집실에 있었어."',
+ o:[{t:'붙잡는다',f:S=>{if(S.men>=60){g(S,{men:-14,rep:2});return '그날 처음으로 촬영을 째고 집에 갔다. 붙잡혔다.';}
+   S.flags.divorced=1;delete S.flags.love;g(S,{men:-26,money:-1200,rep:-6});return '붙잡지 못했다. 위자료가 나갔다.';}},
+  {t:'보낸다',f:S=>{S.flags.divorced=1;delete S.flags.love;g(S,{men:-18,money:-900,dir:8});ach(S,'div');return '사인했다. 그날 밤 편집실에서 12시간을 일했다.';}}]},
+
+/* ─ 범죄 라인 ─ */
+{id:'crime1',cd:40,img:'money',t:'제작비 부풀리기',c:S=>tr(S)>=3,s:'회계 담당이 조심스럽게 말했다.\n"PD님, 세금계산서 조금만 손보면 남는데요."',
+ o:[{t:'손을 댄다',d:'의혹 크게 상승',f:S=>{g(S,{money:r(800,2400),risk:20,men:-6});S.dirty++;ach(S,'dirty');return '통장 숫자를 세 번 봤다. 잠은 잘 못 잤다.';}},
+    {t:'없던 일로',f:S=>{g(S,{rep:5,risk:-4});return '"그런 얘긴 다시 하지 마세요." 담당이 고개를 숙였다.';}}]},
+{id:'crime2',cd:38,img:'money',t:'소속사 뒷돈',c:S=>S.cast>=50,s:'캐스팅 대가로 봉투가 들어왔다.\n두께가 만만치 않다.',
+ o:[{t:'받는다',d:'의혹 상승',f:S=>{g(S,{money:r(500,1400),risk:16,cast:6});S.dirty++;ach(S,'dirty');return '돌려주기엔 이미 늦은 시간이었다. 그렇게 스스로에게 설명했다.';}},
+    {t:'돌려준다',f:S=>{g(S,{rep:8,cast:-4,risk:-5,men:4});return '봉투를 그대로 돌려줬다. 그 소속사와는 그 뒤로 일이 없다.';}}]},
+{id:'crime3',cd:45,img:'clash',t:'스태프 폭언',c:S=>S.men<=40,s:'열여섯 시간째 촬영. 조명팀 실수로 세 번째 리테이크.\n입에서 말이 먼저 나갔다.',
+ o:[{t:'그대로 쏟아낸다',f:S=>{g(S,{risk:16,rep:-10,men:8,q:4});S.flags.gapjil=1;return '현장이 조용해졌다. 누군가 폰을 들고 있었던 것 같다.';}},
+    {t:'삼킨다',f:S=>{g(S,{men:-14,rep:4,sta:-4});return '화장실에서 3분 있다가 돌아왔다. "다시 갑시다."';}}]},
+{id:'crime4',u:1,fail:S=>{g(S,{rep:-28,men:-20,risk:14});return '2차 폭로까지 터졌다. 아무 대응도 하지 않은 게 기사 제목이 됐다.';},img:'tv',t:'폭로 영상',c:S=>S.flags.gapjil,s:'"○○ PD 갑질 녹취"라는 제목의 영상이 올라왔다.\n조회수가 이미 80만이다.',
+ o:[{t:'즉시 사과문',f:S=>{const m=S.items.pr?.4:1;S.scandal++;g(S,{rep:-Math.round(22*m),men:-Math.round(18*m),risk:10});delete S.flags.gapjil;
+   return '고개 숙인 사진이 기사에 박혔다. 6개월은 조용히 살아야 한다.';}},
+  {t:'법적 대응',f:S=>{S.scandal++;if(S.items.lawyer||S.rep>=90){g(S,{rep:-8,men:-10,money:-400});delete S.flags.gapjil;return '악의적 편집이라는 게 밝혀졌다. 절반만 회복됐다.';}
+   g(S,{rep:-30,men:-24,risk:20});return '2차 폭로가 터졌다. 이번엔 영상이 세 개였다.';}}]},
+{id:'crime5',cd:60,img:'car',t:'회식 후 대리 호출',c:S=>tr(S)>=4,s:'2차까지 갔다. 대리를 부르려는데 20분 대기라고 뜬다.\n집까지는 10분 거리다.',
+ o:[{t:'그냥 간다',d:'적발 확률 35%',f:S=>{
+   if(Math.random()<.35){g(S,{risk:30,rep:-25,men:-22,money:-700});S.scandal++;ach(S,'dui');
+     return '음주단속. 면허 취소. 다음 날 아침 기사가 났다.';}
+   g(S,{men:-6,risk:6,luk:4});return '무사히 도착했다. 주차하고 나서 손이 떨렸다.';}},
+  {t:'20분 기다린다',f:S=>{g(S,{sta:-2,men:2});return '편의점 앞에서 20분 서 있었다. 그게 전부였다.';}}]},
+{id:'crime6',u:1,fail:S=>{g(S,{risk:26,rep:-16,men:-14});return '자료 제출 기한을 넘겼다. 감사가 전면 조사로 확대됐다.';},cd:42,img:'police',t:'감사팀 내사',c:S=>S.risk>=45,s:'감사팀에서 자료 제출 요청이 왔다.\n지난 2년치 제작비 집행 내역 전부.',
+ o:[{t:'변호사를 부른다',f:S=>{if(useShield(S)){g(S,{risk:-32,money:-500,men:-8});return '전화 한 통으로 정리됐다. 방어 카드를 한 장 썼다.';}
+   g(S,{risk:-12,money:-800,men:-14});return '선임비가 나갔다. 일단 시간은 벌었다.';}},
+  {t:'정면 돌파',f:S=>{if(S.rep>=80||S.risk<60){g(S,{risk:-20,rep:4,men:-12});return '"다 드리겠습니다." 배짱이 통했다. 내사가 종결됐다.';}
+   g(S,{risk:18,rep:-12,men:-18});return '누락된 영수증 40건이 나왔다. 감사가 확대됐다.';}}]},
+{id:'crime7',cd:60,u:1,fail:S=>{demote(S,1);g(S,{rep:-34,risk:-25,men:-26,money:-1800});S.scandal++;return '출석요구에 불응했다. 체포영장이 나왔고 직급이 한 단계 내려갔다.';},img:'police',t:'검찰 소환',c:S=>S.risk>=80,s:'출석요구서가 왔다.\n포토라인이라는 단어를 처음으로 실감했다.',
+ o:[{t:'끝까지 간다',f:S=>{
+   if(useShield(S)){g(S,{risk:-55,money:-1500,men:-20,rep:-10});return '무혐의. 방어 카드를 한 장 썼다.';}
+   if(Math.random()<Math.min(.75,S.risk/120)){
+     demote(S,2);g(S,{risk:-70,rep:-45,men:-30,money:-3000});S.scandal++;ach(S,'jail');
+     return '집행유예. 회사로 돌아왔지만 직급이 두 단계 내려갔다.';}
+   g(S,{risk:-35,rep:-18,men:-22,money:-900});return '무혐의로 나왔다. 기사 제목은 이미 박혀버렸다.';}}]},
+
+/* ─ 병맛 ─ */
+{id:'meme1',cd:36,img:'tv',t:'자막이 밈이 됐다',c:S=>S.sense>=45,s:'별생각 없이 넣은 자막 한 줄이\n온갖 커뮤니티 짤로 돌아다닌다.',
+ o:[{t:'밀어붙인다',f:S=>{g(S,{sense:8,luk:8,rep:4,men:8,q:5});return '공식 계정에 셀프 패러디를 올렸다. 좋아요 22만.';}},
+    {t:'조용히 있는다',f:S=>{g(S,{men:3,dir:3});return '유행은 3주 만에 지나갔다.';}}]},
+{id:'meme2',cd:40,img:'crowd',t:'현장 사고',s:'조명이 넘어졌다. 다친 사람은 없다.\n근데 그 장면이 그대로 찍혔다.',
+ o:[{t:'방송에 낸다',d:'도박',f:S=>{if(Math.random()<.55){g(S,{luk:10,sense:6,rep:6,q:6});return '"실패 브이로그" 감성으로 나갔다. 반응이 폭발했다.';}
+   g(S,{rep:-10,risk:6,men:-8});S.scandal++;return '"안전불감증"이라는 기사가 났다.';}},
+  {t:'통편집',f:S=>{g(S,{men:-5,q:-3,rep:2});return '없었던 일이 됐다. 스태프들만 안다.';}}]},
+{id:'meme3',cd:44,img:'box',t:'수상한 택배',s:'수신인 없는 택배가 내 자리에 있다.\n흔들면 뭔가 굴러다니는 소리가 난다.',
+ o:[{t:'열어본다',d:'아이템 확정',f:S=>{const it=rollDrop(S,1);return '안에 들어 있던 건... '+(it?ITEMS[it].n:'아무것도 아니었다')+'.';}},
+    {t:'보안팀에 넘긴다',f:S=>{g(S,{rep:4,men:2});return '별거 아니었다고 한다. 뭐였는지는 안 알려줬다.';}}]},
+{id:'meme4',cd:50,img:'mic',t:'인터뷰 실언',c:S=>tr(S)>=4,s:'기자간담회에서 농담을 던졌다.\n기자 열두 명이 동시에 타자를 치기 시작했다.',
+ o:[{t:'수습한다',f:S=>{g(S,{men:-9,rep:-4,plan:4});return '"오해가 있었습니다." 기사 제목은 이미 정해져 있었다.';}},
+    {t:'더 세게 간다',f:S=>{S.scandal++;if(Math.random()<.5){g(S,{luk:14,sense:8,rep:6,men:6});return '"솔직해서 좋다"가 대세가 됐다. 팬이 생겼다.';}
+     g(S,{rep:-16,risk:8,men:-12});return '사흘 내내 실시간 검색어 1위였다. 좋은 쪽이 아니었다.';}}]},
+
+/* ─ 라인 전용 ─ */
+{id:'ldir',cd:50,img:'trophy',t:'연출 특강 요청',c:S=>S.line==='dir',s:'모교에서 특강 요청이 왔다.\n"현업 연출가의 이야기를 듣고 싶습니다."',
+ o:[{t:'간다',f:S=>{g(S,{dir:10,rep:8,men:6,plan:6,exp:120});return '학생 하나가 "저도 PD 되고 싶어요"라고 했다. 말리지 않았다.';}},
+    {t:'거절한다',f:S=>{g(S,{dir:5,q:5,men:-2});return '편집실에 남았다. 그날 컷이 유난히 잘 붙었다.';}}]},
+{id:'lmgr',cd:50,img:'doc',t:'조직 개편안',c:S=>S.line==='mgr',s:'인사팀에서 조직 개편안 초안을 보내왔다.\n내 팀 인원이 두 명 줄어 있다.',
+ o:[{t:'윗선에 항의',f:S=>{if(S.rep>=90){g(S,{rep:12,cast:8,men:-6});return '두 명을 지켰다. 팀원들이 그걸 알고 있다.';}g(S,{rep:-6,men:-10});return '"전사 방침입니다." 문이 닫혔다.';}},
+    {t:'받아들이고 재편',f:S=>{g(S,{plan:10,rep:5,men:-4,exp:90});return '남은 인원으로 굴러가는 구조를 짰다. 그게 내 능력이 됐다.';}}]},
+{id:'lstar',cd:50,img:'mic',t:'신인 발굴',c:S=>S.line==='star',s:'오디션 300번째 지원자.\n이력서에는 아무것도 없는데 눈빛이 다르다.',
+ o:[{t:'내가 키운다',d:'도박',f:S=>{if(Math.random()<.45+S.sense/400){g(S,{cast:18,sense:10,rep:10,men:10,exp:150});
+     return '2년 뒤 그 친구가 대상을 받았다. 수상 소감에 내 이름이 있었다.';}
+   g(S,{cast:4,men:-8,money:-300});return '데뷔도 못 했다. 지금은 연락이 안 된다.';}},
+  {t:'안전한 선택',f:S=>{g(S,{cast:8,q:4,rep:3});return '경력 있는 쪽을 뽑았다. 무난했다.';}}]},
+{id:'lcrime',cd:45,img:'money',t:'차명 계좌 제안',c:S=>S.line==='crime',s:'"PD님 이름으로 안 하시면 됩니다."\n서류에는 처음 보는 사람 이름이 적혀 있다.',
+ o:[{t:'사인한다',d:'의혹 대폭 상승',f:S=>{g(S,{money:r(2000,6000),risk:26});S.dirty++;return '숫자 뒤에 0이 하나 더 붙었다. 이름은 내 것이 아니다.';}},
+    {t:'찢는다',f:S=>{g(S,{risk:-14,men:6,rep:4});return '종이를 세로로 두 번 찢었다. 그 사람은 다시 오지 않았다.';}}]},
+{id:'lmeme',cd:45,img:'tv',t:'짤로 박제됐다',c:S=>S.line==='meme',s:'회의 중 하품하는 내 얼굴이\n"월요일의 나" 짤로 200만 회 공유됐다.',
+ o:[{t:'굿즈로 만든다',f:S=>{g(S,{money:r(400,1200),luk:12,sense:8,rep:-3,men:10});return '머그컵과 티셔츠가 완판됐다. 회사는 아무 말도 못 했다.';}},
+    {t:'삭제 요청',f:S=>{g(S,{men:-6,rep:3});return '지울수록 퍼졌다. 스트라이샌드 효과라고 하던가.';}}]},
+
+/* ══ 미니게임 ══ */
+{id:'cue',cd:30,img:'mic',t:'생방송 큐 사인',c:S=>tr(S)>=2,s:'부조정실. 5초 뒤 생방송이 나간다.\n큐를 넘기는 타이밍은 딱 한 번뿐이다.',
+ o:[{t:'내가 직접 큐를 잡는다',mini:'timing',zone:20,speed:.06,mdesc:'MC의 호흡이 끊기는 지점에서 STOP.',
+     win:S=>{g(S,{dir:9,rep:8,men:10,q:8,exp:110});return '완벽했다. 부조정실에서 짧은 박수가 나왔다.';},
+     lose:S=>{g(S,{rep:-9,men:-12,q:-6});S.scandal++;return '0.8초 늦었다. MC가 카메라를 멍하니 봤고 그 장면이 짤이 됐다.';}},
+    {t:'조연출에게 맡긴다',f:S=>{g(S,{men:-4,rep:-2,dir:2});return '무난하게 넘어갔다. 무난하기만 했다.';}}]},
+{id:'deadline',cd:26,img:'crash',t:'마감 3시간 전',c:S=>S.prog,s:'납품까지 3시간. 컷은 절반이 안 붙었다.\n손가락으로 승부를 봐야 한다.',
+ o:[{t:'밤새워 갈아넣는다',mini:'mash',goal:26,dur:3.4,mdesc:'3.4초 안에 26번. 마우스가 부서져도 어쩔 수 없다.',
+     win:S=>{g(S,{dir:8,q:16,sta:-14,men:-10,exp:120});return '맞췄다. 손목이 나갔지만 방송은 나갔다.';},
+     lose:S=>{g(S,{q:-14,rep:-8,men:-14,sta:-10});return '못 맞췄다. 미완성분이 그대로 송출됐다.';}},
+    {t:'재방송을 때린다',f:S=>{g(S,{rep:-11,men:4,q:-4});return '지난주 걸 다시 틀었다. 시청자 게시판이 조용히 뜨거웠다.';}}]},
+{id:'bribeshell',cd:34,img:'money',t:'봉투 세 개',c:S=>S.cast>=45,s:'테이블에 봉투가 셋 놓였다.\n"하나만 고르세요. 나머진 없던 걸로."',
+ o:[{t:'하나를 집는다',mini:'shell',mdesc:'하나엔 돈, 하나엔 함정, 하나엔 아무것도.',
+     win:S=>{g(S,{money:r(900,2600),risk:14});S.dirty++;ach(S,'dirty');return '두툼했다. 세어보진 않았다. 세면 돌이킬 수 없을 것 같아서.';},
+     lose:S=>{g(S,{risk:24,rep:-10,men:-12});S.dirty++;return '안에 든 건 명함 한 장. "다음 주에 뵙죠." 협박이었다.';}},
+    {t:'셋 다 안 건드린다',f:S=>{g(S,{rep:7,risk:-6,men:5});return '"저는 커피만 마실게요." 그날 이후 그쪽에서 연락이 없다.';}}]},
+{id:'coinslot',cd:32,img:'money',t:'심야 코인 방송',s:'새벽 3시. 편집하다 말고 차트를 켰다.\n손가락이 먼저 움직였다.',
+ o:[{t:'풀매수',mini:'slot',mdesc:'세 개 맞으면 인생 역전, 두 개면 본전, 하나면 반토막.',
+     win:(S,x)=>{const b=Math.max(300,Math.min(6000,Math.floor(S.money*.4)));
+       if(x===3){g(S,{money:b*4,men:22});return '세 개가 맞았다. 통장을 다섯 번 새로고침했다. (+'+num(b*4)+'만원)';}
+       g(S,{money:Math.floor(b*.4),men:6});return '두 개. 수수료 빼고 조금 남았다. (+'+num(Math.floor(b*.4))+'만원)';},
+     lose:S=>{const b=Math.max(300,Math.min(6000,Math.floor(S.money*.4)));
+       g(S,{money:-b,men:-18,sta:-4});return '전부 빨간불. 아침 회의에서 눈을 못 마주쳤다. (−'+num(b)+'만원)';}},
+    {t:'폰을 엎어놓는다',f:S=>{g(S,{men:3,dir:2});return '엎어놓고 컷을 붙였다. 그게 제일 나은 선택이었다.';}}]},
+{id:'golf',cd:40,img:'party',t:'접대 골프',c:S=>tr(S)>=4,s:'본부장이 퍼터를 건넨다.\n"넣으면 자네 말 들어줄게."\n\n2미터. 인생이 걸린 2미터.',
+ o:[{t:'라인을 읽는다',mini:'timing',zone:14,speed:.075,mdesc:'홀컵 구간에서 STOP. 폭이 좁다.',
+     win:S=>{g(S,{cast:14,rep:11,men:12,exp:110});return '들어갔다. 본부장이 손뼉을 쳤고, 다음 주에 내 기획안이 통과됐다.';},
+     lose:S=>{g(S,{cast:3,men:-8,money:-r(150,400)});return '홀컵을 30센티 지나쳤다. 그날 밥값은 내가 냈다.';}},
+    {t:'일부러 진다',f:S=>{g(S,{cast:8,rep:4,men:-5,money:-r(100,260)});return '져주는 것도 기술이다. 본부장 기분이 아주 좋았다.';}}]},
+{id:'audition',cd:36,img:'mic',t:'최종 3인',c:S=>S.cast>=60,s:'오디션 최종에 셋이 남았다.\n딱 한 명만 데뷔조에 넣을 수 있다.',
+ o:[{t:'감으로 찍는다',mini:'shell',mdesc:'이력서로는 구분이 안 된다. 눈빛만 봐라.',
+     win:S=>{g(S,{cast:16,sense:12,rep:10,men:10,exp:140});return '2년 뒤 그 친구가 대상을 받았다. 수상 소감 첫 줄에 내 이름이 있었다.';},
+     lose:S=>{g(S,{cast:4,men:-10,money:-r(200,500)});return '떨어뜨린 둘이 다른 방송사에서 떴다. 내가 뽑은 애는 소식이 없다.';}},
+    {t:'회사 추천을 따른다',f:S=>{g(S,{cast:6,rep:5,sense:-2});return '무난한 친구가 들어왔다. 무난하게 잊혔다.';}}]},
+{id:'elevator',cd:44,img:'crowd',t:'엘리베이터에 갇혔다',s:'12층과 13층 사이. 비상벨이 안 눌린다.\n오늘 편성 회의는 20분 뒤다.',
+ o:[{t:'문을 억지로 연다',mini:'mash',goal:20,dur:3.0,mdesc:'3초 안에 20번. 손끝이 아프다.',
+     win:S=>{g(S,{sta:-8,men:-4,rep:6,exp:60});return '기어 나왔다. 정장이 찢어졌지만 회의엔 늦지 않았다.';},
+     lose:S=>{g(S,{men:-14,rep:-7,sta:-5});return '40분 만에 구조됐다. 회의는 이미 끝나 있었다.';}},
+    {t:'앉아서 기다린다',f:S=>{g(S,{men:6,rep:-5,sense:3});return '바닥에 앉아 릴스를 봤다. 아이템 하나를 건졌다.';}}]},
+
+/* ══ 돈 나가는 인생 ══ */
+{id:'carcrash',cd:50,img:'car',t:'접촉 사고',c:S=>tr(S)>=3,s:'주차장에서 후진하다 남의 차를 긁었다.\n하필 수입차다.',
+ o:[{t:'보험 처리',f:S=>{g(S,{money:-r(120,300),men:-6});return '할증이 붙었다. 3년간 따라다닌다.';}},
+    {t:'현금으로 합의',f:S=>{g(S,{money:-r(300,700),men:-3,rep:1});return '봉투로 끝냈다. 기록은 안 남았다.';}}]},
+{id:'jeonse',cd:60,img:'doc',t:'전세 만기',c:S=>S.m>=40,s:'집주인에게서 문자가 왔다.\n"시세가 많이 올라서요..."',
+ o:[{t:'올려준다',f:S=>{g(S,{money:-r(1500,4000),men:-10});return '대출을 더 받았다. 이자가 월급의 한 조각을 가져간다.';}},
+    {t:'이사한다',f:S=>{g(S,{money:-r(600,1400),men:-14,sta:-8});return '회사에서 40분 더 먼 곳으로 갔다. 출근이 40분 더 길어졌다.';}}]},
+{id:'wedding',cd:26,img:'money',t:'경조사 폭탄',s:'이번 달 청첩장 넷, 부고 하나.\n다 갈 수는 없고, 안 갈 수도 없다.',
+ o:[{t:'전부 챙긴다',f:S=>{g(S,{money:-r(80,220),rep:6,sta:-5,men:-4});return '주말이 사라졌다. 대신 이름은 다 올라갔다.';}},
+    {t:'계좌이체만',f:S=>{g(S,{money:-r(40,110),rep:-3});return '"바빠서 못 갔어요." 다들 그렇게 산다.';}},
+    {t:'조용히 넘긴다',f:S=>{g(S,{rep:-8,men:2});return '아무 데도 안 갔다. 다음에 내 차례가 오면 알게 되겠지.';}}]},
+{id:'tax',cd:48,img:'doc',t:'종합소득세',c:S=>S.money>=3000,s:'5월. 국세청에서 안내문이 왔다.\n작년에 외주를 좀 뛰었더니.',
+ o:[{t:'성실 납부',f:S=>{g(S,{money:-Math.max(200,Math.floor(S.money*0.06)),risk:-4,rep:2});return '냈다. 아깝지만 밤에 잠은 잘 온다.';}},
+    {t:'세무사에게 줄여달라 한다',f:S=>{if(Math.random()<.7){g(S,{money:-Math.max(80,Math.floor(S.money*0.025)),risk:6});return '절반으로 줄었다. 세무사가 "이건 좀 애매한데"라고 했다.';}
+      g(S,{money:-Math.floor(S.money*0.08),risk:14,men:-8});return '소명 요구가 왔다. 결국 가산세까지 물었다.';}}]},
+{id:'phone',cd:38,img:'phone',t:'액정 파손',s:'촬영장에서 폰을 떨어뜨렸다.\n거미줄이 예쁘게 갔다.',
+ o:[{t:'최신 기종으로 바꾼다',f:S=>{g(S,{money:-r(120,180),men:8,sense:3});return '기왕 이렇게 된 거. 카메라가 좋아졌다.';}},
+    {t:'액정만 간다',f:S=>{g(S,{money:-r(20,45),men:-2});return '사설 수리점. 터치가 가끔 안 먹는다.';}},
+    {t:'그냥 쓴다',f:S=>{g(S,{men:-6});return '손가락이 자꾸 베인다.';}}]},
+{id:'parking',cd:42,img:'car',t:'주차위반 딱지',s:'스튜디오 앞에 대놓은 3개월치가 한 번에 날아왔다.\n일곱 장이다.',
+ o:[{t:'전부 납부',f:S=>{g(S,{money:-r(28,60),men:-4,risk:-2});return '냈다. 다음 달에 또 붙을 것을 안다.';}},
+    {t:'이의신청',f:S=>{if(Math.random()<.35){g(S,{money:-r(5,15),men:3});return '두 장이 취소됐다. 세 시간을 썼다.';}
+      g(S,{money:-r(35,75),men:-8});return '전부 기각됐다. 가산금까지 붙었다.';}}]},
+{id:'hwangap',cd:70,img:'party',t:'부모님 환갑',c:S=>S.m>=60,s:'형제들이 단톡방을 팠다.\n"막내가 방송국 다니니까 좀 더 내야지?"',
+ o:[{t:'크게 쏜다',f:S=>{g(S,{money:-r(400,900),men:14,rep:2});return '호텔 뷔페를 잡았다. 어머니가 사진을 200장 찍으셨다.';}},
+    {t:'분담대로',f:S=>{g(S,{money:-r(150,320),men:4});return '똑같이 냈다. 단톡방이 조금 조용해졌다.';}}]},
+{id:'delivery',cd:30,img:'money',t:'야식 결산',s:'카드 명세서를 봤다.\n지난달 배달 앱 결제가 서른한 건이다.',
+ o:[{t:'앱을 지운다',f:S=>{g(S,{money:r(30,70),sta:6,men:-5});return '지웠다. 3일 뒤 다시 깔았다. 그래도 3일은 벌었다.';}},
+    {t:'인정하고 산다',f:S=>{g(S,{money:-r(60,140),men:6,sta:-4});return '오늘도 시켰다. 편집실의 유일한 낙이다.';}}]},
+
+/* ══ 범죄 유혹 (확률형) ══ */
+{id:'rebate',cd:38,img:'money',t:'리베이트 제안',c:S=>tr(S)>=4,s:'장비 렌탈 업체 대표가 조용히 말했다.\n"단가에 5%만 얹어주시면, 그중 절반은 PD님 겁니다."',
+ o:[{t:'단가를 올린다',d:'적발 확률 25%',f:S=>{
+     if(Math.random()<.25){g(S,{risk:32,rep:-20,men:-18,money:-r(200,600)});S.dirty++;S.scandal++;
+       return '회계팀이 단가표를 대조했다. 내 이름이 빨간 줄로 그어졌다.';}
+     g(S,{money:r(700,1900),risk:15});S.dirty++;ach(S,'dirty');
+     return '아무도 안 봤다. 매달 들어온다. 이게 제일 무섭다.';}},
+   {t:'거절한다',f:S=>{g(S,{rep:6,risk:-5,money:-r(0,40)});return '"다음엔 다른 업체 쓸게요." 그 대표는 안 웃었다.';}}]},
+{id:'insider',cd:44,img:'money',t:'내부 정보',c:S=>tr(S)>=5,s:'우리 회사 인수 얘기가 임원 회의에서 나왔다.\n아직 공시 전이다.',
+ o:[{t:'몰래 산다',d:'적발 확률 30%',f:S=>{
+     if(Math.random()<.30){g(S,{risk:38,rep:-24,men:-22,money:-r(500,1500)});S.dirty++;S.scandal++;
+       return '금감원 조사 대상에 올랐다. 미공개정보 이용이라는 단어를 처음 들었다.';}
+     g(S,{money:r(1500,4500),risk:18,men:8});S.dirty++;
+     return '공시 다음 날 상한가. 아무한테도 말 못 한다.';}},
+   {t:'못 들은 걸로',f:S=>{g(S,{men:-4,rep:4});return '한 달 뒤 주가가 두 배가 됐다. 계산기를 두 번 두드렸다가 껐다.';}}]},
+{id:'burner',cd:46,img:'phone',t:'대포폰',c:S=>S.risk>=25,s:'"이 번호로만 연락하시죠."\n누가 내 이름 없는 폰을 하나 쥐여줬다.',
+ o:[{t:'받아둔다',f:S=>{g(S,{risk:12,cast:9,money:r(200,700)});S.dirty++;return '연락이 편해졌다. 기록이 안 남는 게 이렇게 편할 줄이야.';}},
+    {t:'그 자리에서 부순다',f:S=>{g(S,{risk:-12,rep:5,men:4});return '반으로 꺾어서 돌려줬다. 그 사람 표정이 볼만했다.';}}]},
+{id:'split',cd:40,img:'doc',t:'계산서 쪼개기',c:S=>tr(S)>=4,s:'제작비 1억짜리를 900만원짜리 열두 장으로 나누면\n결재가 나 혼자 선에서 끝난다.',
+ o:[{t:'쪼갠다',d:'적발 확률 20%',f:S=>{
+     if(Math.random()<.20){g(S,{risk:28,rep:-16,men:-14});S.dirty++;return '감사에서 패턴이 잡혔다. "왜 다 900만원이죠?"';}
+     g(S,{money:r(400,1100),risk:11,plan:5});S.dirty++;
+     return '결재가 하루 만에 끝났다. 남는 것도 생겼다.';}},
+   {t:'정상 결재',f:S=>{g(S,{men:-6,plan:4,rep:3});return '3주 걸렸다. 촬영 일정이 밀렸다. 대신 깨끗하다.';}}]},
+{id:'namelend',cd:50,img:'doc',t:'명의 좀 빌려줘',s:'대학 동기가 술자리에서 말했다.\n"딱 6개월이야. 이자는 내가 다 내고."',
+ o:[{t:'빌려준다',d:'사고 확률 40%',f:S=>{
+     if(Math.random()<.40){g(S,{money:-r(1500,4000),risk:16,men:-24,rep:-6});
+       return '반년 뒤 그 친구가 사라졌다. 독촉장이 우리 집으로 왔다.';}
+     g(S,{money:r(200,600),men:4,cast:4});return '진짜로 6개월 만에 정리해줬다. 밥도 샀다. 사람 보는 눈이 있었다.';}},
+   {t:'거절한다',f:S=>{g(S,{men:-3,rep:1});return '"미안, 그건 좀." 그 뒤로 동기 모임에 안 부른다.';}}]},
+
+/* ══ 병맛 ══ */
+{id:'ghostwater',cd:52,img:'crowd',t:'정수기 앞의 그것',s:'새벽 4시. 정수기 앞에 누가 서 있다.\n분명 사무실엔 나뿐이었는데.',
+ o:[{t:'말을 건다',f:S=>{if(Math.random()<.5){g(S,{men:-16,sta:-6,luk:10});return '옆 팀 차장이었다. 사흘째 퇴근을 안 했다고 한다. 서로 아무 말 없이 물만 마셨다.';}
+   g(S,{men:-10,luk:18,sense:6});return '돌아보니 아무도 없었다. 그날 편집한 컷이 이상하게 잘 붙었다.';}},
+  {t:'못 본 척한다',f:S=>{g(S,{men:-6,sta:-3});return '모니터만 봤다. 30분 동안 뒤통수가 뜨거웠다.';}}]},
+{id:'wrongchat',cd:34,img:'phone',t:'메신저 오발송',s:'"국장 또 헛소리하네 ㅋㅋ"\n\n보낸 곳이 팀 단톡방이 아니다.\n국장과의 1:1 대화창이다.',
+ o:[{t:'즉시 삭제',mini:'timing',zone:12,speed:.09,mdesc:'읽음 표시가 뜨기 전에. 폭이 아주 좁다.',
+     win:S=>{g(S,{men:-6,cast:4,luk:6});return '0.4초 차이로 지웠다. 손이 아직 떨린다.';},
+     lose:S=>{g(S,{rep:-16,men:-20,cast:-8});return '"1"이 사라졌다. 국장이 타이핑 중... 이 3분간 지속됐다.';}},
+    {t:'술 취한 척한다',f:S=>{g(S,{rep:-7,men:-8,luk:4});return '"죄송합니다 회식 중이라..." 오전 11시였다.';}}]},
+{id:'toilet',cd:36,img:'crowd',t:'휴지가 없다',s:'화장실 세 번째 칸.\n앉고 나서야 알았다.',
+ o:[{t:'옆 칸에 요청',f:S=>{if(Math.random()<.6){g(S,{men:4,rep:2,cast:3});return '옆 칸에서 손이 넘어왔다. 나중에 보니 국장이었다. 그날 이후 사이가 좋다.';}
+   g(S,{men:-10,rep:-3});return '옆 칸도 없었다. 둘이 20분간 침묵했다.';}},
+  {t:'혼자 해결한다',f:S=>{g(S,{men:-8,sense:2});return '방법은 밝히지 않겠다. 사람은 어떻게든 산다.';}}]},
+{id:'bungeo',cd:40,img:'money',t:'회사 앞 붕어빵',c:S=>S.m>=24,s:'11월. 정문 앞에 그 아저씨가 다시 나왔다.\n작년보다 500원 올랐다.',
+ o:[{t:'한 봉지 산다',f:S=>{g(S,{money:-1,men:9,sta:2});return '따뜻했다. 이번 달 제일 잘 쓴 3천 원이다.';}},
+    {t:'팀 전체분을 산다',f:S=>{g(S,{money:-r(3,8),men:7,rep:7,cast:4});return '스물다섯 봉지. 팀원들이 나를 다시 봤다.';}}]},
+{id:'badge',cd:44,img:'doc',t:'사원증 분실',s:'출입 게이트 앞. 주머니가 비었다.\n뒤에 스무 명이 서 있다.',
+ o:[{t:'뒤로 붙어 들어간다',f:S=>{if(Math.random()<.7){g(S,{men:-4,luk:4});return '성공. 경비 아저씨와 눈이 마주쳤지만 못 본 척해주셨다.';}
+   g(S,{rep:-6,men:-8,risk:3});return '경보가 울렸다. 보안팀에 사유서를 썼다.';}},
+  {t:'재발급받는다',f:S=>{g(S,{money:-2,men:-5,rep:-1});return '2만 원. 새 사진이 예전보다 늙었다.';}}]},
+{id:'noraebang',cd:38,img:'party',t:'회식 2차 노래방',c:S=>tr(S)>=2,s:'본부장이 마이크를 넘긴다.\n"자네 애창곡이 뭔가?"',
+ o:[{t:'분위기를 찢는다',mini:'mash',goal:22,dur:3.0,mdesc:'탬버린을 쳐라. 3초 안에 22번.',
+     win:S=>{g(S,{cast:12,rep:9,men:8,sta:-6});return '본부장이 어깨동무를 했다. 다음 날 인사팀에 내 이름이 좋게 올라갔다.';},
+     lose:S=>{g(S,{rep:-6,men:-9,sta:-6});return '박자를 놓쳤다. 아무도 안 웃었고 아무도 안 화냈다. 그게 더 아프다.';}},
+    {t:'화장실로 도망',f:S=>{g(S,{cast:-6,men:6,sta:3});return '10분간 변기에 앉아 릴스를 봤다. 나올 땐 다들 취해 있었다.';}}]},
+{id:'smoking',cd:36,img:'crowd',t:'옥상 흡연장',s:'담배는 안 피우는데 옥상에 올라갔다.\n여기서 다음 인사 소문이 제일 먼저 돈다.',
+ o:[{t:'끝까지 듣는다',f:S=>{g(S,{cast:7,rep:2,sta:-4,men:-2,exp:50});return '누가 어디로 가는지 다 알게 됐다. 정보값이 폐 건강값보다 컸다.';}},
+    {t:'내려간다',f:S=>{g(S,{sta:3,dir:3});return '자리로 돌아왔다. 컷 세 개를 더 붙였다.';}}]},
+
+/* ══ 방송 사고 ══ */
+{id:'liveword',cd:44,img:'tv',t:'생방송 욕설',c:S=>S.prog,s:'게스트가 생방송에서 한 마디 했다.\n음성 편집이 불가능한 구간이다.',
+ o:[{t:'즉시 사과 자막',f:S=>{g(S,{rep:-6,men:-8,risk:5,dir:4});return '10초 만에 자막을 띄웠다. 대응이 빨랐다는 평이 나왔다.';}},
+    {t:'모른 척 진행',f:S=>{S.scandal++;if(Math.random()<.5){g(S,{luk:10,sense:8,rep:4,q:6});return '오히려 화제가 됐다. 클립 조회수 500만.';}
+      g(S,{rep:-18,risk:12,men:-14});return '심의에 회부됐다. 국장이 나를 불렀다.';}}]},
+{id:'pplfail',cd:40,img:'tv',t:'PPL 참사',c:S=>S.prog,s:'협찬 음료를 든 출연자가 상표를 손으로 가렸다.\n그 컷이 그대로 나갔다.',
+ o:[{t:'재편집해서 재방송',f:S=>{g(S,{money:-r(150,400),men:-8,rep:3,q:3});return '광고국이 조용해졌다. 비용은 제작비에서 나갔다.';}},
+    {t:'광고국과 싸운다',f:S=>{g(S,{rep:-5,cast:-6,men:-10,dir:5,q:5});return '"그게 왜 제 책임입니까." 이겼지만 광고국장이 나를 기억한다.';}}]},
+{id:'rain',cd:38,img:'crowd',t:'우천 취소',c:S=>S.prog,s:'야외 촬영 당일. 예보에 없던 폭우.\n스태프 60명과 장비가 이미 현장에 있다.',
+ o:[{t:'빗속에서 강행',f:S=>{if(Math.random()<.55){g(S,{q:11,dir:7,sta:-12,men:-8,rep:5});return '비 맞는 그림이 오히려 좋았다. 그 장면이 예고편에 들어갔다.';}
+   g(S,{money:-r(200,500),sta:-14,men:-14,q:-8,rep:-5});return '장비 두 대가 침수됐다. 촬영분은 못 쓴다.';}},
+  {t:'철수',f:S=>{g(S,{money:-r(150,350),men:-6,q:-5});return '전원 철수. 취소 비용만 나갔고 아무것도 못 건졌다.';}}]},
+{id:'baby',cd:0,img:'love',t:'두 줄',c:S=>(S.flags.inlaw||S.flags.open)&&S.m>=120&&!S.flags.kid,s:'집에 갔더니 식탁 위에 뭔가 놓여 있다.\n두 줄이다.',
+ o:[{t:'확인',f:S=>{S.flags.kid=1;g(S,{men:26,rep:4,sta:-4});return '생활비가 확 늘 것이다. 그런데 이상하게 웃음이 멈추질 않는다.';}}]}
+];
+
+/* ══════════════ 이벤트 일러스트 ══════════════ */
+const IMGS={
+ money:(P)=>{P.bg('#1A1610');P.r(14,26,44,4,'#2A2418');
+   for(let i=0;i<3;i++){P.r(18+i*13,14+i*4,22,12,'#3E6E4E');P.r(18+i*13,14+i*4,22,1,'#5A9A6E');
+     P.r(26+i*13,18+i*4,6,4,'#C8B45A');}
+   P.r(66,16,20,14,'#2E2620');P.r(66,16,20,1,'#4A3E30');P.r(70,20,12,2,'#8A7250');},
+ police:(P)=>{P.bg('#0E1420');P.r(0,30,100,10,'#141C28');
+   const f=Math.floor(P.t/240)%2;
+   P.r(24,10,24,10,f?'#C23A2E':'#5A2622');P.r(52,10,24,10,f?'#3A5AC2':'#22305A');
+   P.r(20,20,60,8,'#2A3444');P.r(20,20,60,1,'#3E4C60');
+   P.r(30,28,10,4,'#161C26');P.r(60,28,10,4,'#161C26');},
+ love:(P)=>{P.bg('#1E1220');
+   P.r(22,16,12,10,'#4A3B2E');P.r(24,26,10,12,'#3E4A59');
+   P.r(58,16,12,10,'#5A3B4E');P.r(60,26,10,12,'#4A3A52');
+   const s=Math.floor(P.t/400)%2;
+   P.r(42,12+s,4,4,'#D8506A');P.r(46,12+s,4,4,'#D8506A');P.r(40,16+s,12,4,'#D8506A');
+   P.r(42,20+s,8,3,'#D8506A');P.r(44,23+s,4,2,'#D8506A');},
+ party:(P)=>{P.bg('#191016');P.r(0,30,100,10,'#221720');
+   const s=Math.floor(P.t/300)%2;
+   P.r(24+s,12,10,14,'#C6D0DE');P.r(24+s,12,10,2,'#E9EFF6');P.r(24+s,20,10,6,'#8FA9C6');
+   P.r(62-s,12,10,14,'#C6D0DE');P.r(62-s,12,10,2,'#E9EFF6');P.r(62-s,20,10,6,'#8FA9C6');
+   P.r(40,26,20,4,'#3A3026');},
+ crash:(P)=>{P.bg('#101418');P.r(16,8,68,26,'#1A2028');P.r(18,10,64,22,'#0A0D12');
+   const f=Math.floor(P.t/160)%3;
+   for(let i=0;i<6;i++)P.r(20+((i*11+f*4)%60),13+i*3,r(4,14),1,i%2?'#C23A2E':'#3E4A5A');
+   P.r(46,34,8,4,'#1A2028');P.r(38,38,24,2,'#232A34');},
+ trophy:(P)=>{P.bg('#161310');
+   P.r(38,8,24,16,'#C9A227');P.r(38,8,24,2,'#E8C862');
+   P.r(30,12,8,6,'#C9A227');P.r(62,12,8,6,'#C9A227');
+   P.r(44,24,12,8,'#A88420');P.r(36,32,28,5,'#8A6A18');P.r(36,32,28,1,'#C9A227');
+   const s=Math.floor(P.t/300)%2;if(s)P.r(64,6,4,4,'#F0E0A0');},
+ phone:(P)=>{P.bg('#0F1319');P.r(38,6,24,32,'#232A34');P.r(40,9,20,26,'#0C1016');
+   const f=Math.floor(P.t/300)%2;
+   P.r(43,14,14,3,f?'#D3342A':'#2A3440');P.r(43,20,14,2,'#3A4450');P.r(43,25,10,2,'#3A4450');
+   if(f){P.r(30,10,4,2,'#D3342A');P.r(66,10,4,2,'#D3342A');}},
+ doc:(P)=>{P.bg('#171A20');P.r(26,6,48,34,'#DDE2E8');P.r(26,6,48,2,'#F2F5F8');
+   for(let i=0;i<7;i++)P.r(31,12+i*4,i%3===0?30:38,1,'#8A94A2');
+   P.r(52,32,18,6,'#C23A2E');P.r(54,34,14,1,'#E86A5E');},
+ clash:(P)=>{P.bg('#181218');
+   P.r(16,16,12,10,'#4A3B2E');P.r(18,26,10,12,'#3E4A59');
+   P.r(64,16,12,10,'#2E2620');P.r(66,26,10,12,'#4A3A42');
+   const s=Math.floor(P.t/250)%2;
+   P.r(36,10+s,12,8,'#C23A2E');P.r(52,14-s,12,8,'#3B72C4');
+   P.r(38,12+s,3,3,'#F2F5F8');P.r(56,16-s,3,3,'#F2F5F8');},
+ health:(P)=>{P.bg('#101820');P.r(14,22,58,14,'#DDE2E8');P.r(14,22,58,2,'#F2F5F8');
+   P.r(18,16,34,6,'#3E4A59');P.r(22,10,10,8,'#4A3B2E');
+   P.r(78,6,4,26,'#3A424E');P.r(74,8,12,10,'#C6D0DE');P.r(76,10,8,6,'#7FA8D6');
+   const d=Math.floor(P.t/500)%4;P.r(80,20+d*3,1,2,'#7FA8D6');},
+ crowd:(P)=>{P.bg('#141A22');P.r(0,32,100,8,'#0E141C');
+   const cs=['#4A3B2E','#2E3A4A','#3E2E38','#2A3E36','#463A2A'];
+   for(let i=0;i<5;i++){const x=8+i*18,h=(i%2)?0:2;
+     P.r(x,14+h,10,8,cs[i]);P.r(x-1,22+h,12,12,'#38424F');}
+   P.r(0,10,100,2,'#1E2630');},
+ tv:(P)=>{P.bg('#0D1116');P.r(12,6,76,30,'#232A34');P.r(15,9,70,24,'#0A0E14');
+   const f=Math.floor(P.t/200)%4;
+   for(let i=0;i<5;i++)P.r(18+((i*14+f*3)%64),12+i*4,10,2,['#3B72C4','#3E9B78','#C8A33C','#C23A2E','#8A55C8'][i]);
+   P.r(44,36,12,3,'#232A34');P.r(34,39,32,2,'#2E3742');},
+ car:(P)=>{P.bg('#0E1218');P.r(0,32,100,8,'#161C24');
+   P.r(20,18,52,12,'#3A4A5E');P.r(28,12,34,8,'#2A3648');P.r(31,14,12,5,'#5A7A9E');P.r(47,14,12,5,'#5A7A9E');
+   P.r(26,30,10,6,'#12161C');P.r(58,30,10,6,'#12161C');
+   const f=Math.floor(P.t/200)%2;if(f){P.r(72,22,6,4,'#E8C862');}
+   P.r(6,10,8,6,f?'#C23A2E':'#3A2422');},
+ mic:(P)=>{P.bg('#12101A');P.r(44,6,12,18,'#8A94A2');P.r(46,8,8,14,'#C6D0DE');
+   P.r(48,24,4,12,'#5A6472');P.r(40,36,20,3,'#3A424E');
+   const s=Math.floor(P.t/260)%3;
+   P.r(30-s*3,12,3,10,'#C8A33C');P.r(68+s*3,12,3,10,'#C8A33C');},
+ lotto:(P)=>{P.bg('#161018');P.r(22,10,56,24,'#F2EDE0');P.r(22,10,56,2,'#FFFFFF');
+   const f=Math.floor(P.t/300)%6;
+   for(let i=0;i<6;i++)P.r(27+i*8,16,6,6,i<=f?['#C23A2E','#3B72C4','#3E9B78','#C8A33C','#8A55C8','#C0522B'][i]:'#D8D2C4');
+   P.r(27,26,44,2,'#A89C88');},
+ box:(P)=>{P.bg('#151119');P.r(28,14,44,24,'#7A5A3E');P.r(28,14,44,3,'#9A7452');
+   P.r(46,14,8,24,'#5A4230');P.r(28,22,44,2,'#5A4230');
+   const s=Math.floor(P.t/300)%2;
+   if(s){P.r(34,6,4,4,'#E8C862');P.r(62,8,3,3,'#E8C862');P.r(50,4,3,3,'#F0E0A0');}}
+};
+
+/* ══════════════ 유틸 ══════════════ */
+const MONTH_MS=3600;
+const SP_GAIN=3;
+function r(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function num(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function money(m){const neg=m<0,a=Math.abs(Math.round(m));let s;
+  if(a>=10000){const e=Math.floor(a/10000),man=a%10000;s=e+'억'+(man?' '+num(man)+'만':'');}
+  else s=num(a)+'만';
+  return (neg?'−':'')+s+'원';}
+function eff(x){return 100*x/(x+70);}
+const $=i=>document.getElementById(i);
+const _hc={};
+function setHTML(id,html){if(_hc[id]===html)return;_hc[id]=html;const e=$(id);if(e)e.innerHTML=html;}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+
+const PARENT={};
+Object.keys(TREE).forEach(k=>{(TREE[k].next||[]).forEach(n=>{if(n!==k&&!PARENT[n])PARENT[n]=k;});});
+
+function markSeen(){
+  if(!S.seen)S.seen={};
+  S.seen[S.rank]=1;
+  (TREE[S.rank].next||[]).forEach(id=>{S.seen[id]=1;});
+}
+function seenCount(){return S.seen?Object.keys(S.seen).length:0;}
+function tr(S){return TREE[S.rank]?TREE[S.rank].t:0;}
+function node(){return TREE[S.rank]||TREE.intern;}
+function rankName(){const n=node();return (n.star&&S.star>0)?n.n+' ★'+(S.star+1):n.n;}
+function demote(S,steps){for(let i=0;i<steps;i++){const p=PARENT[S.rank];if(p)S.rank=p;}
+  S.line=TREE[S.rank].l==='com'?null:TREE[S.rank].l;}
+
+let BOARD=null,BOARDSORT='total',_lastBoard=0;
+const SB_URL='https://tytgthyaskhjmtzumqxz.supabase.co',SB_KEY='sb_publishable_U6t9_uxTTaAGMbhZOs46-Q_NQHyOxJc';
+let TOKEN=null,RTOKEN=null,SBUID=null,SBNICK=null;
+function sbH(a){const h={'apikey':SB_KEY,'Content-Type':'application/json'};if(a&&TOKEN)h['Authorization']='Bearer '+TOKEN;return h;}
+let S=null,paused=false,lastT=0,acc=0,disguised=false,tab='stat';
+
+/* ── 아이템 효과 합산 ── */
+function mods(){
+  const M={qMul:1,editQ:1,expMul:1,moneyAdd:0,gAll:1,g:{},staCost:1,menGain:1,
+           ratingMul:1,promo:0,riskAdd:0,riskMul:1,shield:0,negSoft:1,peek:0,reroll:0,prShield:0};
+  if(!S)return M;
+  for(const id in S.items){
+    const e=(ITEMS[id]||{}).e||{};
+    if(e.qMul)M.qMul*=e.qMul; if(e.editQ)M.editQ*=e.editQ;
+    if(e.expMul)M.expMul*=e.expMul; if(e.moneyAdd)M.moneyAdd+=e.moneyAdd;
+    if(e.gAll)M.gAll*=e.gAll;
+    if(e.g)for(const k in e.g)M.g[k]=(M.g[k]||1)*e.g[k];
+    if(e.staCost)M.staCost*=e.staCost; if(e.menGain)M.menGain*=e.menGain;
+    if(e.ratingMul)M.ratingMul*=e.ratingMul; if(e.promo)M.promo+=e.promo;
+    if(e.riskAdd)M.riskAdd+=e.riskAdd; if(e.riskMul)M.riskMul*=e.riskMul;
+    if(e.shield)M.shield+=e.shield; if(e.negSoft)M.negSoft*=e.negSoft;
+    if(e.peek)M.peek=1; if(e.reroll)M.reroll=1; if(e.prShield)M.prShield=1;
+  }
+  return M;
+}
+function useShield(S){const M=mods();if((M.shield-(S.shieldUsed||0))>0){S.shieldUsed=(S.shieldUsed||0)+1;return true;}return false;}
+
+function g(S,d){
+  const soft=mods().negSoft;
+  for(const k in d){
+    let v=d[k];
+    if((k==='rep'||k==='men')&&v<0)v*=soft;
+    if(k==='money')S.money+=v;
+    else if(k==='q'){if(S.prog)S.prog.q=Math.max(0,Math.min(100,S.prog.q+v));}
+    else if(k==='exp')addExp(S,v);
+    else if(k==='sta'||k==='men')S[k]=Math.max(0,Math.min(100,S[k]+v));
+    else if(k==='risk')S.risk=Math.max(0,Math.min(100,S.risk+v));
+    else S[k]=Math.max(0,S[k]+v);
+  }
+}
+function need(lv){return 26+lv*8;}
+function addExp(S,v){
+  S.exp+=v*mods().expMul;
+  while(S.exp>=need(S.lv)){S.exp-=need(S.lv);S.lv++;S.sp+=5;
+    toast('<b>Lv.'+S.lv+'</b> 달성 · 스탯 포인트 +5','blue');
+    if(S.lv>=20)ach(S,'lv20');if(S.lv>=40)ach(S,'lv40');if(S.lv>=60)ach(S,'lv60');}
+}
+function give(S,id){
+  if(S.items[id])return false;
+  S.items[id]=1;
+  const it=ITEMS[id];
+  if(it.e&&it.e.luk)S.luk+=it.e.luk;
+  if(!S.silentGive)toast(RN[it.r]+' 획득 · <b>'+it.n+'</b>',it.r>=4?'gold':(it.r>=2?'epic':'blue'));
+  pushLog('['+RN[it.r]+'] '+it.n+' 획득','gold');
+  if(it.r>=4){ach(S,'legendary');flash('gold',700);shake(true);alarm('LEGENDARY',it.n);}
+  else if(it.r===3)flash('gold',320);
+  if(Object.keys(S.items).length>=20)ach(S,'collector');
+  if(Object.keys(ITEMS).filter(k=>ITEMS[k].p).every(k=>S.items[k]))ach(S,'allshop');
+  return true;
+}
+function sellPrice(id){
+  const it=ITEMS[id];
+  return it.p?Math.round(it.p*0.5):[150,450,1300,3400,9000][it.r];
+}
+function sellItem(id){
+  if(!S.items[id]||S.busy)return;
+  const it=ITEMS[id],val=sellPrice(id);
+  delete S.items[id];
+  if(it.e&&it.e.luk)S.luk=Math.max(0,S.luk-it.e.luk);
+  S.money+=val;
+  pushLog(it.n+'을(를) 처분했다. +'+num(val)+'만원');
+  toast('처분 · <b>'+it.n+'</b> +'+num(val)+'만','');
+  refresh();save();
+}
+function rollDrop(S,bonus){
+  const l=eff(S.luk)/100;
+  let w=[52-bonus*8,28+bonus*2,13+bonus*3,5.5+bonus*2,1.5+bonus*1];
+  w=w.map((x,i)=>x*(1+l*i*0.55));
+  const tot=w.reduce((a,b)=>a+b,0);let x=Math.random()*tot,tier=0;
+  for(let i=0;i<w.length;i++){x-=w[i];if(x<=0){tier=i;break;}}
+  for(let t2=tier;t2>=0;t2--){
+    const pool=DROPS[t2].filter(k=>!S.items[k]);
+    if(pool.length){const id=pick(pool);give(S,id);return id;}
+  }
+  for(let t2=tier+1;t2<5;t2++){
+    const pool=DROPS[t2].filter(k=>!S.items[k]);
+    if(pool.length){const id=pick(pool);give(S,id);return id;}
+  }
+  const cash=r(200,900);S.money+=cash;
+  pushLog('잡템을 처분했다. +'+num(cash)+'만원');
+  return null;
+}
+function ach(S,id){if(S.ach[id]||!ACHS[id])return;S.ach[id]=1;toast('업적 달성 · <b>'+ACHS[id].t+'</b>','gold');}
+function toast(html,cls){
+  const host=$('toasts');
+  while(host.children.length>=4)host.removeChild(host.firstChild);
+  const d=document.createElement('div');d.className='toast'+(cls?' '+cls:'');d.innerHTML=html;
+  host.appendChild(d);
+  setTimeout(()=>{d.style.transition='opacity .4s';d.style.opacity='0';setTimeout(()=>d.remove(),400);},2700);
+}
+function fx(text,color){
+  const el=document.createElement('span');el.textContent=text;el.style.color=color||'#E7EAF0';
+  el.style.left=(20+Math.random()*54)+'%';el.style.top=(28+Math.random()*40)+'%';
+  $('fx').appendChild(el);setTimeout(()=>el.remove(),1600);
+}
+function shake(hard){
+  const w=document.querySelector('.wrap');if(!w)return;
+  w.classList.remove('shk','shk-hard');void w.offsetWidth;
+  w.classList.add(hard?'shk-hard':'shk');
+  setTimeout(()=>w.classList.remove('shk','shk-hard'),hard?1000:520);
+}
+function flash(kind,ms){
+  const f=$('fxlayer');if(!f)return;
+  f.className=kind+' on';
+  setTimeout(()=>{f.className=kind;setTimeout(()=>{f.className='';},200);},ms||260);
+}
+let _alarmT=null;
+function alarm(title,sub,ms){
+  const a=$('alarm');if(!a)return;
+  $('alarm-t').textContent=title;$('alarm-s').textContent=sub||'';
+  a.classList.add('on');clearTimeout(_alarmT);
+  _alarmT=setTimeout(()=>a.classList.remove('on'),ms||4200);
+}
+function dangerMode(on){const d=$('danger');if(d)d.classList.toggle('on',!!on);}
+function livingCost(){
+  let c=140+tr(S)*34;
+  if(S.flags.love)c+=45;
+  if(S.flags.inlaw||S.flags.open)c+=90;
+  if(S.flags.kid)c+=160;
+  if(S.flags.divorced)c+=70;
+  return Math.round(c);
+}
+function uid(){
+  try{let u=localStorage.getItem('bpd_uid');
+    if(!u){u='u'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-5);localStorage.setItem('bpd_uid',u);}
+    return u;}catch(e){return 'u_anon';}
+}
+let UID=uid();
+function score(){
+  if(!S)return 0;
+  const achN=Object.keys(S.ach).length;
+  return Math.round(tr(S)*1200 + (S.star||0)*900 + S.lv*45 + achN*70 + S.smash*120 + S.hits*40
+    + S.awards*80 + Math.max(0,Math.log10(Math.max(1,S.money)))*300 - S.flops*20);
+}
+function myRecord(){
+  return {name:(S.name||'백PD').slice(0,8),job:rankName(),line:(S.line?LINES[S.line].n:'공통'),
+    tier:tr(S),lv:S.lv,money:Math.round(S.money),ach:Object.keys(S.ach).length,
+    hits:S.hits,smash:S.smash,months:S.m,score:score(),ts:Date.now()};
+}
+async function pushBoard(force){
+  if(!TOKEN||!SBUID||!S)return;
+  const now=Date.now();
+  if(!force&&now-_lastBoard<40000)return;
+  _lastBoard=now;
+  const r=myRecord();
+  try{
+    await fetch(SB_URL+'/rest/v1/leaderboard?on_conflict=user_id',{method:'POST',
+      headers:Object.assign(sbH(true),{'Prefer':'resolution=merge-duplicates,return=minimal'}),
+      body:JSON.stringify([{user_id:SBUID,nickname:SBNICK||r.name,job:r.job,line:r.line,tier:r.tier,
+        lv:r.lv,money:r.money,ach:r.ach,hits:r.hits,smash:r.smash,months:r.months,score:r.score,
+        updated_at:new Date().toISOString()}])});
+  }catch(e){}
+}
+async function loadBoard(){
+  const f=BOARDSORT==='money'?'money':(BOARDSORT==='ach'?'ach':'score');
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/leaderboard?select=*&order='+f+'.desc&limit=50',{headers:sbH(false)});
+    const d=res.ok?await res.json():[];
+    BOARD=(d||[]).map(x=>({id:x.user_id,name:x.nickname,job:x.job,line:x.line,lv:x.lv,
+      money:Number(x.money),ach:x.ach,hits:x.hits,smash:x.smash,months:x.months,score:x.score}));
+  }catch(e){BOARD=[];}
+  if(tab==='rank')renderRankTab();
+}
+function perfNow(){return S?0.30+0.70*((S.sta+S.men)/200):1;}
+
+/* ══════════════ 상태 ══════════════ */
+function newGame(name){
+  return {v:7,name:name||'백PD',m:0,rank:'intern',line:null,bias:null,star:0,
+    lv:1,exp:0,sp:0,dir:6,plan:5,sense:9,cast:4,rep:5,luk:5,
+    sta:82,men:78,risk:0,money:r(150,400),
+    act:'edit',prog:null,hits:0,smash:0,flops:0,streakFlop:0,awards:0,idleM:0,
+    dirty:0,scandal:0,shieldUsed:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
+    items:{},flags:{},ach:{},cool:{},seen:{intern:1},hist:[],log:[],inbox:[],pity:0,gacha:0,busy:false,saved:Date.now()};
+}
+function save(){if(!S)return;S.saved=Date.now();try{localStorage.setItem('bpd_save',JSON.stringify(S));}catch(e){}}
+function load(){try{const v=localStorage.getItem('bpd_save');if(!v)return null;const o=JSON.parse(v);return (o&&o.v===7)?o:null;}catch(e){return null;}}
+
+/* ══════════════ 캔버스 ══════════════ */
+const cv=$('cv'),ctx=cv.getContext('2d'),PXS=4,CH=44;
+let CW=88;
+function fitCanvas(){
+  const host=cv.parentElement;
+  const w=Math.max(300,Math.floor(host.clientWidth||880));
+  CW=Math.max(76,Math.floor(w/PXS));cv.width=CW*PXS;cv.height=CH*PXS;
+}
+window.addEventListener('resize',fitCanvas);
+function px(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x)*PXS,Math.round(y)*PXS,w*PXS,h*PXS);}
+const C={mon:'#0D1015',cup:'#B8563F',key:'#252C36',red:'#D3342A',grn:'#3E9B78',blu:'#4C7FC4',yel:'#C8A33C',white:'#DFE3EA'};
+
+/* 라인별 세트 */
+const SETS={
+ com  :{wall:'#1A202A',wallN:'#12161D',floor:'#12161D',desk:'#49535F',deskL:'#6B7686',deskD:'#2F3742'},
+ dir  :{wall:'#171E28',wallN:'#0F141B',floor:'#101620',desk:'#404B58',deskL:'#66727F',deskD:'#2A323C'},
+ mgr  :{wall:'#232028',wallN:'#181620',floor:'#1A1620',desk:'#5A4634',deskL:'#8A6E52',deskD:'#3A2E22'},
+ star :{wall:'#1C1826',wallN:'#140F1C',floor:'#171223',desk:'#4A4258',deskL:'#7A6E90',deskD:'#2E2838'},
+ crime:{wall:'#181410',wallN:'#100D0A',floor:'#0E0B08',desk:'#3E342A',deskL:'#5E5040',deskD:'#282018'},
+ meme :{wall:'#152220',wallN:'#0E1816',floor:'#101C1A',desk:'#3A5248',deskL:'#5E8070',deskD:'#26382F'}
+};
+function drawParty(q,mode,t){
+  const HAIR='#4A3B2E',HAIR2='#2E2620',HAIR3='#5E4636',SKIN='#D6A480',SKIN2='#BE8763',RIM='#8496B0';
+  function person(x,base,face,hair,cloth,cloth2,armDy,handY){
+    // face: 1=오른쪽,-1=왼쪽,0=뒷모습
+    q(x+3,base-9,6,11,cloth2); q(x+2,base+2,8,2,'#141820');
+    q(x,base-23,12,15,cloth); q(x,base-23,12,1,'#586a80');
+    if(face>0)q(x+11,base-23,1,15,RIM); else if(face<0)q(x,base-23,1,15,RIM);
+    q(x+4,base-26,4,3,SKIN2);
+    q(x-1,base-36,14,11,hair); q(x,base-37,12,1,HAIR3);
+    if(face>0){q(x+8,base-33,5,7,SKIN);q(x+13,base-31,1,2,SKIN);q(x+9,base-32,1,1,'#2A2F38');q(x+6,base-30,2,2,SKIN2);}
+    else if(face<0){q(x-1,base-33,5,7,SKIN);q(x-2,base-31,1,2,SKIN);q(x+2,base-32,1,1,'#2A2F38');q(x+4,base-30,2,2,SKIN2);}
+    else {q(x,base-28,12,3,HAIR2);}
+    const ax=(face>0)?x+10:(face<0)?x-7:x+11;
+    q(ax,base-20+armDy,7,4,cloth2);
+    if(handY!=null)q((face>0)?ax+6:ax-3,handY,4,3,SKIN);
+  }
+  if(mode==='cast'){
+    const ph=(t/1700)%1, clink=(ph>0.42&&ph<0.56);
+    /* 인물 먼저 (테이블 뒤) */
+    person(20,42, 1,HAIR ,'#33404F','#3E4A59',clink?-4:0,null);
+    person(54,42,-1,HAIR2,'#3A3040','#463A4E',clink?-4:0,null);
+    /* 술상 (인물 앞) */
+    q(26,30,36,3,'#4A3527'); q(26,33,36,5,'#31241A'); q(26,30,36,1,'#6E5138');
+    q(29,38,3,6,'#2A1F16'); q(57,38,3,6,'#2A1F16');
+    q(41,24,4,7,'#2E5A45'); q(42,22,2,2,'#1E3A2D'); q(41,27,4,1,'#8FBF7A');
+    q(31,27,6,3,'#8A6A3E'); q(31,26,6,1,'#A8823E');
+    q(50,27,6,3,'#8A6A3E'); q(50,26,6,1,'#A8823E');
+    /* 잔 */
+    const off=clink?0:4, gy=clink?18:21;
+    q(36-off,gy,5,7,'#C6D0DE'); q(36-off,gy-1,5,1,'#EAF0F7'); q(36-off,gy+4,5,3,'#8FA9C6');
+    q(43+off,gy,5,7,'#C6D0DE'); q(43+off,gy-1,5,1,'#EAF0F7'); q(43+off,gy+4,5,3,'#8FA9C6');
+    if(clink){
+      q(41,gy+1,2,3,'#FFF3C4');
+      q(38,gy-3,1,1,'#FFF3C4'); q(45,gy-3,1,1,'#FFF3C4');
+      q(35,gy-5,1,1,'#FFE38A'); q(48,gy-6,1,1,'#FFE38A'); q(42,gy-6,1,1,'#FFF3C4');
+    }
+    return;
+  }
+  if(mode==='pol'){
+    const sw=Math.floor(t/1000)%4;
+    /* 인물 */
+    person(6 ,44, 1,HAIR2,'#2E3A46','#38424F',(sw===0)?-2:0,null);
+    person(28,44, 0,HAIR ,'#3A4A5E','#46586E',(sw===1)?-2:0,null);
+    person(50,44,-1,HAIR3,'#3A3040','#463A4E',(sw===2)?-2:0,null);
+    person(72,44,-1,HAIR2,'#2E3A33','#384438',(sw===3)?-2:0,null);
+    /* 커피 */
+    q(20,30,4,4,'#C9D2DE'); q(20,29,4,1,'#E6ECF3');
+    q(45,30,4,4,'#B8563F'); q(45,29,4,1,'#8E4232');
+    q(66,30,4,4,'#C9D2DE'); q(66,29,4,1,'#E6ECF3');
+    /* 말풍선 */
+    const bx=[4,26,48,70][sw], by=2+(Math.floor(t/320)%2);
+    q(bx,by,17,10,'#DEE5EE'); q(bx+2,by+10,3,3,'#DEE5EE');
+    for(let k=0;k<3;k++){const on=(Math.floor(t/240+k)%4)!==3;
+      q(bx+3+k*4,by+4,3,2,on?'#48525F':'#B4BEC9');}
+  }
+}
+function drawScene(t){
+  const mode=(ACTIONS.find(a=>a.id===(S?S.act:'edit'))||ACTIONS[0]).mode;
+  const line=(S&&S.line)||'com', T=S?tr(S):0, SET=SETS[line]||SETS.com;
+  const night=(mode==='edit'||mode==='idle');
+  const scrOn=(mode!=='fit'&&mode!=='cast');
+  const HAIR='#4A3B2E',SKIN='#D6A480',SKIN2='#BE8763',BODY='#33404F',BODY2='#3E4A59',RIM='#8496B0',DARK='#1A2028';
+  const OX=Math.round(CW/2)-44;
+  const q=(x,y,w,h,c)=>px(x+OX,y,w,h,c);
+
+  ctx.fillStyle=night?SET.wallN:SET.wall;ctx.fillRect(0,0,cv.width,cv.height);
+  px(0,31,CW,1,'#262D38');px(0,32,CW,12,SET.floor);
+  for(let x=0;x<CW;x+=26)px(x,0,1,31,night?'rgba(255,255,255,.03)':'rgba(255,255,255,.045)');
+  for(let x=(OX%14+14)%14;x<CW;x+=14)px(x,38,7,1,'rgba(0,0,0,.25)');
+
+  /* 창문 (관리 라인은 통창) */
+  if(line==='mgr'){
+    q(-92,2,32,20,night?'#0C1220':'#3A5170');
+    for(let i=0;i<10;i++){const on=night&&(Math.floor(t/900+i*3)%3!==0);
+      q(-90+(i%5)*6,4+Math.floor(i/5)*8,4,6,on?'#C8A85A':(night?'#101828':'#4A6486'));}
+    q(-92,2,32,1,'#2E3742');q(-92,21,32,1,'#2E3742');q(-77,2,1,20,'#2E3742');
+  }else if(line==='crime'){
+    q(-88,3,20,15,'#141010');
+    for(let i=0;i<7;i++)q(-88,3+i*2,20,1,'#241C18');
+  }else{
+    q(-84,4,14,13,night?'#0A0D13':'#35475F');
+    for(let i=0;i<6;i++){const on=night&&(Math.floor(t/1100+i*5)%5===0);
+      q(-83+(i%3)*4,5+Math.floor(i/3)*5,3,4,on?'#3E4C62':(night?'#10151D':'#45596F'));}
+    q(-84,4,14,1,'#262D38');q(-84,16,14,1,'#262D38');q(-84,4,1,13,'#262D38');q(-71,4,1,13,'#262D38');
+  }
+
+  /* 좌측 소품 */
+  if(line==='mgr'){
+    q(-52,16,18,16,'#4A3A2A');q(-53,15,20,1,'#6A5238');
+    q(-50,18,6,12,'#5E4832');q(-43,18,6,12,'#5E4832');
+    q(-48,10,12,5,'#C9A227');q(-46,8,8,2,'#E8C862');
+  }else if(line==='star'){
+    q(-56,6,4,24,'#2A2438');q(-62,2,16,6,'#D8D0E4');q(-60,8,12,2,'#8A7EA0');
+    q(-40,14,14,18,'#3A3048');q(-38,16,10,3,'#5A4E70');
+  }else if(line==='crime'){
+    q(-54,14,20,18,'#2A2218');q(-54,14,20,1,'#4A3E28');
+    q(-50,18,5,5,'#161210');q(-44,18,5,5,'#161210');q(-47,25,6,3,'#8A7250');
+    q(-30,22,12,10,'#241C14');q(-28,24,8,2,'#3E3226');
+  }else if(line==='meme'){
+    for(let i=0;i<4;i++)q(-52+i*2,26-i*4,10,4,['#C23A2E','#C8A33C','#3E9B78','#3B72C4'][i]);
+    q(-34,20,10,12,'#C86A8E');q(-32,22,3,3,'#FFFFFF');q(-28,22,3,3,'#FFFFFF');
+    q(-33,27,8,2,'#8A3A52');
+  }else{
+    q(-42,4,13,10,'#232A34');q(-41,5,11,8,night?'#1B222C':'#2A3947');
+    q(-40,7,4,1,C.red);q(-40,9,7,1,'#4A5563');
+    q(-32,15,17,17,'#2A313B');q(-33,14,19,1,'#3D4652');
+    q(-31,17,13,4,'#222933');q(-31,22,13,4,'#222933');q(-31,27,13,4,'#222933');
+    q(-50,19,11,8,'#2E5A45');q(-48,16,7,4,'#357A57');q(-48,27,7,5,'#8A5A3E');
+  }
+
+  /* 우측 소품 */
+  q(100,7,20,25,'#252C36');q(102,9,16,23,'#2F3742');q(100,7,20,1,'#3D4652');q(115,20,2,3,'#B9A05C');
+  if(T>=6){q(128,4,26,10,'#2A313B');q(129,5,24,1,'#3D4652');
+    for(let i=0;i<3;i++)q(132+i*8,7,5,6,['#C9A227','#8A94A2','#C9A227'][i]);}
+  else{q(128,5,10,10,'#DCE2EA');q(129,6,8,8,'#20262F');q(133,8,1,3,'#DCE2EA');q(133,10,3,1,'#C25A4E');}
+  q(160,22,26,4,'#3E4A59');q(160,26,26,6,'#33404F');
+
+  /* 벽 게시물 */
+  if(mode==='plan'){
+    q(44,2,20,14,'#26313E');q(44,2,20,1,'#3C4756');
+    for(let k=0;k<6;k++){if((Math.floor(t/620+k)%7)!==0)
+      q(46+(k%3)*6,4+Math.floor(k/3)*6,5,5,[C.yel,'#8FBF7A','#D9A0BE','#9BB6E0',C.yel,'#8FBF7A'][k]);}
+  }else if(line==='meme'){
+    q(20,3,14,11,'#1E2A26');q(21,4,12,4,'#C8A33C');q(21,9,9,1,'#4A5563');q(21,11,11,1,'#3B434F');
+  }else{
+    q(20,3,12,10,'#20262F');q(21,4,10,2,C.red);q(21,7,7,1,'#4A5563');q(21,9,8,1,'#3B434F');
+  }
+
+  const partyMode=(mode==='cast'||mode==='pol');
+  if(partyMode){drawParty(q,mode,t);}else{
+  /* 책상 */
+  q(44,26,44,2,SET.desk);q(44,26,44,1,SET.deskL);q(44,28,44,2,SET.deskD);q(83,30,3,14,'#262D37');
+  if(line==='mgr'){q(40,26,4,2,SET.desk);q(40,28,4,2,SET.deskD);
+    q(74,22,10,4,'#2A313B');q(75,21,8,1,'#C9A227');}
+
+  /* 모니터 */
+  q(66,22,4,4,'#2A313B');q(61,25,14,1,'#3A424E');
+  q(55,3,27,19,'#242B35');
+  const sx=56,sy=4,sw=25,sh=17;
+  q(sx,sy,sw,sh,scrOn?C.mon:'#0A0C10');
+  if(scrOn){
+    if(mode==='edit'){
+      const off=Math.floor(t/70)%sw;
+      for(let k=0;k<7;k++){const b2=sx+((k*5+off)%sw);
+        q(b2,sy+1+k*2,Math.min(4,sx+sw-b2),1,[C.blu,C.grn,C.yel,C.red,C.blu,C.grn,C.yel][k]);}
+      q(sx+(Math.floor(t/40)%sw),sy,1,sh,'#8A99B2');
+    }else if(mode==='trend'){
+      const f=Math.floor(t/380)%3;
+      q(sx+1,sy+1,sw-2,sh-4,['#2E4258','#3D2E4A','#20423B'][f]);
+      q(sx+2,sy+sh-2,Math.max(2,Math.floor((sw-4)*((t/2600)%1))),1,C.white);
+    }else if(mode==='plan'){
+      for(let k=0;k<8;k++){const on2=(Math.floor(t/300+k)%5)!==0;
+        q(sx+1+(k%4)*6,sy+1+Math.floor(k/4)*8,5,7,on2?[C.yel,'#7FA86B','#C98FB0','#8FA8D6'][k%4]:C.mon);}
+    }else if(mode==='pol'){
+      for(let k=0;k<5;k++)q(sx+2,sy+2+k*3,Math.floor(4+((t/500+k*4)%18)),1,k===0?C.red:'#5A6675');
+    }else if(mode==='idle'){
+      q(sx+1,sy+1,sw-2,sh-2,'#0F2A1B');
+      const f=Math.floor(t/240)%6;q(sx+2+f*3,sy+3+((f%2)?3:0),4,4,C.grn);q(sx+1,sy+sh-3,sw-2,1,'#1C5638');
+    }else if(mode==='rest'){q(sx+1,sy+1,sw-2,sh-2,'#101820');q(sx+8,sy+7,9,3,'#1E2A36');}
+  }
+
+  /* 책상 위 */
+  q(46,24,14,2,C.key);
+  for(let k=0;k<6;k++)q(47+k*2,24,1,1,(mode==='edit'&&(Math.floor(t/110+k)%4===0))?'#8593A9':'#151A21');
+  if(mode!=='cast'&&mode!=='fit'){
+    q(76,22,5,4,C.cup);q(76,21,5,1,'#8E4232');
+    for(let k=0;k<3;k++){const yy=20-((t/300+k*8)%8);q(77+(k%2),Math.floor(yy),1,1,'rgba(190,200,215,.45)');}
+  }
+  if(mode==='pol'){q(62,23,7,3,'#C9D2DE');q(62,23,7,1,'#E6ECF3');}
+  if(mode==='cast'){
+    q(50,19,5,7,'#C6D0DE');q(50,18,5,1,'#E9EFF6');q(50,23,5,3,'#8FA9C6');
+    q(70,19,5,7,'#C6D0DE');q(70,18,5,1,'#E9EFF6');q(70,23,5,3,'#8FA9C6');
+    q(58,23,10,3,'#3A3026');q(59,22,8,1,'#4C4030');
+  }
+  if(line==='meme'){q(40,21,6,5,'#C23A2E');q(40,20,6,1,'#E8695E');}
+  if(line==='crime'){q(38,22,8,4,'#2A2218');q(39,21,6,1,'#4A3E28');}
+
+  /* 캐릭터 */
+  const th=(mode==='edit')?(Math.floor(t/95)%2):(mode==='plan'||mode==='pol')?(Math.floor(t/320)%2):0;
+  let dy=0,lean=0;const faceBack=(mode==='idle');
+  if(mode==='rest'){dy=6;lean=4;}
+  if(mode==='trend')lean=-2;
+  if(mode==='fit')dy=(Math.floor(t/280)%2)*4;
+  const standing=(mode==='fit'||mode==='cast');
+  const suit=(T>=6)?'#2A3140':BODY, suit2=(T>=6)?'#333B4C':BODY2;
+
+  if(!standing){
+    q(15,13,4,21,DARK);q(15,12,4,1,'#333C48');q(15,32,20,3,DARK);
+    q(23,31,19,4,suit2);q(23,31,19,1,'#4C5A6C');q(38,34,5,10,suit);q(37,42,8,2,'#141820');
+  }else{q(30,32,6,12,suit2);q(29,42,8,2,'#141820');}
+  const tx=22+lean,ty=(standing?16:17)+dy,tH=(standing?18:16);
+  q(tx,ty,15,tH,suit);q(tx+14,ty,1,tH,RIM);q(tx,ty,15,1,'#4C5A6C');
+  if(T>=6){q(tx+6,ty+1,3,9,'#C23A2E');q(tx+6,ty+1,3,1,'#E8695E');}
+  q(tx+8,ty-3,4,4,SKIN2);
+  const hx2=tx+2,hy2=ty-13;
+  q(hx2,hy2,13,11,HAIR);q(hx2+1,hy2-1,11,1,'#6B5744');q(hx2,hy2+8,9,3,HAIR);
+  if(faceBack){q(hx2,hy2+3,4,6,SKIN);q(hx2-1,hy2+5,1,2,SKIN);q(hx2+4,hy2+4,1,1,'#2A2F38');}
+  else{q(hx2+8,hy2+3,5,7,SKIN);q(hx2+13,hy2+5,1,2,SKIN);q(hx2+12,hy2,1,10,RIM);
+       q(hx2+9,hy2+4,1,1,'#2A2F38');q(hx2+6,hy2+6,2,2,SKIN2);}
+  if(S&&S.items&&S.items.head){q(hx2-1,hy2+2,2,7,'#39424F');q(hx2+12,hy2+2,2,7,'#39424F');q(hx2,hy2-2,13,2,'#454F5E');}
+  if(S&&S.items&&S.items.fakewatch)q(tx+27,ty+7,2,2,'#C9A227');
+  if(mode==='rest'){q(tx+13,ty+4,12,3,suit2);q(tx+24,ty+4,4,3,SKIN);}
+  else if(mode==='fit'){q(tx+13,ty+1,7,4,suit2);q(tx+18,ty-2,4,4,SKIN);q(tx+20,ty-4,6,3,'#4A5563');}
+  else if(mode==='cast'){q(tx+13,ty+2,8,4,suit2);q(tx+20,ty-1,4,4,SKIN);q(tx+21,ty-5,4,5,'#C6D0DE');q(tx+21,ty-6,4,1,'#E9EFF6');}
+  else if(mode==='trend'){q(tx+13,ty+8,10,4,suit2);q(tx+22,ty+9,4,3,SKIN);}
+  else{q(tx+13,ty+2,8,4,suit2);q(tx+19,ty+4+th,9,4,suit2);q(tx+26,ty+6+th,5,3,SKIN);}
+  if(mode==='rest'){
+    for(let k=0;k<3;k++){const yy=14-((t/430+k*5)%7);
+      ctx.fillStyle='rgba(205,215,230,.62)';ctx.font='bold '+(9+k*4)+'px monospace';
+      ctx.fillText('z',(OX+30+k*6)*PXS,Math.floor(yy+k*2)*PXS);}
+  }
+  }
+  if(night){
+    q(86,14,2,12,'#3A414C');q(80,12,8,2,'#4A5563');
+    ctx.fillStyle='rgba(210,185,125,.10)';ctx.beginPath();
+    ctx.moveTo((OX+80)*PXS,14*PXS);ctx.lineTo((OX+88)*PXS,14*PXS);
+    ctx.lineTo((OX+88)*PXS,30*PXS);ctx.lineTo((OX+62)*PXS,30*PXS);ctx.closePath();ctx.fill();
+  }
+  if(scrOn&&!partyMode){ctx.fillStyle='rgba(120,155,215,.05)';ctx.fillRect((OX+30)*PXS,4*PXS,58*PXS,26*PXS);}
+  ctx.fillStyle='rgba(0,0,0,.13)';
+  for(let y=0;y<cv.height;y+=4)ctx.fillRect(0,y,cv.width,1);
+  const gr=ctx.createRadialGradient(cv.width/2,cv.height/2,cv.height*0.45,cv.width/2,cv.height/2,cv.width*0.58);
+  gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.5)');
+  ctx.fillStyle=gr;ctx.fillRect(0,0,cv.width,cv.height);
+}
+
+/* ── 이벤트 일러스트 ── */
+const icv=document.createElement('canvas');
+function drawIllust(kind,host){
+  const P2=6,W=100,H=40;
+  icv.width=W*P2;icv.height=H*P2;
+  const c2=icv.getContext('2d');
+  const P={t:performance.now(),
+    r:(x,y,w,h,col)=>{c2.fillStyle=col;c2.fillRect(x*P2,y*P2,w*P2,h*P2);},
+    bg:col=>{c2.fillStyle=col;c2.fillRect(0,0,icv.width,icv.height);}};
+  (IMGS[kind]||IMGS.doc)(P);
+  c2.fillStyle='rgba(0,0,0,.07)';
+  for(let y=0;y<icv.height;y+=4)c2.fillRect(0,y,icv.width,1);
+  host.innerHTML='<img alt="" style="display:block;width:100%;height:auto;image-rendering:pixelated;border:1px solid var(--line)" src="'+icv.toDataURL()+'">';
+}
+
+/* ══════════════ 렌더 ══════════════ */
+const TABS=[['stat','능력치'],['promo','승진'],['show','작품'],['bag','가방'],['shop','상점'],['rank','랭킹'],['log','일지']];
+function renderTabs(){
+  const nxt=readyPromos().length>0;
+  setHTML('tabbar',TABS.map(x=>{
+    let dot='';
+    if(x[0]==='stat'&&S.sp>0)dot='<span class="dot"></span>';
+    if(x[0]==='promo'&&nxt)dot='<span class="dot"></span>';
+    if(x[0]==='bag'&&S.newItem)dot='<span class="dot"></span>';
+    return '<button data-t="'+x[0]+'" class="'+(tab===x[0]?'on':'')+'">'+x[1]+dot+'</button>';
+  }).join(''));
+  TABS.forEach(x=>{const el=$('tab-'+x[0]);if(el)el.hidden=(tab!==x[0]);});
+}
+function renderStrip(){
+  const nd=need(S.lv),pf=perfNow();
+  const bar=(v,cls)=>'<span class="mini"><i class="'+cls+'" style="width:'+Math.round(v)+'%"></i></span>';
+  const ready=readyPromos().length>0;
+  setHTML('strip',
+    '<span class="chip lv">Lv.<b>'+S.lv+'</b>'+bar(S.exp/nd*100,'f-men')+'</span>'+
+    '<span class="chip">체력'+bar(S.sta,'f-sta')+'<b>'+Math.round(S.sta)+'</b></span>'+
+    '<span class="chip">멘탈'+bar(S.men,'f-men')+'<b>'+Math.round(S.men)+'</b></span>'+
+    '<span class="chip">의혹'+bar(S.risk,'f-risk')+'<b>'+Math.round(S.risk)+'</b></span>'+
+    '<span class="chip">효율 <b style="color:'+(pf<.6?'var(--onair)':'var(--rate)')+'">'+Math.round(pf*100)+'%</b></span>'+
+    '<span class="chip">자산 <b>'+money(S.money)+'</b></span>'+
+    (S.sp>0?'<span class="chip alert" data-go="stat">스탯 포인트 <b>'+S.sp+'</b></span>':'')+
+    (ready?'<span class="chip alert" data-go="promo">승진 심사 가능</span>':'')+
+    '<span class="spacer"></span>'+
+    '<span class="chip">'+(S.prog?'제작 중 · <b>'+esc(S.prog.title)+'</b>':(tr(S)>=3?'차기작 대기':'조연출'))+'</span>');
+}
+function renderActs(){
+  setHTML('acts',ACTIONS.map((a,i)=>
+    '<button class="act'+(S.act===a.id?' sel':'')+'" data-i="'+i+'"><span class="t">'+a.t+'</span><span class="d">'+a.d+'</span></button>').join(''));
+  $('c-doing').textContent=(ACTIONS.find(a=>a.id===S.act)||ACTIONS[0]).t;
+}
+function renderHead(){
+  const y=Math.floor(S.m/12),mo=S.m%12;
+  $('c-clock').textContent=(y+1)+'년차 '+(mo+1)+'월';
+  $('sysmeta').textContent=S.name+' · '+rankName()+' · Lv.'+S.lv;
+}
+function pushLog(t,k){
+  if(!S)return;
+  S.log.push({m:S.m,t:t,k:k||''});if(S.log.length>60)S.log.shift();
+  if(tab==='log')renderLogTab();
+}
+
+/* ── 탭: 능력치 ── */
+function renderStatTab(){
+  const n=node(),L=LINES[n.l]||LINES.com,M=mods();
+  const bonusOf=k=>{const b=(M.g[k]||1)*M.gAll;
+    return b>1.001?'<span class="bonus">+'+Math.round((b-1)*100)+'%</span>':(b<0.999?'<span class="bonus" style="color:var(--onair)">'+Math.round((b-1)*100)+'%</span>':'');};
+  setHTML('tab-stat',
+   '<div class="cols c2"><div>'+
+    '<div class="idcard"><div class="row1"><span class="nm han">'+esc(S.name)+'</span><span class="lv num">Lv.'+S.lv+'</span></div>'+
+    '<div class="rk">'+rankName()+'<span class="lineTag '+L.cls+'">'+L.n+' 라인 · T'+n.t+'</span></div>'+
+    '<div class="sub num">근속 '+Math.floor(S.m/12)+'년 '+(S.m%12)+'개월 · '+(24+Math.floor(S.m/12))+'세 · 월급 '+num(n.pay)+'만</div>'+
+    '<div class="expbar"><i style="width:'+Math.min(100,S.exp/need(S.lv)*100)+'%"></i></div>'+
+    '<div class="expnum"><span>EXP</span><span class="num">'+Math.floor(S.exp)+' / '+need(S.lv)+'</span></div></div>'+
+    '<div class="pnote" style="margin-top:12px">체력·멘탈이 낮으면 <b>업무 효율</b>(현재 '+Math.round(perfNow()*100)+'%)이 떨어져 모든 성장이 느려집니다. 의혹은 감사·수사를 부르지만 범죄 라인 승진 확률은 올려줍니다. 수치는 위쪽 상태바에서 실시간으로 볼 수 있습니다.</div>'+
+    '<div class="sec-label mt">월 수 지</div>'+
+    '<div class="prow"><span>월급 ('+node().n+')</span><b class="num" style="color:var(--rate)">+'+num(node().pay)+'만</b></div>'+
+    '<div class="prow"><span>생활비'+(S.flags.love?' · 연애':'')+(S.flags.inlaw||S.flags.open?' · 가정':'')+(S.flags.kid?' · 육아':'')+'</span><b class="num" style="color:var(--onair)">−'+num(livingCost())+'만</b></div>'+
+    '<div class="prow"><span>장비 수입</span><b class="num" style="color:'+(M.moneyAdd>=0?'var(--rate)':'var(--onair)')+'">'+(M.moneyAdd>=0?'+':'−')+num(Math.abs(M.moneyAdd))+'만</b></div>'+
+    '<div class="prow" style="border-top:1px dashed var(--line);margin-top:4px;padding-top:5px"><span>월 순수지</span><b class="num" style="color:'+((node().pay-livingCost()+M.moneyAdd)>=0?'var(--rate)':'var(--onair)')+'">'+((node().pay-livingCost()+M.moneyAdd)>=0?'+':'−')+num(Math.abs(node().pay-livingCost()+M.moneyAdd))+'만</b></div>'+
+    '<div class="prow"><span>순자산</span><b class="num">'+money(S.money)+'</b></div>'+
+    '<div class="sec-label mt">기 록</div>'+
+    '<div class="prow"><span>연출작</span><b class="num">'+S.hist.length+'편</b></div>'+
+    '<div class="prow"><span>히트 / 대박 / 폭망</span><b class="num">'+S.hits+' / '+S.smash+' / '+S.flops+'</b></div>'+
+    '<div class="prow"><span>수상</span><b class="num">'+S.awards+'회</b></div>'+
+    '<div class="prow"><span>검은 거래 / 논란</span><b class="num">'+S.dirty+' / '+S.scandal+'</b></div>'+
+    '<div class="prow"><span>딴짓</span><b class="num">'+S.idleM+'개월</b></div>'+
+    '<div class="prow"><span>승진 심사 실패</span><b class="num">'+S.promoFail+'회</b></div>'+
+   '</div><div>'+
+    '<div class="sec-label">능 력 치 '+(S.sp>0?'<span class="spbadge">SP '+S.sp+'</span>':'')+'</div>'+
+    GROW.map(k=>
+      '<div class="st2"><span class="k">'+GKEY[k]+'</span><span class="dd">'+GDESC[k]+'</span>'+
+      '<span class="rt"><span class="v num">'+Math.floor(S[k])+'</span>'+bonusOf(k)+
+      [1,10,100].map(n=>'<button class="plus'+(S.sp>=1?' on':'')+(n>1?' wide':'')+'" data-k="'+k+'" data-n="'+n+'"'+
+        (S.sp>=1?'':' disabled')+'>+'+n+'</button>').join('')+'</span></div>').join('')+
+    '<div class="pnote">스탯 포인트 1점당 <b>+3</b>. 레벨업마다 5점이 들어옵니다. <b>+10 / +100</b>으로 한 번에 부을 수 있고, 남은 포인트가 모자라면 있는 만큼만 씁니다. 어디에 찍느냐가 곧 승진 갈래를 정합니다 — 연출·기획은 연출 라인, 평판은 관리 라인, 섭외·감각은 스타 라인, 운과 딴짓은 병맛 라인 쪽입니다.</div>'+
+   '</div></div>');
+}
+
+/* ── 탭: 승진 ── */
+function reqRows(nd2){
+  const q=nd2.req||{},rows=[];
+  if(q.lv)rows.push(['레벨',S.lv,q.lv]);
+  ['dir','plan','sense','cast','rep','luk'].forEach(k=>{if(q[k]!=null)rows.push([GKEY[k],Math.floor(S[k]),q[k]]);});
+  if(q.hit)rows.push(['히트작',S.hits,q.hit]);
+  if(q.smash)rows.push(['대박작',S.smash,q.smash]);
+  if(q.awards)rows.push(['수상',S.awards,q.awards]);
+  if(q.money)rows.push(['자산(만)',Math.floor(S.money),q.money]);
+  if(q.risk)rows.push(['의혹',Math.round(S.risk),q.risk]);
+  if(q.dirty)rows.push(['검은 거래',S.dirty,q.dirty]);
+  if(q.scandal)rows.push(['논란',S.scandal,q.scandal]);
+  if(q.idle)rows.push(['딴짓(개월)',S.idleM,q.idle]);
+  return rows;
+}
+function reqOk(id){return reqRows(TREE[id]).every(x=>x[1]>=x[2]);}
+function nextIds(){const n=node();return (n.next||[]).filter(x=>x!==S.rank||n.star);}
+function readyPromos(){if(!S||S.promoCd>0)return [];return nextIds().filter(reqOk);}
+function promoChance(id){
+  const nd2=TREE[id],rows=reqRows(nd2);
+  let over=0,cnt=0;
+  rows.forEach(x=>{if(x[2]>0){over+=Math.min(1.2,(x[1]-x[2])/x[2]);cnt++;}});
+  const avg=cnt?over/cnt:0;
+  let c=26+avg*52+eff(S.rep)/6+eff(S.luk)/5+S.promoFail*6+mods().promo;
+  if(S.bias&&S.bias[nd2.l])c+=S.bias[nd2.l];
+  if(nd2.l==='crime')c+=S.risk/6;
+  if(nd2.l==='meme')c+=S.scandal*2;
+  if(S.risk>=55&&nd2.l!=='crime')c-=14;
+  if(nd2.star)c=Math.max(5,Math.min(55,20+S.lv/5+S.smash*1.4-(S.star||0)*5));
+  return Math.max(5,Math.min(95,c));
+}
+function renderPromoTab(){
+  markSeen();
+  const ids=nextIds();
+  const cards=ids.map(id=>{
+    const nd2=TREE[id],L=LINES[nd2.l],ok=reqOk(id),ch=promoChance(id);
+    const rows=reqRows(nd2),done=rows.filter(x=>x[1]>=x[2]).length;
+    const pct=Math.round(done/rows.length*100);
+    return '<div class="pcard'+(ok?' ready':'')+'">'+
+      '<div class="ln '+L.cls+'">'+L.n+' 라인 · T'+nd2.t+'</div>'+
+      '<div class="nm han">'+nd2.n+'</div>'+
+      '<div class="dsc">'+nd2.d+'</div>'+
+      '<div class="reqs">'+rows.map(x=>
+        '<div class="prow '+(x[1]>=x[2]?'ok':'no')+'"><span>'+x[0]+'</span><b class="num">'+num(x[1])+' / '+num(x[2])+'</b></div>').join('')+'</div>'+
+      (ok
+        ? '<div class="chance num han" style="color:var(--onair)">'+Math.round(ch)+'<small>%</small></div>'+
+          '<button class="btn-try" data-promo="'+id+'"'+((S.promoCd>0||S.busy)?' disabled':'')+'>'+
+            (S.promoCd>0?S.promoCd+'개월 뒤 재도전':'승진 심사 도전')+'</button>'
+        : '<div style="margin-top:9px"><div class="track"><span class="fill f-men" style="width:'+pct+'%"></span></div>'+
+          '<div class="prow no" style="justify-content:center;margin-top:5px">조건 '+done+' / '+rows.length+' 달성</div></div>')+
+      '</div>';
+  }).join('');
+
+  const path=[];let cur=S.rank;while(cur){path.unshift(cur);cur=PARENT[cur];}
+  const nodeHtml=(id)=>{
+    const known=S.seen&&S.seen[id];
+    const cls=(S.rank===id)?' cur':(path.indexOf(id)>=0?' done':'');
+    return '<span class="tnode'+cls+(known?'':' fog')+'">'+(known?TREE[id].n:'? ? ?')+'</span>';
+  };
+  const laneRow=(key)=>{
+    const L=LINES[key],any=LANES[key].some(id=>S.seen&&S.seen[id]);
+    return '<div class="tlane"><div class="lab '+(any?L.cls:'')+'" style="'+(any?'':'color:var(--ink-3)')+'">'+(any?L.n:'???')+'</div><div class="trow">'+
+      LANES[key].map(nodeHtml).join('')+'</div></div>';
+  };
+  const total=Object.keys(TREE).length;
+  setHTML('tab-promo',
+    '<div class="sec-label">다 음 단 계'+(S.promoFail>0?' · 실패 보정 +'+(S.promoFail*6)+'%':'')+'</div>'+
+    '<div class="promo-grid">'+(cards||'<div class="prow">더 오를 곳이 없다.</div>')+'</div>'+
+    '<div class="pnote">조건을 채우면 <b>인사 발령 통지</b>가 편지로 옵니다. 도전할지 미룰지는 직접 정합니다.<br>'+
+    '두 갈래 이상이 동시에 열리면 그 자리에서 <b>진로를 고릅니다.</b> 어떤 스탯을 찍었는지가 곧 갈래를 정합니다.</div>'+
+    '<div class="sec-label mt">커 리 어 로 드 맵 · 발견 <span class="num">'+seenCount()+'</span> / '+total+'</div>'+
+    '<div class="tree">'+
+      '<div class="tlane"><div class="lab ln-com">공통</div><div class="trow">'+
+        ['intern','ad','ad2','pdA','pdB'].map(nodeHtml).join('')+'</div></div>'+
+      ['dir','mgr','star','crime','meme'].map(laneRow).join('')+
+      '<div class="tlane"><div class="lab ln-com">최종</div><div class="trow">'+nodeHtml('legend')+'</div></div>'+
+    '</div>'+
+    '<div class="pnote">아직 밟지 않은 길은 <b>???</b>로 가려져 있습니다. 승진할 때마다 그 앞이 한 칸씩 드러납니다.</div>');
+}
+
+/* ── 탭: 작품 ── */
+function renderShowTab(){
+  let cur;
+  if(tr(S)<3)cur='<div class="prow">입봉 PD가 되면 내 프로그램을 맡습니다.</div>';
+  else if(!S.prog)cur='<div class="prow">차기작 준비 중 · <b class="num">'+Math.max(0,S.nextSlot-S.m)+'개월</b> 뒤 편성 회의</div>';
+  else{const p=S.prog;
+    cur='<div class="progtt han">'+esc(p.title)+'</div><div class="proggn">'+p.g.n+' · '+p.g.d+'</div>'+
+      '<div class="prow" style="margin-top:9px"><span>완성도</span><b class="num">'+Math.round(p.q)+'</b></div>'+
+      '<div class="track"><span class="fill f-men" style="width:'+p.q+'%"></span></div>'+
+      '<div class="prow" style="margin-top:7px"><span>첫 방송까지</span><b class="num">'+Math.max(0,p.air-S.m)+'개월</b></div>'+
+      (mods().peek?'<div class="prow ok"><span>예측 시청률</span><b>'+predict()+'</b></div>':'');}
+  setHTML('tab-show',
+    '<div class="cols c2b"><div>'+
+      '<div class="sec-label">현 재 작 품</div><div class="panel">'+cur+'</div>'+
+      '<div class="sec-label mt">방 송 이 력</div>'+
+      '<div class="panel"><div class="hist">'+(S.hist.length?S.hist.map(h=>'<span class="pip '+h.c+'">'+h.v+'</span>').join(''):'<span class="prow">아직 없음</span>')+'</div></div>'+
+    '</div><div>'+
+      '<div class="sec-label">성 적</div><div class="panel">'+
+      '<div class="prow"><span>연출작</span><b class="num">'+S.hist.length+'편</b></div>'+
+      '<div class="prow ok"><span>히트 (8.5%+)</span><b class="num">'+S.hits+'</b></div>'+
+      '<div class="prow" style="color:var(--onair)"><span>대박 (14%+)</span><b class="num">'+S.smash+'</b></div>'+
+      '<div class="prow no"><span>폭망</span><b class="num">'+S.flops+'</b></div>'+
+      '<div class="prow"><span>수상</span><b class="num">'+S.awards+'회</b></div></div>'+
+    '</div></div>');
+}
+
+/* ── 탭: 가방 / 상점 ── */
+function itemCard(id,shop){
+  const it=ITEMS[id],own=!!S.items[id];
+  const body='<div class="rr">'+RN[it.r]+(it.warn?' · 양날':'')+'</div><div class="n">'+it.n+'</div>'+
+    '<div class="d'+(it.warn?' warn':'')+'">'+it.d+'</div>';
+  if(!shop)return '<div class="icard r'+it.r+'"><div class="sitem"><div>'+body+'</div>'+
+    '<button class="sellbtn" data-sell="'+id+'">'+num(sellPrice(id))+'만<br><span>처분</span></button></div></div>';
+  return '<div class="icard r'+it.r+(own?' empty':'')+'"><div class="sitem"><div>'+body+'</div>'+
+    '<button data-buy="'+id+'"'+((own||S.money<it.p)?' disabled':'')+'>'+(own?'보유':num(it.p)+'만')+'</button></div></div>';
+}
+function renderBagTab(){
+  S.newItem=0;
+  const own=Object.keys(ITEMS).filter(k=>S.items[k]);
+  const cnt=[0,0,0,0,0];own.forEach(k=>cnt[ITEMS[k].r]++);
+  const total=[0,0,0,0,0];Object.keys(ITEMS).forEach(k=>total[ITEMS[k].r]++);
+  setHTML('tab-bag',
+    '<div class="rarbar">'+RN.map((n,i)=>'<span class="rarchip r'+i+'" style="border-color:var(--r'+['N','R','E','U','L'][i]+');color:var(--r'+['N','R','E','U','L'][i]+')">'+n+' '+cnt[i]+'/'+total[i]+'</span>').join('')+
+      '<span class="rarchip">합계 '+own.length+' / '+Object.keys(ITEMS).length+'</span></div>'+
+    (own.length?'<div class="igrid">'+own.sort((a,b)=>ITEMS[b].r-ITEMS[a].r).map(k=>itemCard(k,false)).join('')+'</div>'
+      :'<div class="prow">아직 아무것도 없다. 이벤트에서 줍거나 상점에서 사면 된다.</div>')+
+    '<div class="sec-label mt">획 득 · 처 분</div>'+
+    '<div class="pnote">이벤트 종료 시 낮은 확률로 드롭 · 대박 방영과 승진 시 확률 상승 · 운 스탯이 높을수록 상위 등급.<br>'+
+    '<b>양날</b> 표시는 이득과 손해가 같이 붙은 물건입니다. 안 맞으면 우측 버튼으로 처분해 현금화하세요 (되사기 불가).</div>');
+}
+function renderShopTab(){
+  const g1=1400,g10=12600;
+  setHTML('tab-shop',
+    '<div class="sec-label">협 찬 사 랜 덤 박 스</div>'+
+    '<div class="gbox"><div class="gtitle han">심야 협찬 뽑기</div>'+
+    '<div class="gsub">협찬사에서 보내온 정체불명의 박스. 안에 뭐가 들었는지는 열어봐야 안다.<br>이미 가진 물건이 나오면 그 자리에서 현금으로 바꿔줍니다.</div>'+
+    '<div class="grate">'+[['노말',55,'N'],['레어',30,'R'],['에픽',11,'E'],['유니크',3.4,'U'],['레전더리',0.6,'L']].map(x=>
+      '<span style="border-color:var(--r'+x[2]+');color:var(--r'+x[2]+')">'+x[0]+' '+x[1]+'%</span>').join('')+
+    '<span>운 스탯이 높을수록 상위 등급 확률 ↑</span></div>'+
+    '<div class="gbtns">'+
+      '<button data-gacha="1"'+(S.money<g1?' disabled':'')+'>1회 뽑기 · '+num(g1)+'만</button>'+
+      '<button class="alt" data-gacha="10"'+(S.money<g10?' disabled':'')+'>10연차 · '+num(g10)+'만 <span style="font-size:11px">(레어 이상 1개 확정)</span></button>'+
+    '</div>'+
+    '<div class="gpity">천장 <b class="num">'+(90-(S.pity||0))+'</b>회 남음 — 90회 안에 유니크 이상이 반드시 나옵니다 · 누적 '+(S.gacha||0)+'회</div>'+
+    '</div>'+
+    '<div class="sec-label mt">장 비 상 점 · 보유 '+money(S.money)+'</div>'+
+    '<div class="igrid">'+Object.keys(ITEMS).filter(k=>ITEMS[k].p).map(k=>itemCard(k,true)).join('')+'</div>'+
+    '<div class="pnote">상점 장비는 영구 지속입니다. 뽑기 전용 아이템 31종은 상점에서 팔지 않습니다.</div>');
+}
+function doGacha(n){
+  const cost=(n===10?12600:1400);
+  if(S.money<cost||S.busy)return;
+  S.money-=cost;S.gacha=(S.gacha||0)+n;S.silentGive=1;
+  const got=[],l=eff(S.luk)/100;
+  for(let i=0;i<n;i++){
+    S.pity=(S.pity||0)+1;
+    let rar;
+    if(S.pity>=90){rar=3;}
+    else{
+      let w=[55,30,11,3.4,0.6].map((x,i2)=>x*(1+l*i2*0.55));
+      if(n===10&&i===9&&!got.some(x=>x.r>=1))w=[0,30,11,3.4,0.6];
+      const tot=w.reduce((a,b)=>a+b,0);let x=Math.random()*tot;rar=0;
+      for(let k=0;k<5;k++){x-=w[k];if(x<=0){rar=k;break;}}
+    }
+    if(rar>=3)S.pity=0;
+    const pool=DROPS[rar].filter(k=>!S.items[k]);
+    if(pool.length){const id=pick(pool);give(S,id);got.push({r:rar,id:id});}
+    else{const back=[150,450,1300,3400,9000][rar];S.money+=back;got.push({r:rar,id:null,back:back});}
+  }
+  S.silentGive=0;
+  if(got.some(x=>x.r>=4))ach(S,'gachaL');
+  if((S.gacha||0)>=10)ach(S,'gacha10');
+  S.newItem=1;S.busy=true;
+  const RC=['N','R','E','U','L'];
+  showModal({tag:'뽑기',title:n===10?'10연차 결과':'뽑기 결과',noResult:true,
+    story:'박스를 열었다.',
+    html:'<div class="gres">'+got.map((x,i)=>
+      '<div class="gcard r'+x.r+'" style="animation-delay:'+(i*70)+'ms">'+
+      '<div class="rr" style="color:var(--r'+RC[x.r]+')">'+RN[x.r]+'</div>'+
+      '<div class="n">'+(x.id?ITEMS[x.id].n:'중복')+'</div>'+
+      '<div class="sub">'+(x.id?ITEMS[x.id].d:'+'+num(x.back)+'만원 환급')+'</div></div>').join('')+'</div>',
+    opts:[{t:'확인',f:()=>null}]});
+}
+function renderRankTab(){
+  const me=S?myRecord():null;
+  const sorts=[['total','종합'],['money','자본'],['ach','업적']];
+  const head='<div class="subtabs">'+sorts.map(x=>'<button data-sort="'+x[0]+'" class="'+(BOARDSORT===x[0]?'on':'')+'">'+x[1]+' 랭킹</button>').join('')+
+    '<button data-refresh="1">새로고침</button></div>';
+  const mine=me?('<div class="rme"><div class="t">MY PROFILE</div>'+
+    '<div class="n">'+esc(me.name)+'<span class="job">'+me.job+' · '+me.line+' 라인 · Lv.'+me.lv+'</span></div>'+
+    '<div class="g"><span>자산 <b>'+money(me.money)+'</b></span><span>업적 <b>'+me.ach+'</b></span>'+
+    '<span>히트 <b>'+me.hits+'</b> / 대박 <b>'+me.smash+'</b></span><span>근속 <b>'+Math.floor(me.months/12)+'년</b></span>'+
+    '<span>종합점수 <b>'+num(me.score)+'</b></span></div></div>'):'';
+  if(!SBUID){
+    setHTML('tab-rank',head+mine+
+      '<div class="pnote"><b>로그인하면 내 기록이 이 순위표에 올라갑니다.</b> 오른쪽 위 · 또는 첫 화면에서 회원가입하세요. 로그인 없이도 순위표는 볼 수 있습니다.</div>'+
+      boardTable());
+    return;
+  }
+  setHTML('tab-rank',head+mine+boardTable());
+}
+function boardTable(){
+  if(BOARD===null)return '<div class="pnote">랭킹을 불러오는 중…</div>';
+  const valOf=r=>BOARDSORT==='money'?money(r.money||0):(BOARDSORT==='ach'?((r.ach||0)+' / 42'):num(r.score||0));
+  const subOf=r=>BOARDSORT==='money'?('Lv.'+(r.lv||1)+' · 업적 '+(r.ach||0)):(BOARDSORT==='ach'?money(r.money||0):('Lv.'+(r.lv||1)+' · '+money(r.money||0)));
+  const rows=BOARD.map((r,i)=>
+    '<div class="rrow'+(r.id===UID?' me':'')+(i<3?' r'+(i+1):'')+'">'+
+      '<div class="rrank">'+(i+1)+'</div>'+
+      '<div class="rname">'+esc(r.name||'?')+'<span class="rjob">'+esc(r.job||'')+' · '+esc(r.line||'')+'</span></div>'+
+      '<div class="rval">'+valOf(r)+'</div>'+
+      '<div class="rsub">'+subOf(r)+'</div>'+
+    '</div>').join('');
+  return (
+    '<div class="rtable"><div class="rrow head"><div class="rrank">#</div><div>플레이어 · 직업</div>'+
+      '<div class="rval">'+(BOARDSORT==='money'?'자산':BOARDSORT==='ach'?'업적':'종합점수')+'</div><div class="rsub">기타</div></div>'+
+      (rows||'<div class="rrow"><div class="rrank">–</div><div>아직 등록된 기록이 없습니다.</div><div class="rval"></div><div class="rsub"></div></div>')+
+    '</div>'+
+    '<div class="pnote">종합점수는 직급 · 명예 승급 · 레벨 · 업적 · 대박작 · 히트작 · 수상 · 자산을 합산하고 폭망을 감점해 계산합니다.<br>'+
+    '기록은 승진·방영 때와 2년마다 자동으로 갱신됩니다.</div>');
+}
+function renderLogTab(){
+  const keys=Object.keys(ACHS),got=keys.filter(k=>S.ach[k]).length;
+  setHTML('tab-log',
+    '<div class="cols c2b"><div>'+
+    '<div class="sec-label">제 작 일 지</div>'+
+    '<div class="log" id="logbox">'+S.log.map(l=>'<p class="'+l.k+'"><span class="mo num">'+(Math.floor(l.m/12)+1)+'-'+String(l.m%12+1).padStart(2,'0')+'</span>'+esc(l.t)+'</p>').join('')+'</div>'+
+    '</div><div>'+
+    '<div class="sec-label">업 적 '+got+' / '+keys.length+'</div>'+
+    '<div class="ach-grid" style="grid-template-columns:1fr">'+keys.map(k=>{const a=ACHS[k],o=S.ach[k];
+      return '<div class="ach'+(o?'':' lock')+'"><div class="t">'+(o?a.t:'???')+'</div><div class="d">'+a.d+'</div></div>';}).join('')+'</div>'+
+    '</div></div>');
+  const lb=$('logbox');if(lb)lb.scrollTop=lb.scrollHeight;
+}
+function renderTab(){
+  if(tab==='stat')renderStatTab();
+  else if(tab==='promo')renderPromoTab();
+  else if(tab==='show')renderShowTab();
+  else if(tab==='bag')renderBagTab();
+  else if(tab==='shop')renderShopTab();
+  else if(tab==='rank')renderRankTab();
+  else renderLogTab();
+}
+function refresh(){renderHead();renderStrip();renderActs();renderTabs();renderTab();renderInbox();}
+
+/* ══════════════ 진행 ══════════════ */
+function tick(){
+  S.m++;
+  if(S.pause>0){S.pause--;S.men=Math.min(100,S.men+6);S.sta=Math.min(100,S.sta+6);
+    if(S.pause===0)pushLog('병가에서 복귀했다.','hi');afterTick();return;}
+  if(S.promoCd>0)S.promoCd--;
+  const a=ACTIONS.find(x=>x.id===S.act)||ACTIONS[0],e=a.e,M=mods(),perf=perfNow();
+  const d={};
+  for(const k in e){
+    let v=e[k];
+    if(k==='q'){v*=M.qMul;if(a.id==='edit')v*=M.editQ;if(v>0)v*=perf;}
+    else if(k==='sta'&&v<0)v*=M.staCost;
+    else if(k==='men'&&v>0)v*=M.menGain;
+    else if(k==='exp')v*=perf;
+    else if(GROW.indexOf(k)>=0)v*=M.gAll*(M.g[k]||1)*perf;
+    d[k]=v;
+  }
+  g(S,d);
+  if(a.id==='idle'){S.idleM++;if(S.idleM>=60)ach(S,'idle60');}
+  S.money+=node().pay-livingCost()+M.moneyAdd;
+  if(S.sta<25)g(S,{men:-2});
+  if(S.men<20)g(S,{sta:-2});
+  S.risk=Math.max(0,Math.min(100,S.risk-0.3*M.riskMul+M.riskAdd));
+  if(S.sta<=1||S.men<=1){S.zero=(S.zero||0)+1;
+    if(S.zero>=5){S.zero=0;S.pause=3;g(S,{sta:45,men:45,rep:-10,money:-250});
+      pushLog('현장에서 쓰러졌다. 3개월 강제 병가.','bad');toast('<b>과로로 쓰러짐</b> · 3개월 병가');}
+  }else S.zero=0;
+  if(Math.random()<0.5)fx('+'+Math.round((e.exp||0)*perf*M.expMul)+' EXP','#8FB4E8');
+  if(e.q&&S.prog&&Math.random()<0.38)fx('완성도 +'+Math.round(d.q),'#59C79F');
+  if(Math.random()<0.2)pushLog(pick(a.l));
+  afterTick();
+}
+function afterTick(){
+  checkAch();
+  dangerMode(S.risk>=68||S.sta<=18||S.men<=18);
+  if(tr(S)>=3&&!S.prog&&S.m>=S.nextSlot&&!hasInbox('plan')){pushInbox({kind:'plan'});S.nextSlot=S.m+10;}
+  if(S.prog&&S.m>=S.prog.air&&!hasInbox('air')){pushInbox({kind:'air'});S.prog.air=S.m+9999;}
+  autoPromo();
+  if(S.inbox.length<6){
+    if(S.risk>=45&&Math.random()<S.risk/900){
+      const ev=EVENTS.find(x=>x.id===(S.risk>=80?'crime7':'crime6'));
+      if(ev&&canFire(ev))fireEvent(ev);
+    }else if(Math.random()<0.10){
+      const pool=EVENTS.filter(canFire);if(pool.length)fireEvent(pick(pool));
+    }
+  }
+  if(S.m%6===0)save();
+  if(S.m%24===0)pushBoard(false);
+  refresh();
+}
+
+/* ── 편지함 ── */
+function hasInbox(kind){return S.inbox.some(x=>x.kind===kind);}
+function pushInbox(item){
+  if(item.kind==='event'){const ev=EVENTS.find(e=>e.id===item.id);if(ev&&ev.u)item.u=1;}
+  S.inbox.push(item);
+  if(S.inbox.length>8)S.inbox.shift();
+  renderInbox();
+  const label=item.kind==='promo'?'인사 발령 통지':item.kind==='plan'?'편성 회의 소집':item.kind==='air'?'첫 방송일':'새 소식';
+  if(item.u){
+    const ev=EVENTS.find(e=>e.id===item.id);
+    alarm('긴급 · '+(ev?ev.t:'사태 발생'),'열면 10초 안에 판단해야 한다');
+    flash('red',420);shake(true);
+    toast('<b>긴급</b> · '+(ev?ev.t:'사태'),'');
+  }else{
+    toast('<b>'+label+'</b>이(가) 도착했다','blue');
+    if(item.kind==='promo'){flash('gold',300);}
+  }
+}
+function inboxLabel(it){
+  return it.kind==='promo'?'인사 발령 통지':it.kind==='plan'?'편성 회의':it.kind==='air'?'첫 방송':'새 소식';
+}
+function renderInbox(){
+  const b=$('inbox');if(!b)return;
+  const n=S?S.inbox.length:0;
+  b.hidden=(n===0);
+  if(!n)return;
+  const top=S.inbox[0];
+  const urg=S.inbox.find(x=>x.u);
+  $('inbox-n').textContent=n;
+  $('inbox-label').textContent=inboxLabel(urg||top);
+  $('inbox-sub').innerHTML=urg?'<span class="dl">즉시 대응 필요 · 10초 판단</span>':'클릭해서 확인';
+  b.classList.toggle('urgent',!!urg);
+}
+function openInbox(){
+  if(!S||S.busy||!S.inbox.length)return;
+  let idx=S.inbox.findIndex(x=>x.u); if(idx<0)idx=0;
+  const it=S.inbox.splice(idx,1)[0];renderInbox();
+  if(it.kind==='event'){const ev=EVENTS.find(e=>e.id===it.id);if(ev)runEvent(ev);}
+  else if(it.kind==='plan')runPlan();
+  else if(it.kind==='air')airShow();
+  else if(it.kind==='promo')runPromo(it.ids);
+}
+function canFire(e){
+  if(e.c&&!e.c(S))return false;
+  const last=S.cool[e.id];
+  if(last!=null){if(!e.cd)return false;if(S.m-last<e.cd)return false;}
+  return true;
+}
+function checkAch(){
+  const T=tr(S);
+  if(T>=3)ach(S,'first');
+  if(T>=6)ach(S,'t6');
+  if(T>=8)ach(S,'t8');
+  if(S.rank==='legend')ach(S,'legend');
+  if((S.star||0)>=2)ach(S,'star3');
+  if(S.line)ach(S,'line'+S.line.charAt(0).toUpperCase()+S.line.slice(1));
+  if(S.money>=10000)ach(S,'rich1');
+  if(S.money>=100000)ach(S,'rich10');
+  if(S.money>=1000000)ach(S,'rich100');
+  if(S.m>=120){ach(S,'y10');if(S.risk<=0&&!S.dirty)ach(S,'clean');}
+  if(S.m>=240)ach(S,'y20');
+  if(S.m>=360)ach(S,'y30');
+  if(S.awards>=3)ach(S,'award3');
+  if(S.promoFail>=5)ach(S,'fail5');
+  if(S.promoFail>=12)ach(S,'fail12');
+  if(S.streakFlop>=3)ach(S,'flop3');
+}
+
+/* ── 승진 심사 ── */
+function autoPromo(){
+  if(S.promoCd>0||hasInbox('promo'))return;
+  const ready=readyPromos();
+  if(ready.length)pushInbox({kind:'promo',ids:ready});
+}
+function runPromo(ids){
+  ids=(ids||[]).filter(id=>reqOk(id)&&nextIds().indexOf(id)>=0);
+  if(!ids.length)return;
+  S.busy=true;
+  const multi=ids.length>1;
+  showModal({tag:'인사',title:multi?'진로 선택':'승진 심사 안내',img:'doc',noResult:true,
+    story:multi
+      ? '길이 '+ids.length+'갈래로 동시에 열렸다.\n어느 쪽으로 갈지는 내가 고른다. 한 번 정하면 되돌릴 수 없다.'
+      : '「'+TREE[ids[0]].n+'」 심사 대상자 명단에 올랐다.\n응할지 말지는 내가 정한다. 떨어지면 8개월간 재도전할 수 없다.',
+    opts:ids.map(id=>{const nd2=TREE[id];
+      return {t:'「'+nd2.n+'」 심사에 응한다',
+        d:LINES[nd2.l].n+' 라인 · T'+nd2.t+' · 성공 확률 '+Math.round(promoChance(id))+'%',
+        f:()=>{setTimeout(()=>judgePromo(id),60);return null;}};})
+      .concat([{t:'이번엔 넘긴다',d:'3개월 뒤 다시 통지가 온다. 그동안 스탯을 더 올리면 확률이 오른다.',
+        f:()=>{S.promoCd=3;pushLog('승진 심사를 미뤘다.','');return null;}}])});
+}
+function judgePromo(id){
+  if(!reqOk(id)||nextIds().indexOf(id)<0)return;
+  const nd2=TREE[id],c=promoChance(id),ok=Math.random()*100<c;
+  S.busy=true;
+  showModal({tag:'인사',title:(nd2.star?'승급 심사':'승진 심사'),img:'trophy',
+    story:'「'+nd2.n+'」 심사가 시작됐다.\n회의실 문이 닫혔다. 성공 확률 '+Math.round(c)+'%.',
+    opts:[{t:'결과를 듣는다',d:'성공 '+Math.round(c)+'% / 실패 '+(100-Math.round(c))+'%',f:()=>{
+      let msg;
+      if(ok){
+        if(nd2.star&&S.rank==='legend'){S.star=(S.star||0)+1;S.promoCd=12;}
+        else{S.rank=id;if(nd2.l!=='com')S.line=nd2.l;if(nd2.bias)S.bias=nd2.bias;}
+        markSeen();
+        S.promoFail=0;S.promoCd=0;g(S,{men:16,rep:6,exp:150});
+        msg='승진이다.\n\n새 명함이 나왔다. 직함을 세 번 읽었다.\n\n▶ '+rankName();
+        pushLog(rankName()+'(으)로 승진했다.','up');
+        toast('<b>승진!</b> '+rankName(),'gold');pushBoard(true);
+        flash('gold',520);shake(false);
+        if(Math.random()<0.45)S.dropNow=rollDrop(S,1);
+      }else{
+        S.promoFail++;S.promoCd=8;g(S,{rep:-5,men:-12});
+        msg='미끄러졌다.\n\n"이번엔 자리가 없었어."\n그 말을 '+S.promoFail+'번째 들었다.\n\n8개월 뒤 다시 통지가 온다. 실패할수록 확률이 +6%씩 붙는다.';
+        pushLog('승진 심사 탈락 ('+S.promoFail+'회)','bad');
+        flash('red',300);
+      }
+      return msg;
+    }}]});
+}
+
+/* ── 편성 ── */
+function runPlan(){
+  S.busy=true;
+  const pool=GENRES.slice().sort(()=>Math.random()-.5).slice(0,3);
+  showModal({tag:'편성',title:'편성 회의 · 기획안 선택',img:'tv',
+    story:'슬롯이 하나 비었다. 국장이 기획안 세 개를 책상에 올려놨다.\n"뭘로 갈래?"',
+    noResult:true,
+    opts:pool.map(gn=>({t:gn.n,d:gn.d+' · 기대치 '+(gn.mult>=1.05?'높음':gn.mult>=.9?'보통':'낮음')+' / 변동성 '+(gn.vol>=1.3?'매우 큼':gn.vol>=.95?'보통':'작음'),
+      f:()=>{S.prog={g:gn,title:pick(gn.names),q:10,air:S.m+14};
+        pushLog('신규 편성: 「'+S.prog.title+'」 ('+gn.n+')','hi');return null;}}))});
+}
+
+/* ── 방영 ── */
+function calcRating(){
+  const p=S.prog,gn=p.g,w=gn.w;
+  const raw=p.q*w.q+eff(S.sense)*w.sense+eff(S.dir)*w.dir+eff(S.cast)*w.cast+eff(S.plan)*w.plan;
+  const sw=w.q+w.sense+w.dir+w.cast+w.plan;
+  const base=raw/sw*(0.45+0.75*p.q/100);
+  const luck=Math.max(.18,1+(Math.random()*2-1)*.55*gn.vol);
+  let v=base*gn.mult*luck*0.152*(1+eff(S.luk)/220)*mods().ratingMul;
+  return Math.max(.2,Math.min(45,v));
+}
+function tierOf(v){
+  if(v>=14)return {k:'smash',n:'국민 예능',c:'t-smash',pip:'s'};
+  if(v>=8.5)return {k:'hit',n:'히트',c:'t-hit',pip:'h'};
+  if(v>=4.5)return {k:'mid',n:'평타',c:'t-mid',pip:''};
+  if(v>=2.2)return {k:'low',n:'아쉬움',c:'t-low',pip:''};
+  return {k:'flop',n:'폭망',c:'t-flop',pip:'f'};
+}
+function predict(){
+  const p=S.prog,gn=p.g,w=gn.w;
+  const raw=p.q*w.q+eff(S.sense)*w.sense+eff(S.dir)*w.dir+eff(S.cast)*w.cast+eff(S.plan)*w.plan;
+  const sw=w.q+w.sense+w.dir+w.cast+w.plan;
+  return (raw/sw*(0.45+0.75*p.q/100)*gn.mult*0.152*(1+eff(S.luk)/220)*mods().ratingMul).toFixed(1)+'% 내외';
+}
+function airShow(){
+  S.busy=true;
+  const p=S.prog,gn=p.g;let v=calcRating(),t=tierOf(v),extra='';
+  if(t.k==='flop'&&mods().reroll&&!S.rerollUsed){S.rerollUsed=1;
+    const v2=calcRating();if(v2>v){v=v2;t=tierOf(v);extra='\n\n타임머신 편집기가 발동했다. 다시 뽑았다.';}}
+  const vs=v.toFixed(1);let msg='';
+  if(t.k==='smash'){g(S,{rep:16,cast:8,sense:4,men:22,money:r(400,900),exp:190});S.smash++;S.hits++;S.streakFlop=0;
+    setTimeout(()=>{flash('gold',700);shake(true);},900);
+    msg='시청률표 맨 위에 우리 프로그램이 있다.\n국장이 복도에서 내 어깨를 두 번 쳤다.';
+    if(Math.random()<0.35)S.dropNow=rollDrop(S,1);}
+  else if(t.k==='hit'){g(S,{rep:9,cast:4,men:14,money:r(150,380),exp:115});S.hits++;S.streakFlop=0;
+    msg='시즌 2가 확정됐다.\n회식 자리에서 처음으로 상석에 앉았다.';}
+  else if(t.k==='mid'){g(S,{rep:2,men:3,money:r(30,110),exp:65});S.streakFlop=0;
+    msg='무난하다. 잘렸다는 소식도, 잘됐다는 소식도 없다.';}
+  else if(t.k==='low'){g(S,{rep:-4,men:-11,exp:60});S.streakFlop=0;
+    msg='편성팀에서 "일단 8부까지만 보자"고 했다.';}
+  else{g(S,{rep:-13,men:-19,sta:-5,exp:40});S.flops++;S.streakFlop++;
+    setTimeout(()=>{flash('red',600);shake(true);},900);
+    msg='조기 종영이 결정됐다.\n마지막 촬영날 스태프들이 아무 말도 안 했다.';}
+  if(gn.award&&v>=2.2){g(S,{rep:12});msg+='\n\n대신 작품상 후보에 올랐다.';}
+  if(gn.buzz&&t.k!=='flop'){g(S,{cast:5,sense:4,luk:3});msg+='\n\n클립 조회수는 시청률의 열 배였다.';}
+  msg+=extra;
+  if(v>=8.5)ach(S,'hit1');if(v>=14)ach(S,'smash1');if(v>=20)ach(S,'r20');if(v>=25)ach(S,'r25');
+  S.hist.push({v:vs+'%',c:t.pip});S.rerollUsed=0;
+  pushLog('「'+p.title+'」 첫 방송 '+vs+'% — '+t.n,(t.k==='smash'||t.k==='hit')?'up':(t.k==='flop'?'bad':'hi'));
+  S.prog=null;S.nextSlot=S.m+r(5,9);
+  $('rv-title').textContent=p.title;$('rv-genre').textContent=gn.n;
+  $('rv-tier').textContent=t.n;$('rv-tier').className='tier han '+t.c;
+  $('rv-msg').textContent=msg;$('rv-num').innerHTML='0.0<small>%</small>';
+  $('reveal').hidden=false;countTo(v);refresh();
+  pushBoard(false);
+  $('rv-go').onclick=()=>{$('reveal').hidden=true;S.busy=false;renderInbox();
+    if(S.dropNow){const id=S.dropNow;S.dropNow=null;S.newItem=1;}
+    refresh();save();};
+  $('rv-go').focus();
+}
+function countTo(target){
+  const el=$('rv-num'),dur=1100,t0=performance.now();
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    el.innerHTML=target.toFixed(1)+'<small>%</small>';return;}
+  (function fr(t){const k=Math.min(1,(t-t0)/dur),e2=1-Math.pow(1-k,3);
+    el.innerHTML=(target*e2).toFixed(1)+'<small>%</small>';
+    if(k<1)requestAnimationFrame(fr);})(t0);
+}
+
+/* ── 모달 ── */
+
+/* ══ 미니게임 ══ */
+const SYMS=['★','◆','●','▲','✦'];
+let _miniRAF=null;
+function stopMini(){if(_miniRAF){cancelAnimationFrame(_miniRAF);_miniRAF=null;}}
+function runMini(kind,opt,done){
+  stopTimer();stopMini();
+  const box=$('m-opts');box.innerHTML='';
+  const wrap=document.createElement('div');wrap.className='minigame';box.appendChild(wrap);
+  const finish=(win,extra)=>{stopMini();done(win,extra);};
+
+  if(kind==='timing'){
+    const zw=Math.max(8,(opt.zone||18));
+    const zx=12+Math.random()*(76-zw);
+    const spd=(opt.speed||0.055);
+    wrap.innerHTML='<div class="mtitle">타 이 밍</div><div class="mdesc">'+(opt.mdesc||'초록 구간에서 멈춰라.')+'</div>'+
+      '<div class="mbar"><i class="zone'+(zw<=12?' small':'')+'" style="left:'+zx+'%;width:'+zw+'%"></i><i class="cur" style="left:0%"></i></div>'+
+      '<button class="mbtn">S T O P</button><div class="mhint">한 번뿐이다.</div>';
+    const cur=wrap.querySelector('.cur');let x=0,dir=1,t0=performance.now();
+    (function step(t){const dt=t-t0;t0=t;x+=dir*spd*dt;
+      if(x>=100){x=100;dir=-1;}if(x<=0){x=0;dir=1;}
+      cur.style.left=x+'%';_miniRAF=requestAnimationFrame(step);})(performance.now());
+    wrap.querySelector('.mbtn').onclick=()=>{stopMini();
+      const win=(x>=zx&&x<=zx+zw);
+      cur.style.background=win?'#3FD6A0':'#FF5A4C';
+      finish(win);};
+  }
+  else if(kind==='mash'){
+    const goal=opt.goal||24,dur=(opt.dur||3.2)*1000;
+    wrap.innerHTML='<div class="mtitle">연 타</div><div class="mdesc">'+(opt.mdesc||'시간 안에 목표만큼 두들겨라.')+'</div>'+
+      '<div class="mcount"><span id="mc">0</span><small> / '+goal+'</small></div>'+
+      '<div class="mbar"><i class="fillv" style="width:100%"></i></div>'+
+      '<button class="mbtn">두 들 겨 !</button><div class="mhint">'+(dur/1000).toFixed(1)+'초</div>';
+    let n=0;const end=Date.now()+dur,fv=wrap.querySelector('.fillv'),mc=wrap.querySelector('#mc');
+    wrap.querySelector('.mbtn').onclick=()=>{n++;mc.textContent=n;
+      if(n>=goal){finish(true);}};
+    (function step(){const left=end-Date.now();
+      if(left<=0){finish(n>=goal);return;}
+      fv.style.width=(left/dur*100)+'%';_miniRAF=requestAnimationFrame(step);})();
+  }
+  else if(kind==='shell'){
+    const n=opt.cards||3,winIdx=Math.floor(Math.random()*n);
+    wrap.innerHTML='<div class="mtitle">한 장 만</div><div class="mdesc">'+(opt.mdesc||'셋 중 하나. 감으로 찍어라.')+'</div>'+
+      '<div class="mcards">'+Array.from({length:n},(_,i)=>'<button class="mcard" data-i="'+i+'">?</button>').join('')+'</div>'+
+      '<div class="mhint">운 스탯이 높으면 손이 알아서 간다.</div>';
+    wrap.querySelectorAll('.mcard').forEach(b=>{
+      b.onclick=()=>{
+        let win=(+b.dataset.i===winIdx);
+        if(!win&&Math.random()<eff(S.luk)/260)win=true;
+        wrap.querySelectorAll('.mcard').forEach((c,i)=>{c.disabled=true;
+          c.textContent=(i===winIdx||(win&&c===b))?'○':'×';
+          c.classList.add((i===winIdx||(win&&c===b))?'hit':'miss');});
+        setTimeout(()=>finish(win),480);
+      };
+    });
+  }
+  else if(kind==='slot'){
+    wrap.innerHTML='<div class="mtitle">돌 려 라</div><div class="mdesc">'+(opt.mdesc||'세 개가 맞으면 대박.')+'</div>'+
+      '<div class="mreels">'+[0,1,2].map(i=>'<div class="mreel spin" id="rl'+i+'">★</div>').join('')+'</div>'+
+      '<button class="mbtn">S P I N</button><div class="mhint">두 개만 맞아도 본전은 넘는다.</div>';
+    const reels=[0,1,2].map(i=>wrap.querySelector('#rl'+i));
+    const res=[0,1,2].map(()=>Math.floor(Math.random()*SYMS.length));
+    const bias=eff(S.luk)/100;
+    if(Math.random()<0.10+bias*0.22){res[1]=res[0];if(Math.random()<0.35+bias*0.3)res[2]=res[0];}
+    wrap.querySelector('.mbtn').onclick=function(){
+      this.disabled=true;this.textContent='...';
+      let t0=performance.now(),stopped=0;
+      (function step(t){
+        reels.forEach((r,i)=>{if(i>=stopped)r.textContent=SYMS[Math.floor(Math.random()*SYMS.length)];});
+        const el=t-t0;
+        const want=el<700?0:el<1350?1:el<2050?2:3;
+        while(stopped<want&&stopped<3){reels[stopped].textContent=SYMS[res[stopped]];
+          reels[stopped].classList.remove('spin');reels[stopped].classList.add('stop');stopped++;}
+        if(stopped>=3){
+          const same=(res[0]===res[1]&&res[1]===res[2])?3:((res[0]===res[1]||res[1]===res[2]||res[0]===res[2])?2:1);
+          setTimeout(()=>finish(same>=2,same),450);return;}
+        _miniRAF=requestAnimationFrame(step);})(performance.now());
+    };
+  }
+  else {wrap.innerHTML='<div class="mtitle">판 정</div><div class="mdesc">결과를 기다린다.</div>';setTimeout(()=>finish(Math.random()<0.5),200);}
+}
+let _timerRAF=null,_timerEnd=0;
+function stopTimer(){
+  if(_timerRAF){cancelAnimationFrame(_timerRAF);_timerRAF=null;}
+  const t=$('m-timer');if(t){t.hidden=true;t.classList.remove('hot');}
+}
+function startTimer(sec,onEnd){
+  const box=$('m-timer'),bar=$('m-bar'),lab=$('m-sec');
+  box.hidden=false;box.classList.remove('hot');
+  _timerEnd=Date.now()+sec*1000;
+  (function step(){
+    const left=Math.max(0,_timerEnd-Date.now());
+    const ratio=left/(sec*1000);
+    bar.style.width=(ratio*100)+'%';
+    const s2=Math.ceil(left/1000);
+    lab.innerHTML=s2+'<small>초</small>';
+    box.classList.toggle('hot',left<=4000);
+    if(left<=0){stopTimer();onEnd();return;}
+    _timerRAF=requestAnimationFrame(step);
+  })();
+}
+function showModal(cfg){
+  stopTimer();
+  $('m-tag').textContent=cfg.tag||'사건';
+  $('m-title').textContent=cfg.title;
+  $('m-story').textContent=cfg.story;
+  $('m-result').hidden=true;
+  if(cfg.img)drawIllust(cfg.img,$('m-img'));else $('m-img').innerHTML='';
+  $('m-drop').innerHTML=cfg.html||'';
+  const box=$('m-opts');box.innerHTML='';
+  (cfg.opts||[]).filter(o=>!o.c||o.c(S)).forEach(o=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML='<span class="ot">'+esc(o.t)+'</span>'+(o.d?'<span class="od'+(/의혹|적발|도박|확률/.test(o.d)?' risky':'')+'">'+esc(o.d)+'</span>':'');
+    b.onclick=()=>{
+      stopTimer();
+      if(o.mini){
+        $('m-story').textContent=o.md||cfg.story;
+        runMini(o.mini,o,(win,extra)=>{
+          let res='';
+          try{res=win?(o.win?o.win(S,extra):''):(o.lose?o.lose(S,extra):'');}catch(err){res='';}
+          finishOpt(cfg,res,win);
+        });
+        return;
+      }
+      const res=o.f(S);
+      refresh();
+      if(res){$('m-result').textContent=res;$('m-result').hidden=false;pushLog('['+cfg.title+'] '+res,'');}
+      if(S.dropNow!==undefined&&S.dropNow){const it=ITEMS[S.dropNow];S.dropNow=null;S.newItem=1;
+        $('m-drop').innerHTML='<div class="dropbox r'+it.r+'"><div class="lb" style="color:var(--r'+['N','R','E','U','L'][it.r]+')">'+RN[it.r]+' 획득</div>'+
+          '<div class="nm">'+it.n+'</div><div class="ds">'+it.d+'</div></div>';}
+      if(cfg.noResult&&!res){closeModal();return;}
+      box.innerHTML='';
+      const c2=document.createElement('button');c2.className='opt';c2.style.textAlign='center';c2.innerHTML='<span class="ot">계속</span>';
+      c2.onclick=closeModal;box.appendChild(c2);c2.focus();
+    };
+    box.appendChild(b);
+  });
+  $('modal').hidden=false;
+  const f=box.querySelector('button');if(f)f.focus();
+  if(cfg.timer)startTimer(cfg.timer,cfg.onTimeout||closeModal);
+}
+function finishOpt(cfg,res,win){
+  refresh();
+  if(res){$('m-result').textContent=res;$('m-result').hidden=false;pushLog('['+cfg.title+'] '+res,win===false?'bad':'');}
+  if(S.dropNow){const it=ITEMS[S.dropNow];S.dropNow=null;S.newItem=1;
+    $('m-drop').innerHTML='<div class="dropbox r'+it.r+'"><div class="lb" style="color:var(--r'+['N','R','E','U','L'][it.r]+')">'+RN[it.r]+' 획득</div>'+
+      '<div class="nm">'+it.n+'</div><div class="ds">'+it.d+'</div></div>';}
+  if(win===true){flash('gold',260);}else if(win===false){flash('red',260);}
+  const box=$('m-opts');box.innerHTML='';
+  const c=document.createElement('button');c.className='opt';c.style.textAlign='center';
+  c.innerHTML='<span class="ot">계속</span>';c.onclick=closeModal;box.appendChild(c);c.focus();
+}
+function closeModal(){stopTimer();stopMini();$('modal').hidden=true;S.busy=false;renderInbox();refresh();save();}
+function fireEvent(ev){S.cool[ev.id]=S.m;pushInbox({kind:'event',id:ev.id});}
+function runEvent(ev){
+  S.busy=true;
+  const wrap=fn=>fn?function(St,x){const res=fn(S,x);
+    if(Math.random()<0.18)S.dropNow=rollDrop(S,0);return res;}:undefined;
+  const cfg={tag:ev.u?'긴급':'사건',title:ev.t,img:ev.img,story:ev.s,
+    opts:ev.o.map(o=>{
+      const n={t:o.t,d:o.d,c:o.c};
+      if(o.mini){
+        n.mini=o.mini;n.zone=o.zone;n.speed=o.speed;n.goal=o.goal;
+        n.dur=o.dur;n.cards=o.cards;n.mdesc=o.mdesc;n.md=o.md;
+        n.win=wrap(o.win);n.lose=wrap(o.lose);
+      }else n.f=wrap(o.f);
+      return n;
+    })};
+  if(ev.u&&ev.fail){
+    cfg.timer=10;
+    cfg.onTimeout=()=>{
+      const res=ev.fail(S);refresh();
+      pushLog('['+ev.t+'] '+res,'bad');
+      $('m-result').textContent='시간 초과. 아무것도 결정하지 못했다.\n\n'+res;
+      $('m-result').hidden=false;
+      const box=$('m-opts');box.innerHTML='';
+      const c=document.createElement('button');c.className='opt';c.style.textAlign='center';
+      c.innerHTML='<span class="ot">계속</span>';c.onclick=closeModal;box.appendChild(c);c.focus();
+      flash('red',560);shake(true);alarm('대응 실패 · '+ev.t,res);
+    };
+  }
+  showModal(cfg);
+}
+
+/* ══════════════ 루프 ══════════════ */
+function loop(t){
+  if(!lastT)lastT=t;
+  const dt=t-lastT;lastT=t;
+  if(S&&!paused&&!S.busy&&!disguised){
+    acc+=dt;let guard=0;
+    while(acc>=MONTH_MS&&guard<20){acc-=MONTH_MS;guard++;tick();if(S.busy)break;}
+  }
+  if(S)drawScene(t);
+  requestAnimationFrame(loop);
+}
+function renderPause(){const b=$('btn-pause');b.textContent=paused?'▶  재개':'❚❚ 일시정지';b.classList.toggle('on',paused);}
+
+/* ══════════════ 위장 ══════════════ */
+const SHOWS=['일요일이 좋다','나 혼자 잘 산다','최후의 1인','미드나잇 라이브','어쩌다 유럽','3층 사람들','새벽 두 시의 대화'];
+function toggleDisguise(){
+  disguised=!disguised;
+  if(disguised){
+    $('dg-rows').innerHTML=SHOWS.map(s=>{const a=[];let sum=0;
+      for(let i=0;i<4;i++){const v=(1.2+Math.random()*13).toFixed(1);a.push(v);sum+=parseFloat(v);}
+      return '<tr><td>'+s+'</td>'+a.map(v=>'<td>'+v+'</td>').join('')+'<td>'+(sum/4).toFixed(1)+'</td><td>'+(0.6+Math.random()*5).toFixed(1)+'</td></tr>';}).join('');
+  }
+  $('disguise').hidden=!disguised;
+  document.title=disguised?'주간시청률_2026W36_최종_v3.xlsx':'백PD 키우기';
+}
+
+/* ══════════════ 시작 / 바인딩 ══════════════ */
+function begin(state,offMonths){
+  S=state;paused=false;acc=0;tab='stat';
+  $('screen-title').hidden=true;$('screen-game').hidden=false;$('btn-reset').hidden=false;
+  fitCanvas();renderPause();refresh();
+  if(offMonths>0){pushLog('자리를 비운 '+offMonths+'개월 동안 알아서 굴러갔다.','hi');
+    toast('자리 비운 사이 <b>'+offMonths+'개월</b> 진행됨','blue');}
+  else if(S.m===0)pushLog('예능국 인턴으로 배치됐다. 첫 업무는 프리뷰 20시간 분량.','hi');
+  else pushLog('복귀했다.','hi');
+  refresh();save();
+}
+function offlineRun(st){
+  const el=Date.now()-(st.saved||Date.now());
+  let months=Math.max(0,Math.min(36,Math.floor(el/MONTH_MS)));
+  if(months<=0)return 0;
+  const a=ACTIONS.find(x=>x.id===st.act)||ACTIONS[0];
+  const sv=S;S=st;
+  for(let i=0;i<months;i++){
+    if(st.prog&&st.m+1>=st.prog.air)break;
+    if(tr(st)>=3&&!st.prog&&st.m+1>=st.nextSlot)break;
+    st.m++;g(st,a.e);
+    st.money+=TREE[st.rank].pay-(140+tr(st)*34);
+    st.risk=Math.max(0,st.risk-0.3);
+  }
+  S=sv;return months;
+}
+$('btn-start').onclick=()=>{const n=($('inp-name').value||'').trim().slice(0,8)||'백PD';begin(newGame(n),0);};
+$('btn-continue').onclick=()=>{const st=load();if(!st)return;const mo=offlineRun(st);begin(st,mo);};
+$('inp-name').addEventListener('keydown',e=>{if(e.key==='Enter')$('btn-start').click();});
+$('acts').addEventListener('click',e=>{const b=e.target.closest('.act');if(!b||!S)return;
+  S.act=ACTIONS[+b.dataset.i].id;renderActs();save();});
+$('tabbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.t;refresh();});
+$('strip').addEventListener('click',e=>{const c=e.target.closest('[data-go]');if(!c)return;tab=c.dataset.go;refresh();});
+document.querySelector('.panelwrap').addEventListener('click',e=>{
+  if(!S)return;
+  const p=e.target.closest('.plus');
+  if(p&&S.sp>0){
+    const want=+(p.dataset.n||1), use=Math.min(want,S.sp);
+    S.sp-=use;S[p.dataset.k]+=use*SP_GAIN;
+    fx('+'+(use*SP_GAIN)+' '+GKEY[p.dataset.k],'#E8695E');
+    refresh();save();return;}
+  const pr=e.target.closest('[data-promo]');
+  if(pr&&!pr.disabled&&!S.busy){judgePromo(pr.dataset.promo);return;}
+  const so=e.target.closest('[data-sort]');
+  if(so){BOARDSORT=so.dataset.sort;BOARD=null;renderRankTab();loadBoard();return;}
+  if(e.target.closest('[data-refresh]')){BOARD=null;renderRankTab();pushBoard(true);loadBoard();return;}
+  const sl=e.target.closest('[data-sell]');
+  if(sl){sellItem(sl.dataset.sell);return;}
+  const ga=e.target.closest('[data-gacha]');
+  if(ga&&!ga.disabled){doGacha(+ga.dataset.gacha);return;}
+  const bu=e.target.closest('[data-buy]');
+  if(bu&&!bu.disabled){const k=bu.dataset.buy,it=ITEMS[k];
+    if(!S.items[k]&&S.money>=it.p){S.money-=it.p;give(S,k);refresh();save();}}
+});
+$('btn-pause').onclick=()=>{paused=!paused;renderPause();};
+$('inbox').onclick=openInbox;
+$('btn-reset').onclick=()=>{
+  if(!confirm('저장을 지우고 처음부터 시작할까요?'))return;
+  try{localStorage.removeItem('bpd_save');}catch(e){}
+  S=null;$('inbox').hidden=true;$('screen-game').hidden=true;$('screen-title').hidden=false;
+  $('btn-reset').hidden=true;$('btn-continue').hidden=true;$('sysmeta').textContent='세션 대기';
+};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.preventDefault();toggleDisguise();return;}
+  if(disguised||!S)return;
+  if(e.code==='Space'&&!S.busy&&$('modal').hidden){e.preventDefault();paused=!paused;renderPause();return;}
+  const n=parseInt(e.key,10);
+  if(n>=1&&n<=8&&!S.busy){S.act=ACTIONS[n-1].id;renderActs();}
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
+window.addEventListener('beforeunload',save);
+setInterval(()=>{if(S&&!S.busy)save();},15000);
+
+/* ══ 계정 (Supabase REST) ══ */
+function amsg(t,cls){const e=$('a-msg');if(e){e.textContent=t;e.className='amsg'+(cls?' '+cls:'');}}
+function saveTok(){try{localStorage.setItem('bpd_tok',JSON.stringify({a:TOKEN,r:RTOKEN,u:SBUID,n:SBNICK}));}catch(e){}}
+function clearTok(){try{localStorage.removeItem('bpd_tok');}catch(e){}}
+function setAuthUI(){
+  const w=$('who');if(w)w.textContent=SBUID?('◉ '+(SBNICK||'플레이어')):'';
+  $('btn-auth').hidden=!!SBUID;$('btn-logout').hidden=!SBUID;
+  if(SBUID)$('authpanel').classList.remove('on');
+}
+async function fetchNick(){
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/leaderboard?select=nickname&user_id=eq.'+SBUID,{headers:sbH(true)});
+    const d=res.ok?await res.json():[];
+    if(d&&d[0]&&d[0].nickname){SBNICK=d[0].nickname;$('inp-name').value=SBNICK;if(S){S.name=SBNICK;refresh();}}
+  }catch(e){}
+}
+async function onSession(j){
+  TOKEN=j.access_token;RTOKEN=j.refresh_token;SBUID=(j.user&&j.user.id)||j.user_id||SBUID;
+  UID=SBUID;saveTok();await fetchNick();setAuthUI();loadBoard();if(S)pushBoard(true);
+}
+$('btn-auth').onclick=()=>{$('authpanel').classList.toggle('on');};
+$('a-close').onclick=()=>{$('authpanel').classList.remove('on');};
+$('btn-logout').onclick=()=>{TOKEN=RTOKEN=SBUID=SBNICK=null;clearTok();UID=uid();setAuthUI();loadBoard();};
+$('a-login').onclick=async()=>{
+  amsg('로그인 중…');
+  try{
+    const res=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:sbH(false),
+      body:JSON.stringify({email:($('a-email').value||'').trim(),password:$('a-pw').value||''})});
+    const j=await res.json();
+    if(!res.ok){amsg('로그인 실패 · '+(j.error_description||j.msg||j.message||'확인해주세요'),'err');return;}
+    amsg('로그인 완료.','ok');await onSession(j);
+  }catch(e){amsg('네트워크 오류','err');}
+};
+$('a-signup').onclick=async()=>{
+  const nick=($('a-nick').value||'').trim().slice(0,12);
+  if(!nick){amsg('닉네임을 입력하세요.','err');return;}
+  amsg('가입 중…');
+  try{
+    const res=await fetch(SB_URL+'/auth/v1/signup',{method:'POST',headers:sbH(false),
+      body:JSON.stringify({email:($('a-email').value||'').trim(),password:$('a-pw').value||''})});
+    const j=await res.json();
+    if(!res.ok){amsg('가입 실패 · '+(j.msg||j.error_description||j.message||''),'err');return;}
+    if(!j.access_token){amsg('가입 완료. 메일함의 인증 링크를 누른 뒤 로그인하세요.','ok');return;}
+    await onSession(j);
+    const r2=await fetch(SB_URL+'/rest/v1/leaderboard?on_conflict=user_id',{method:'POST',
+      headers:Object.assign(sbH(true),{'Prefer':'resolution=merge-duplicates,return=minimal'}),
+      body:JSON.stringify([{user_id:SBUID,nickname:nick}])});
+    if(!r2.ok){
+      const t=await r2.text();
+      if(/23505|duplicate|unique/i.test(t)){amsg('이미 쓰는 닉네임입니다. 다른 닉네임으로 다시 시도하세요.','err');return;}
+      amsg('닉네임 등록 실패 · 잠시 후 다시 시도하세요.','err');return;
+    }
+    SBNICK=nick;saveTok();$('inp-name').value=nick;if(S){S.name=nick;refresh();}
+    setAuthUI();amsg('가입 완료. 랭킹에 등록되었습니다.','ok');pushBoard(true);loadBoard();
+  }catch(e){amsg('네트워크 오류','err');}
+};
+(async function restore(){
+  let t=null;try{t=JSON.parse(localStorage.getItem('bpd_tok')||'null');}catch(e){}
+  if(t&&t.r){
+    SBNICK=t.n||null;
+    try{
+      const res=await fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:sbH(false),
+        body:JSON.stringify({refresh_token:t.r})});
+      if(res.ok){await onSession(await res.json());return;}
+    }catch(e){}
+    clearTok();
+  }
+  setAuthUI();loadBoard();
+})();
+
+(function init(){
+  const st=load();
+  if(st){$('btn-continue').hidden=false;$('inp-name').value=st.name||'백PD';}
+  requestAnimationFrame(loop);
+})();
+})();
+
+</script>
+
+</body></html>

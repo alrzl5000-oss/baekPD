@@ -1,0 +1,9 @@
+{
+  "name": "baekpd-keuugi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "백PD 키우기 — 방치형 방송국 육성 RPG",
+  "scripts": {
+    "start": "npx --yes serve . -l ${PORT:-3000}"
+  }
+}
