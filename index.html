@@ -496,7 +496,12 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
 #authpanel .ahead{font-size:10px;letter-spacing:.22em;color:var(--onair);font-weight:700;margin-bottom:11px}
 #authpanel .arow{display:flex;gap:7px;margin-bottom:8px}
 #authpanel input{flex:1;width:auto;min-width:0}
-#authpanel .arow:last-of-type button{flex:1;padding:10px 0}
+#authpanel .arow:last-of-type button{flex:1;padding:11px 0;font-size:15px}
+#authpanel .atabs{display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid var(--line)}
+#authpanel .atabs button{flex:1;background:transparent;border:none;color:var(--ink-3);
+  padding:10px 0 11px;font-size:14.5px;font-weight:700}
+#authpanel .atabs button.on{color:var(--onair);box-shadow:inset 0 -2px 0 var(--onair)}
+#authpanel .ahead{display:none}
 .amsg{font-size:12px;color:var(--ink-3);line-height:1.65;margin-top:8px}
 .amsg.err{color:var(--onair)} .amsg.ok{color:var(--rate)}
 .sysbar #who{color:var(--rate);font-weight:700}
@@ -527,11 +532,20 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
       <p class="title-sub">24세 인턴으로 들어가서 끝없이 위로 올라가는 방치형 RPG.<br>어떻게 키우느냐에 따라 올라가는 길이 갈립니다.</p>
       <div class="title-rule"></div>
       <div id="authpanel" class="on">
-        <div class="ahead">계 정 으 로 시 작 하 기</div>
-        <div class="arow"><input type="text" id="a-nick" maxlength="12" placeholder="닉네임 (랭킹 표시명 · 가입 시에만)"></div>
-        <div class="arow"><input type="email" id="a-email" placeholder="이메일" autocomplete="email"><input type="password" id="a-pw" placeholder="비밀번호 6자 이상" autocomplete="current-password"></div>
-        <div class="arow"><button class="btn-primary" id="a-signup">회원가입</button><button class="btn-cont" id="a-login">로그인</button></div>
-        <div class="amsg" id="a-msg">계정이 있어야 플레이할 수 있습니다. 진행 상황이 이 계정에 묶이고, 종합·자본·업적 랭킹에 기록이 올라갑니다.</div>
+        <div class="atabs"><button id="at-login" class="on">로그인</button><button id="at-signup">회원가입</button></div>
+        <div id="pane-login">
+          <div class="arow"><input type="text" id="l-id" maxlength="16" placeholder="아이디" autocomplete="username"></div>
+          <div class="arow"><input type="password" id="l-pw" placeholder="비밀번호" autocomplete="current-password"></div>
+          <div class="arow"><button class="btn-primary" id="a-login">로그인</button></div>
+        </div>
+        <div id="pane-signup" hidden>
+          <div class="arow"><input type="text" id="s-id" maxlength="16" placeholder="아이디 (영문·숫자 4~16자)" autocomplete="username"></div>
+          <div class="arow"><input type="text" id="s-nick" maxlength="12" placeholder="닉네임 (랭킹에 보일 이름)"></div>
+          <div class="arow"><input type="password" id="s-pw" placeholder="비밀번호 (6자 이상)" autocomplete="new-password"></div>
+          <div class="arow"><input type="password" id="s-pw2" placeholder="비밀번호 다시 입력" autocomplete="new-password"></div>
+          <div class="arow"><button class="btn-primary" id="a-signup">가입하고 시작하기</button></div>
+        </div>
+        <div class="amsg" id="a-msg">계정이 있어야 플레이할 수 있습니다. 진행 상황이 계정에 묶이고, 종합·자본·업적 랭킹에 기록이 올라갑니다.</div>
       </div>
       <div class="name-row" id="gate" hidden>
         <input type="text" id="inp-name" maxlength="8" placeholder="이름" value="백PD" aria-label="PD 이름">
@@ -2755,28 +2769,51 @@ $('btn-logout').onclick=()=>{
   TOKEN=RTOKEN=SBUID=SBNICK=null;clearTok();UID=uid();
   S=null;$('screen-game').hidden=true;$('screen-title').hidden=false;
   $('btn-reset').hidden=true;$('inp-name').readOnly=false;
-  setAuthUI();loadBoard();amsg('로그아웃했습니다.','');
+  setAuthUI();loadBoard();switchAuth('login');amsg('로그아웃했습니다.','');
 };
+function idToEmail(id){return id.toLowerCase()+'@baekpd.app';}
+function switchAuth(which){
+  const L=which==='login';
+  $('at-login').classList.toggle('on',L);
+  $('at-signup').classList.toggle('on',!L);
+  $('pane-login').hidden=!L;
+  $('pane-signup').hidden=L;
+  amsg(L?'아이디와 비밀번호를 넣고 로그인하세요.':'아이디는 영문·숫자로, 닉네임은 랭킹에 보일 이름입니다.','');
+}
+$('at-login').onclick=()=>switchAuth('login');
+$('at-signup').onclick=()=>switchAuth('signup');
 $('a-login').onclick=async()=>{
+  const id=($('l-id').value||'').trim();
+  if(!id){amsg('아이디를 입력하세요.','err');return;}
   amsg('로그인 중…');
   try{
     const res=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:sbH(false),
-      body:JSON.stringify({email:($('a-email').value||'').trim(),password:$('a-pw').value||''})});
+      body:JSON.stringify({email:idToEmail(id),password:$('l-pw').value||''})});
     const j=await res.json();
-    if(!res.ok){amsg('로그인 실패 · '+(j.error_description||j.msg||j.message||'이메일과 비밀번호를 확인해주세요'),'err');return;}
+    if(!res.ok){
+      const m=(j.error_description||j.msg||j.message||'');
+      amsg(/Invalid login/i.test(m)?'아이디나 비밀번호가 틀렸습니다.':('로그인 실패 · '+m),'err');return;}
     amsg('로그인 완료. 아래에서 시작하세요.','ok');await onSession(j);
   }catch(e){amsg('네트워크 오류. 잠시 후 다시 시도해주세요.','err');}
 };
 $('a-signup').onclick=async()=>{
-  const nick=($('a-nick').value||'').trim().slice(0,12);
-  if(!nick){amsg('닉네임을 입력하세요. 랭킹에 표시될 이름입니다.','err');return;}
+  const id=($('s-id').value||'').trim();
+  const nick=($('s-nick').value||'').trim().slice(0,12);
+  const pw=$('s-pw').value||'', pw2=$('s-pw2').value||'';
+  if(!/^[A-Za-z0-9_]{4,16}$/.test(id)){amsg('아이디는 영문·숫자·밑줄 4~16자로 만들어주세요.','err');return;}
+  if(!nick){amsg('닉네임을 입력하세요. 랭킹에 보일 이름입니다.','err');return;}
+  if(pw.length<6){amsg('비밀번호는 6자 이상이어야 합니다.','err');return;}
+  if(pw!==pw2){amsg('비밀번호 두 개가 서로 다릅니다.','err');return;}
   amsg('가입 중…');
   try{
     const res=await fetch(SB_URL+'/auth/v1/signup',{method:'POST',headers:sbH(false),
-      body:JSON.stringify({email:($('a-email').value||'').trim(),password:$('a-pw').value||''})});
+      body:JSON.stringify({email:idToEmail(id),password:pw})});
     const j=await res.json();
-    if(!res.ok){amsg('가입 실패 · '+(j.msg||j.error_description||j.message||''),'err');return;}
-    if(!j.access_token){amsg('가입 완료. 메일함의 인증 링크를 누른 뒤 로그인하세요.','ok');return;}
+    if(!res.ok){
+      const m=(j.msg||j.error_description||j.message||'');
+      amsg(/already registered|already been/i.test(m)?'이미 있는 아이디입니다. 다른 걸로 해주세요.':('가입 실패 · '+m),'err');return;}
+    if(!j.access_token){
+      amsg('가입은 됐는데 바로 로그인이 안 됩니다. 관리자에게 이메일 인증 설정을 꺼달라고 하세요.','err');return;}
     await onSession(j);
     const r2=await fetch(SB_URL+'/rest/v1/leaderboard?on_conflict=user_id',{method:'POST',
       headers:Object.assign(sbH(true),{'Prefer':'resolution=merge-duplicates,return=minimal'}),
