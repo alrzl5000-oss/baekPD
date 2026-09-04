@@ -874,7 +874,7 @@ body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.
 #authpanel .ahead{display:none}
 .amsg{font-size:12px;color:var(--ink-3);line-height:1.65;margin-top:8px}
 .amsg.err{color:var(--onair)} .amsg.ok{color:var(--rate)}
-.sysbar #who{color:var(--rate);font-weight:700}
+.shhead #who{color:var(--rate);font-weight:700;font-size:11px;letter-spacing:0}
 </style>
 
 <div id="disguise" hidden>
@@ -960,10 +960,11 @@ body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.
     <div id="sheet" hidden>
       <div id="sheet-bg"></div>
       <div id="sheet-card">
-        <div class="shhead"><span>더 보 기</span><button id="sheet-x">✕</button></div>
+        <div class="shhead"><span>더 보 기</span><span class="meta" id="who"></span><button id="sheet-x">✕</button></div>
         <div id="sheet-list"></div>
         <div class="shfoot">
           <button class="ghost" id="btn-tut">튜토리얼 다시 보기</button>
+          <button class="ghost" id="btn-logout" hidden>로그아웃</button>
           <button class="ghost" id="btn-reset" hidden>처음 화면으로</button>
         </div>
       </div>
