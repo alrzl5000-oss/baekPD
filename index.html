@@ -81,6 +81,12 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
 
 /* 상단 스테이지 */
 .topstage{border:1px solid var(--line);border-top:none;background:linear-gradient(180deg,#12171E,#0D1116);padding:12px}
+/* ── 모바일 : 연타 시 더블탭 확대 차단 (핀치 줌은 유지) ── */
+html{-webkit-text-size-adjust:100%}
+body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.mcell,.mcard,.dcard,.icard{
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.stage,.acts,.tabbar,.crop,button{-webkit-user-select:none;user-select:none}
+.stage{-webkit-touch-callout:none}
 .stage{position:relative;border:1px solid #2A333F;border-radius:3px;background:var(--console);overflow:hidden;line-height:0;
   box-shadow:0 0 0 1px rgba(0,0,0,.7) inset, 0 0 34px rgba(90,160,240,.07) inset, 0 10px 30px rgba(0,0,0,.5)}
 .stage canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges}
@@ -611,6 +617,72 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
 .dcard .dr{position:absolute;top:4px;left:5px;font-size:8.5px;font-weight:800;letter-spacing:.06em}
 .dcard .dd{font-size:10px;color:var(--ink-3);line-height:1.45;margin-top:4px;display:none}
 .dcard.got:hover .dd{display:block}
+/* ── 가방 타일 + 상세 팝업 ── */
+.itiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px}
+.itile{position:relative;text-align:left;background:var(--surface-2);border:1px solid var(--line);
+  padding:9px 10px 8px;cursor:pointer;font-family:inherit;display:block;width:100%}
+.itile:hover{border-color:var(--onair)}
+.itile.r1{border-left:3px solid var(--rR)}.itile.r2{border-left:3px solid var(--rE)}
+.itile.r3{border-left:3px solid var(--rU)}.itile.r4{border-left:3px solid var(--rL)}
+.itile.r0{border-left:3px solid var(--rN)}
+.itile .ir{display:block;font-size:9.5px;letter-spacing:.14em;font-weight:800;margin-bottom:3px}
+.itile .inm{display:block;font-size:12.5px;font-weight:700;color:var(--ink-1);line-height:1.35}
+.itile .iw{position:absolute;right:7px;top:7px;font-size:9px;font-weight:800;color:var(--risk);letter-spacing:.06em}
+.itile .ioff{display:inline-block;margin-top:5px;font-size:9.5px;font-weight:800;letter-spacing:.08em;
+  color:var(--onair);border:1px solid var(--onair);padding:0 4px}
+.itile.off{opacity:.55}
+.itile.off .inm{text-decoration:line-through;text-decoration-color:#4A5563}
+.ipop{border:1px solid var(--line);background:#07090C;padding:10px 12px}
+.iprow{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--ink-3);padding:3px 0}
+.iprow b{color:var(--ink-1);font-size:12.5px}
+.ipeff{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.ipe{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--ink-2);padding:3px 0}
+.ipe b{font-variant-numeric:tabular-nums}
+.ipe b.up{color:var(--rate)}.ipe b.dn{color:var(--onair)}
+/* ── 환생 / 유산 카드 ── */
+.rebornbox{border:1px solid var(--line);background:var(--surface-2);padding:14px 13px}
+.rebornbox.on{border-color:#C9A227;background:linear-gradient(180deg,rgba(255,210,74,.12),rgba(0,0,0,0))}
+.rebornbox .rt{font-size:15px;font-weight:800;color:var(--ink-0);letter-spacing:.04em}
+.rebornbox.on .rt{color:#FFD24A}
+.rebornbox .rd{font-size:11.5px;color:var(--ink-3);line-height:1.7;margin-top:6px}
+.rebornbox .rlock{margin-top:10px;font-size:11.5px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:9px}
+.rbtn{margin-top:11px;width:100%;background:linear-gradient(180deg,#E8C34A,#C9A227);border:1px solid #FFD97A;
+  color:#1A1206;font-family:inherit;font-size:14.5px;font-weight:800;letter-spacing:.06em;padding:11px;cursor:pointer}
+.rbtn:active{transform:translateY(1px)}
+.cardsum{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px}
+.cs{display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px;color:var(--ink-3);
+  border:1px solid var(--line);background:#07090C;padding:6px 9px}
+.cs b{color:var(--rate);font-variant-numeric:tabular-nums}
+.cardgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:8px}
+.ccard{border:1px solid var(--line);background:var(--surface-2);padding:10px 11px 9px}
+.ccard.lock{opacity:.45}
+.ccard.got.r1{border-left:3px solid var(--rR)}.ccard.got.r2{border-left:3px solid var(--rE)}
+.ccard.got.r3{border-left:3px solid var(--rU)}
+.ccard.got.r4{border-left:3px solid var(--rL);background:linear-gradient(180deg,rgba(255,210,74,.09),rgba(0,0,0,0))}
+.ccard.got.r0{border-left:3px solid var(--rN)}
+.ccard .cr{font-size:9.5px;font-weight:800;letter-spacing:.12em;margin-bottom:4px}
+.ccard .cn{font-size:13px;font-weight:800;color:var(--ink-0);line-height:1.3}
+.ccard .ct{font-size:11px;color:var(--rate);line-height:1.5;margin-top:4px}
+.ccard.lock .ct{color:var(--ink-3)}
+.ccard .cd{font-size:10.5px;color:var(--ink-3);line-height:1.5;margin-top:5px;border-top:1px dashed var(--line);padding-top:5px}
+/* ── 접이식 섹션 (모바일 스크롤 감소) ── */
+.fold{border-top:1px solid var(--line);margin-top:11px}
+.fold>summary{list-style:none;cursor:pointer;padding:9px 0 8px;font-size:10.5px;letter-spacing:.2em;
+  color:var(--ink-3);font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary:after{content:'▾';font-size:11px;letter-spacing:0;transition:transform .15s;color:var(--ink-3)}
+.fold[open]>summary:after{transform:rotate(180deg)}
+.fold>summary:hover{color:var(--ink-1)}
+.fold .foldin{padding-bottom:4px}
+@media (max-width:600px){
+  .cols.c2{display:flex;flex-direction:column}
+  .cols.c2>div:last-child{order:-1}            /* 모바일에선 능력치를 위로 */
+  .itiles{grid-template-columns:repeat(2,1fr)}
+  .cardgrid{grid-template-columns:repeat(2,1fr)}
+  .dexgrid{grid-template-columns:repeat(3,1fr)}
+  .cardsum{grid-template-columns:repeat(2,1fr)}
+  .tabbar button{min-width:72px;font-size:12px;padding-left:6px;padding-right:6px}
+}
 .savenote{font-size:11.5px;line-height:1.75;color:var(--ink-3);border-left:2px solid var(--line);padding:2px 0 2px 11px;margin-top:11px}
 .savenote b{color:var(--ink-2)}
 .linkbtn{background:none;border:none;padding:0;margin-top:5px;color:var(--onair-soft);font-family:inherit;
@@ -807,6 +879,7 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
       <div class="tabpane" id="tab-bag" hidden></div>
       <div class="tabpane" id="tab-shop" hidden></div>
       <div class="tabpane" id="tab-rank" hidden></div>
+      <div class="tabpane" id="tab-card" hidden></div>
       <div class="tabpane" id="tab-set" hidden></div>
       <div class="tabpane" id="tab-log" hidden></div>
     </div>
@@ -1206,6 +1279,9 @@ const ACHS={
  rich100:{t:'100억',d:'순자산 100억 돌파'},
  lotto:{t:'로또 1등',d:'그런 일이 실제로 일어났다'},
  degen:{t:'투기의 맛',d:'복권·코인에 30번 손을 댔다'},
+ reborn1:{t:'두 번째 인생',d:'처음으로 환생했다'},
+ reborn3:{t:'★★★',d:'세 번 환생했다'},
+ reborn7:{t:'윤 회',d:'일곱 번 환생했다'},
  dex8:{t:'수집벽',d:'책상 도감 8종을 채웠다'},
  dex18:{t:'책상 고고학자',d:'책상 도감 18종을 채웠다'},
  dexall:{t:'전 부 다 주 웠 다',d:'책상 도감을 전부 채웠다'},
@@ -1746,6 +1822,7 @@ function mods(){
            ratingMul:1,promo:0,riskAdd:0,riskMul:1,shield:0,negSoft:1,peek:0,reroll:0,prShield:0};
   if(!S)return M;
   for(const id in S.items){
+    if(S.off&&S.off[id])continue;              /* 비활성 장비는 효과 없음 */
     const e=(ITEMS[id]||{}).e||{};
     if(e.qMul)M.qMul*=e.qMul; if(e.editQ)M.editQ*=e.editQ;
     if(e.expMul)M.expMul*=e.expMul; if(e.moneyAdd)M.moneyAdd+=e.moneyAdd;
@@ -1757,12 +1834,25 @@ function mods(){
     if(e.shield)M.shield+=e.shield; if(e.negSoft)M.negSoft*=e.negSoft;
     if(e.peek)M.peek=1; if(e.reroll)M.reroll=1; if(e.prShield)M.prShield=1;
   }
+  /* 유산 카드 (환생 누적) */
+  const C=cardMods();
+  M.gAll*=(1+C.gAll);
+  for(const k in C.g)M.g[k]=(M.g[k]||1)*(1+C.g[k]);
+  M.expMul*=(1+C.exp);
+  M.qMul*=(1+C.qMul);
+  M.ratingMul*=(1+C.rating);
+  M.promo+=C.promo;
+  M.staCost*=(1+C.staCost);
+  M.menGain*=(1+C.menGain);
+  M.riskMul*=(1+C.riskMul);
+  M.riskAdd+=C.riskAdd;
+  M.cardMoney=C.money;M.cardFee=C.fee;M.cardCrop=C.crop;M.markSoft=C.markSoft;
   return M;
 }
 let LASTSH='';
 function shieldList(St){
   const a=[];
-  for(const id in St.items){const e=(ITEMS[id]||{}).e||{};if(e.shield)a.push([id,e.shield]);}
+  for(const id in St.items){if(St.off&&St.off[id])continue;const e=(ITEMS[id]||{}).e||{};if(e.shield)a.push([id,e.shield]);}
   a.sort((x,y)=>x[1]-y[1]);   /* 방어 횟수 적은 것부터 소모 */
   return a;
 }
@@ -1865,6 +1955,158 @@ function toast(html,cls){
   host.appendChild(d);
   setTimeout(()=>{d.style.transition='opacity .4s';d.style.opacity='0';setTimeout(()=>d.remove(),400);},2700);
 }
+/* ══════════════ 환생 · 유산 카드 ══════════════ */
+const CARDS={
+ /* [효과키] 는 cardMods() 에서 합산 */
+ diligence:{n:'첫차의 기억',r:0,w:1000,d:'막내 시절 첫차를 타던 습관은 몸에 남는다.',e:{gAll:0.06},t:'모든 능력치 성장 +6%'},
+ nightowl :{n:'야간형 인간',r:0,w:1000,d:'새벽 세 시가 제일 잘 돌아간다.',e:{exp:0.07},t:'경험치 +7%'},
+ thrift   :{n:'짠돌이 습관',r:0,w:950,d:'회식은 가되 계산은 안 한다.',e:{money:0.10},t:'월 수입 +10%'},
+ stamina  :{n:'버티는 몸',r:0,w:950,d:'열여섯 시간 촬영에도 안 눕는다.',e:{staCost:-0.10},t:'체력 소모 −10%'},
+ zen      :{n:'무념무상',r:0,w:900,d:'욕을 먹어도 아무 생각이 안 든다.',e:{menGain:0.12},t:'멘탈 회복 +12%'},
+
+ network  :{n:'인맥 장부',r:1,w:560,d:'전 직장 사람들이 아직 전화를 받는다.',e:{g:{cast:0.14,rep:0.10}},t:'섭외·평판 성장 +14/10%'},
+ eye      :{n:'감독의 눈',r:1,w:560,d:'컷이 튀는 게 먼저 보인다.',e:{g:{dir:0.16},qMul:0.06},t:'연출 성장 +16% · 완성도 +6%'},
+ pitch    :{n:'기획서 템플릿',r:1,w:540,d:'세 줄만 바꿔도 새 기획이 된다.',e:{g:{plan:0.16},promo:2},t:'기획 성장 +16% · 승진 확률 +2%p'},
+ antenna  :{n:'트렌드 안테나',r:1,w:540,d:'유행을 두 달 먼저 안다.',e:{g:{sense:0.16},rating:0.05},t:'감각 성장 +16% · 시청률 +5%'},
+ seed     :{n:'퇴직금 시드',r:1,w:500,d:'전생에 모아둔 돈 일부가 따라왔다.',e:{start:2500},t:'시작 자금 +2,500만원'},
+
+ lawyerX  :{n:'단골 변호사',r:2,w:230,d:'번호를 외우고 있다.',e:{fee:-0.20,riskMul:0.15},t:'변호사비·추징금 −20% · 의혹 감소 +15%'},
+ clean    :{n:'깨끗한 장부',r:2,w:230,d:'영수증을 날짜순으로 정리하는 병이 있다.',e:{riskAdd:-0.35},t:'의혹 자연 감소 크게 증가'},
+ magnet   :{n:'책상 자석',r:2,w:220,d:'물건이 유독 이 책상에만 쌓인다.',e:{crop:0.55},t:'책상 수확 등장 +55%'},
+ lucky    :{n:'국장 라이터',r:2,w:210,d:'주웠는데 돌려주지 않았다.',e:{g:{luk:0.30}},t:'운 성장 +30%'},
+ promoX   :{n:'인사팀 라인',r:2,w:200,d:'발표 전날 결과를 안다.',e:{promo:6},t:'승진 확률 +6%p'},
+
+ legacy   :{n:'전생의 명함첩',r:3,w:70,d:'★이 붙은 이름은 업계가 기억한다.',e:{startStat:6,rep:0.20},t:'시작 능력치 +6 · 평판 성장 +20%'},
+ midas    :{n:'편성의 손',r:3,w:65,d:'무슨 슬롯을 잡아도 숫자가 나온다.',e:{rating:0.14},t:'시청률 +14%'},
+ phoenix  :{n:'불사조 인사기록',r:3,w:60,d:'강등돼도 반은 지워진다.',e:{markSoft:0.5},t:'오점 승진 페널티 절반'},
+ vault    :{n:'차명 금고',r:3,w:60,d:'어디에 뒀는지는 나만 안다.',e:{start:12000,money:0.18},t:'시작 자금 +1.2억 · 월 수입 +18%'},
+
+ destiny  :{n:'운 명',r:4,w:14,d:'세 번째 인생부터는 결과가 먼저 보인다.',e:{promo:12,rating:0.10,gAll:0.10},t:'승진 +12%p · 시청률 +10% · 성장 +10%'},
+ immortal :{n:'불 멸',r:4,w:12,d:'이 바닥에서 사라지지 않는 사람이 있다.',e:{gAll:0.22,exp:0.25},t:'모든 성장 +22% · 경험치 +25%'},
+ kingmaker:{n:'킹 메 이 커',r:4,w:10,d:'국장을 만드는 사람은 따로 있다.',e:{promo:9,startStat:12,start:30000},t:'승진 +9%p · 시작 능력치 +12 · 시작 자금 +3억'}
+};
+function cardMods(){
+  const M={gAll:0,g:{},exp:0,money:0,staCost:0,menGain:0,qMul:0,rating:0,promo:0,
+           riskMul:0,riskAdd:0,fee:0,crop:0,start:0,startStat:0,markSoft:1};
+  if(!S||!S.cards)return M;
+  for(const id in S.cards){
+    const c=CARDS[id];if(!c)continue;
+    const lv=S.cards[id],k=1+(lv-1)*0.5;      /* 중복 1장당 +50% */
+    const e=c.e||{};
+    for(const key in e){
+      if(key==='g'){for(const g2 in e.g)M.g[g2]=(M.g[g2]||0)+e.g[g2]*k;}
+      else if(key==='markSoft')M.markSoft=Math.min(M.markSoft,e.markSoft);
+      else M[key]=(M[key]||0)+e[key]*k;
+    }
+  }
+  return M;
+}
+function cardCount(){return S&&S.cards?Object.values(S.cards).reduce((a,b)=>a+b,0):0;}
+function drawCards(n){
+  const got=[],keys=Object.keys(CARDS);
+  for(let i=0;i<n;i++){
+    const w=keys.map(k=>CARDS[k].w*(1+(S.reborn||0)*0.06*CARDS[k].r));
+    const tot=w.reduce((a,b)=>a+b,0);
+    let r2=Math.random()*tot,pickd=keys[0];
+    for(let j=0;j<keys.length;j++){r2-=w[j];if(r2<=0){pickd=keys[j];break;}}
+    S.cards=S.cards||{};
+    const isNew=!S.cards[pickd];
+    S.cards[pickd]=(S.cards[pickd]||0)+1;
+    got.push({k:pickd,nw:isNew,lv:S.cards[pickd]});
+  }
+  return got;
+}
+function rebornReady(){return S&&S.rank==='legend'&&(S.star||0)>=1;}
+function starName(){const n=S?(S.reborn||0):0;return n<=0?'':(n<=3?'★'.repeat(n):'★×'+n);}
+function doReborn(){
+  if(!rebornReady()||S.busy)return;
+  S.busy=true;
+  const n=(S.reborn||0)+1;
+  const drawN=1+Math.min(2,Math.floor(n/3));       /* 1장 시작, 3회마다 +1 (최대 3장) */
+  showModal({tag:'환생',title:'환 생',img:'trophy',noResult:true,noDelta:true,
+    story:'명예의 전당에 이름을 올렸다.\n더 올라갈 자리는 없다.\n\n"처음부터 다시 해보시겠습니까?"\n\n'+
+      '직급·능력치·자산·아이템은 전부 사라집니다.\n'+
+      '대신 이름에 ★이 하나 더 붙고, 유산 카드 '+drawN+'장을 뽑습니다.\n'+
+      '카드 효과는 다음 생부터 영구히 적용됩니다.\n\n'+
+      '지금까지 모은 카드 '+cardCount()+'장 · 도감은 그대로 유지됩니다.',
+    opts:[
+      {t:'환생한다',d:'★'+n+' 획득 · 유산 카드 '+drawN+'장 · 진행 상황 초기화',
+       f:S2=>{
+         const got=drawCards(drawN);
+         const keep={cards:S2.cards,dex:S2.dex,ach:S2.ach,reborn:n,name:S2.name,bet:S2.bet};
+         const fresh=newGame(S2.name);
+         Object.keys(fresh).forEach(k=>{S2[k]=fresh[k];});
+         S2.cards=keep.cards;S2.dex=keep.dex;S2.ach=keep.ach;S2.reborn=keep.reborn;S2.bet=keep.bet;
+         applyCardStart(S2);
+         ach(S2,'reborn1');
+         if(n>=3)ach(S2,'reborn3');
+         if(n>=7)ach(S2,'reborn7');
+         pushLog('환생 ★'+n+' — 유산 카드 '+drawN+'장을 얻었다','up');
+         flash('gold',1200);shake(true);
+         toast('<b>환생 ★'+n+'</b> · 유산 카드 '+drawN+'장','gold');
+         return '★'+n+'\n\n'+got.map(g2=>{
+           const c=CARDS[g2.k];
+           return (g2.nw?'▶ NEW · ':'▶ ')+'['+RN[c.r]+'] '+c.n+(g2.lv>1?' Lv.'+g2.lv:'')+'\n   '+c.t;
+         }).join('\n\n')+'\n\n다음 생이 시작됐다.';
+       }},
+      {t:'아직은 아니다',d:'명예의 전당에서 ★ 승급을 계속합니다.',f:()=>null}]});
+}
+function applyCardStart(S2){
+  const M=cardMods();
+  if(M.start)S2.money+=Math.round(M.start);
+  if(M.startStat){
+    const add=Math.round(M.startStat);
+    ['dir','plan','sense','cast','rep','luk'].forEach(k=>{S2[k]+=add;});
+  }
+}
+function renderCardTab(){
+  const keys=Object.keys(CARDS);
+  S.cards=S.cards||{};
+  const own=keys.filter(k=>S.cards[k]);
+  const M=cardMods();
+  const sum=[];
+  if(M.gAll)sum.push(['모든 능력치 성장','+'+Math.round(M.gAll*100)+'%']);
+  Object.keys(M.g).forEach(k=>sum.push([GKEY[k]+' 성장','+'+Math.round(M.g[k]*100)+'%']));
+  if(M.exp)sum.push(['경험치','+'+Math.round(M.exp*100)+'%']);
+  if(M.money)sum.push(['월 수입','+'+Math.round(M.money*100)+'%']);
+  if(M.qMul)sum.push(['완성도','+'+Math.round(M.qMul*100)+'%']);
+  if(M.rating)sum.push(['시청률','+'+Math.round(M.rating*100)+'%']);
+  if(M.promo)sum.push(['승진 확률','+'+M.promo.toFixed(0)+'%p']);
+  if(M.staCost)sum.push(['체력 소모',Math.round(M.staCost*100)+'%']);
+  if(M.menGain)sum.push(['멘탈 회복','+'+Math.round(M.menGain*100)+'%']);
+  if(M.riskMul)sum.push(['의혹 감소','+'+Math.round(M.riskMul*100)+'%']);
+  if(M.riskAdd)sum.push(['매달 의혹',M.riskAdd.toFixed(2)]);
+  if(M.fee)sum.push(['변호사비·추징금',Math.round(M.fee*100)+'%']);
+  if(M.crop)sum.push(['책상 수확 등장','+'+Math.round(M.crop*100)+'%']);
+  if(M.start)sum.push(['시작 자금','+'+num(Math.round(M.start))+'만']);
+  if(M.startStat)sum.push(['시작 능력치','+'+Math.round(M.startStat)]);
+  if(M.markSoft<1)sum.push(['오점 페널티','절반']);
+
+  setHTML('tab-card',
+    '<div class="rebornbox'+(rebornReady()?' on':'')+'">'+
+      '<div class="rt">환 생 · 현재 '+((S.reborn||0)>0?starName():'★ 없음')+'</div>'+
+      '<div class="rd">최종 직급 <b>명예의 전당</b>에서 ★ 승급을 한 번이라도 하면 환생할 수 있습니다.<br>'+
+      '진행은 초기화되지만 <b>유산 카드</b>와 <b>책상 도감</b>, 업적은 그대로 남고, 카드 효과는 다음 생부터 영구 적용됩니다.</div>'+
+      (rebornReady()
+        ? '<button class="rbtn" data-reborn="1">환생하기 · 유산 카드 '+(1+Math.min(2,Math.floor(((S.reborn||0)+1)/3)))+'장</button>'
+        : '<div class="rlock">현재 '+rankName()+' — 명예의 전당 ★1 이상이어야 환생할 수 있습니다.</div>')+
+    '</div>'+
+    (sum.length?'<div class="sec-label mt">현 재 유 산 효 과</div>'+
+      '<div class="cardsum">'+sum.map(x=>'<div class="cs"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div>':'')+
+    '<div class="sec-label mt">유 산 카 드 · '+own.length+' / '+keys.length+' (누적 '+cardCount()+'장)</div>'+
+    '<div class="cardgrid">'+keys.map(k=>{
+      const c=CARDS[k],lv=S.cards[k]||0;
+      return '<div class="ccard '+(lv?'got':'lock')+' r'+c.r+'">'+
+        '<div class="cr" style="color:var(--r'+RKEY[c.r]+')">'+RN[c.r]+(lv>1?' · Lv.'+lv:'')+'</div>'+
+        '<div class="cn">'+(lv?esc(c.n):'? ? ?')+'</div>'+
+        '<div class="ct">'+(lv?esc(c.t):'환생으로 뽑으면 열립니다')+'</div>'+
+        (lv?'<div class="cd">'+esc(c.d)+'</div>':'')+
+      '</div>';
+    }).join('')+'</div>'+
+    '<div class="pnote">환생할 때마다 카드를 뽑습니다. 3회마다 뽑는 장수가 1장씩 늘어 최대 3장까지 올라가고, ★이 쌓일수록 상위 등급 확률이 올라갑니다.<br>'+
+    '같은 카드를 또 뽑으면 <b>Lv.가 올라 효과가 1.5배씩</b> 강해집니다.</div>');
+}
+
 /* ══════════════ 책상 위 수확 · 도감 ══════════════
    8x8 픽셀맵. '.'=투명, 나머지 문자는 pal 키.                      */
 const CROPS={
@@ -1995,7 +2237,7 @@ function cropTick(dt){
   if(!S||S.busy||paused||disguised)return;
   S.crop=S.crop||[];
   _cropT+=dt;
-  const every=4200+Math.random()*2600;
+  const every=(4200+Math.random()*2600)/(1+(mods().cardCrop||0));
   if(_cropT<every)return;
   _cropT=0;
   if(S.crop.length>=4)return;
@@ -2096,7 +2338,7 @@ function alarm(title,sub,ms){
 function dangerMode(on){const d=$('danger');if(d)d.classList.toggle('on',!!on);}
 /* ══ 티어 스케일 · 높이 갈수록 판돈이 커진다 ══ */
 function tmul(){return Math.max(1,1+(tr(S)-1)*0.62);}   /* T1 1.0 → T8 5.3 */
-function feeOf(base){return Math.round(base*tmul());}
+function feeOf(base){return Math.max(10,Math.round(base*tmul()*(1+(mods().cardFee||0))));}
 
 /* ══ 사채 ══ */
 function loanTick(){
@@ -2141,12 +2383,12 @@ let UID=uid();
 function score(){
   if(!S)return 0;
   const achN=Object.keys(S.ach).length;
-  return Math.round(tr(S)*1200 + (S.star||0)*900 + S.lv*45 + achN*70 + S.smash*120 + S.hits*40
+  return Math.round((S.reborn||0)*9000 + cardCount()*180 + tr(S)*1200 + (S.star||0)*900 + S.lv*45 + achN*70 + S.smash*120 + S.hits*40
     + S.awards*80 + Math.max(0,Math.log10(Math.max(1,S.money)))*300 + (S.best||0)*35
     - S.flops*20 - (S.mark||0)*400 - Math.min(1500,(S.debt||0)/4));
 }
 function myRecord(){
-  return {name:(S.name||'백PD').slice(0,8),job:rankName(),line:(S.line?LINES[S.line].n:'공통'),
+  return {name:((S.name||'백PD').slice(0,8)+starName()),job:rankName(),line:(S.line?LINES[S.line].n:'공통'),
     tier:tr(S),lv:S.lv,money:Math.round(S.money),ach:Object.keys(S.ach).length,
     hits:S.hits,smash:S.smash,months:S.m,score:score(),
     best:+(S.best||0),bestt:(S.bestT||'').slice(0,20),debt:Math.round(S.debt||0),ts:Date.now()};
@@ -2186,7 +2428,7 @@ function newGame(name){
     lv:1,exp:0,sp:0,dir:6,plan:5,sense:9,cast:4,rep:5,luk:5,
     sta:82,men:78,risk:0,money:r(150,400),
     hype:0,act:'edit',prog:null,hits:0,smash:0,flops:0,streakFlop:0,awards:0,idleM:0,
-    mark:0,dirty:0,scandal:0,shieldUsed:0,shieldUse:{},debt:0,thug:0,loanSeen:0,loanLast:-99,best:0,bestT:'',oj:{},bet:{in:0,out:0,best:0,jack:0,n:0},dex:{},crop:[],newDex:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
+    mark:0,dirty:0,scandal:0,shieldUsed:0,shieldUse:{},debt:0,thug:0,loanSeen:0,loanLast:-99,best:0,bestT:'',oj:{},bet:{in:0,out:0,best:0,jack:0,n:0},dex:{},crop:[],newDex:0,off:{},cards:{},reborn:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
     items:{},flags:{},ach:{},cool:{},seen:{intern:1},hist:[],log:[],inbox:[],pity:0,gacha:0,busy:false,saved:Date.now()};
 }
 function save(){if(!S)return;S.saved=Date.now();try{localStorage.setItem('bpd_save',JSON.stringify(S));}catch(e){}if(typeof pushSave==='function')pushSave(false);}
@@ -2195,7 +2437,7 @@ function load(){try{const v=localStorage.getItem('bpd_save');if(!v)return null;c
   if(o.v===7){o.v=8;o.debt=0;o.thug=0;o.loanSeen=0;o.loanLast=-99;o.best=0;o.bestT='';o.shieldUse=o.shieldUse||{};
     if(o.prog&&!o.prog.slot)o.prog.slot=SLOTS[1];}
   if(o.v!==8)return null;
-  o.debt=o.debt||0;o.best=o.best||0;o.shieldUse=o.shieldUse||{};o.oj=o.oj||{};o.bet=o.bet||{in:0,out:0,best:0,jack:0,n:0};o.dex=o.dex||{};o.crop=o.crop||[];
+  o.debt=o.debt||0;o.best=o.best||0;o.shieldUse=o.shieldUse||{};o.oj=o.oj||{};o.bet=o.bet||{in:0,out:0,best:0,jack:0,n:0};o.dex=o.dex||{};o.crop=o.crop||[];o.off=o.off||{};o.cards=o.cards||{};o.reborn=o.reborn||0;
   return o;}catch(e){return null;}}
 
 /* ══════════════ 캔버스 ══════════════ */
@@ -2461,7 +2703,7 @@ function drawIllust(kind,host){
 }
 
 /* ══════════════ 렌더 ══════════════ */
-const TABS=[['stat','능력치'],['promo','승진'],['show','작품'],['bag','가방'],['shop','상점'],['rank','랭킹'],['log','일지'],['set','설정']];
+const TABS=[['stat','능력치'],['promo','승진'],['show','작품'],['bag','가방'],['shop','상점'],['card','환생'],['rank','랭킹'],['log','일지'],['set','설정']];
 function renderTabs(){
   const nxt=readyPromos().length>0;
   setHTML('tabbar',TABS.map(x=>{
@@ -2469,6 +2711,7 @@ function renderTabs(){
     if(x[0]==='stat'&&S.sp>0)dot='<span class="dot"></span>';
     if(x[0]==='promo'&&nxt)dot='<span class="dot"></span>';
     if(x[0]==='bag'&&(S.newItem||S.newDex))dot='<span class="dot"></span>';
+    if(x[0]==='card'&&rebornReady())dot='<span class="dot"></span>';
     return '<button data-t="'+x[0]+'" class="'+(tab===x[0]?'on':'')+'">'+x[1]+dot+'</button>';
   }).join(''));
   TABS.forEach(x=>{const el=$('tab-'+x[0]);if(el)el.hidden=(tab!==x[0]);});
@@ -2539,6 +2782,9 @@ function goalState(){
   const urg=S.inbox.find(x=>x.u);
   if(urg)return {k:'urgent',lab:'긴 급',t:'긴급 편지가 도착했습니다',
     d:'오른쪽 아래 편지를 눌러 확인하세요. 열고 나서 10초 안에 답해야 합니다.',btn:'편지 열기',act:'mail'};
+  if(rebornReady())return {k:'ready',lab:'환 생 가 능',t:'더 올라갈 자리가 없습니다',
+    d:'명예의 전당에 이름을 올렸습니다.\n처음부터 다시 시작하면 이름에 ★이 붙고 유산 카드를 얻습니다.',
+    btn:'환생하러 가기',act:'card',gold:1,mail:mail};
   const rp=readyPromos();
   if(rp.length){
     const nd2=TREE[rp[0]];
@@ -2631,7 +2877,7 @@ function renderActs(){
 function renderHead(){
   const y=Math.floor(S.m/12),mo=S.m%12;
   $('c-clock').textContent=(y+1)+'년차 '+(mo+1)+'월';
-  $('sysmeta').textContent=S.name+' · '+rankName()+' · Lv.'+S.lv;
+  $('sysmeta').textContent=S.name+starName()+' · '+rankName()+' · Lv.'+S.lv;
 }
 function pushLog(t,k){
   if(!S)return;
@@ -2653,8 +2899,9 @@ function renderStatTab(){
     '<div class="sub num">근속 '+Math.floor(S.m/12)+'년 '+(S.m%12)+'개월 · '+(24+Math.floor(S.m/12))+'세 · 월급 '+num(n.pay)+'만</div>'+
     '<div class="expbar"><i style="width:'+Math.min(100,S.exp/need(S.lv)*100)+'%"></i></div>'+
     '<div class="expnum"><span>EXP</span><span class="num">'+Math.floor(S.exp)+' / '+need(S.lv)+'</span></div></div>'+
-    '<div class="pnote" style="margin-top:12px">체력·멘탈이 낮으면 <b>업무 효율</b>(현재 '+Math.round(perfNow()*100)+'%)이 떨어져 모든 성장이 느려집니다. 위쪽 <b>업무 화면을 계속 두드리면</b> 열정이 차올라 효율이 최대 <b>150%</b>까지 올라갑니다. 의혹은 감사·수사를 부르지만 범죄 라인 승진 확률은 올려줍니다. 수치는 위쪽 상태바에서 실시간으로 볼 수 있습니다.</div>'+
-    '<div class="sec-label mt">월 수 지</div>'+
+    '<details class="fold"><summary>업무 효율은 어떻게 정해지나요?</summary>'+
+    '<div class="pnote">체력·멘탈이 낮으면 <b>업무 효율</b>(현재 '+Math.round(perfNow()*100)+'%)이 떨어져 모든 성장이 느려집니다. 위쪽 <b>업무 화면을 계속 두드리면</b> 열정이 차올라 효율이 최대 <b>150%</b>까지 올라갑니다. 의혹은 감사·수사를 부르지만 범죄 라인 승진 확률은 올려줍니다.</div></details>'+
+    '<details class="fold" open><summary>월 수 지</summary><div class="foldin">'+
     '<div class="prow"><span>월급 ('+node().n+')</span><b class="num" style="color:var(--rate)">+'+num(node().pay)+'만</b></div>'+
     '<div class="prow"><span>생활비'+(S.flags.love?' · 연애':'')+(S.flags.inlaw||S.flags.open?' · 가정':'')+(S.flags.kid?' · 육아':'')+'</span><b class="num" style="color:var(--onair)">−'+num(livingCost())+'만</b></div>'+
     '<div class="prow"><span>장비 수입</span><b class="num" style="color:'+(M.moneyAdd>=0?'var(--rate)':'var(--onair)')+'">'+(M.moneyAdd>=0?'+':'−')+num(Math.abs(M.moneyAdd))+'만</b></div>'+
@@ -2664,7 +2911,10 @@ function renderStatTab(){
       '<div class="prow"><span style="color:var(--risk)">사채로 인한 승진 확률</span><b class="num" style="color:var(--risk)">−'+Math.round(debtPenalty())+'%p</b></div>':'')+
     '<div class="prow"><span>티어 판돈 배율'+qb('tmul')+'</span><b class="num">x'+tmul().toFixed(2)+'</b></div>'+
     (S.best>0?'<div class="prow"><span>최고 시청률</span><b class="num" style="color:var(--rate)">'+S.best.toFixed(1)+'%</b></div>':'')+
-    '<div class="sec-label mt">기 록</div>'+
+    ((S.reborn||0)>0?'<div class="prow"><span>환생</span><b class="num" style="color:var(--rL)">'+starName()+' · '+S.reborn+'회</b></div>'+
+      '<div class="prow"><span>유산 카드</span><b class="num">'+Object.keys(S.cards||{}).length+'종 · '+cardCount()+'장</b></div>':'')+
+    '</div></details>'+
+    '<details class="fold"><summary>기 록</summary><div class="foldin">'+
     '<div class="prow"><span>연출작</span><b class="num">'+S.hist.length+'편</b></div>'+
     '<div class="prow"><span>히트 / 대박 / 폭망</span><b class="num">'+S.hits+' / '+S.smash+' / '+S.flops+'</b></div>'+
     '<div class="prow"><span>수상</span><b class="num">'+S.awards+'회</b></div>'+
@@ -2672,6 +2922,7 @@ function renderStatTab(){
     '<div class="prow"><span>딴짓</span><b class="num">'+S.idleM+'개월</b></div>'+
     '<div class="prow"><span>승진 심사 실패</span><b class="num">'+S.promoFail+'회</b></div>'+
     '<div class="prow"><span>인사 기록 오점</span><b class="num" style="color:'+((S.mark||0)>0?'var(--onair)':'var(--ink)')+'">'+(S.mark||0)+'개</b></div>'+
+    '</div></details>'+
    '</div><div>'+
     '<div class="sec-label">능 력 치 '+(S.sp>0?'<span class="spbadge">SP '+S.sp+'</span>':'')+'</div>'+
     GROW.map(k=>
@@ -2679,7 +2930,8 @@ function renderStatTab(){
       '<span class="rt"><span class="v num">'+Math.floor(S[k])+'</span>'+bonusOf(k)+
       [1,10,100].map(n=>'<button class="plus'+(S.sp>=1?' on':'')+(n>1?' wide':'')+'" data-k="'+k+'" data-n="'+n+'"'+
         (S.sp>=1?'':' disabled')+'>+'+n+'</button>').join('')+'</span></div>').join('')+
-    '<div class="pnote">스탯 포인트 1점당 <b>+3</b>. 레벨업마다 5점이 들어옵니다. <b>+10 / +100</b>으로 한 번에 부을 수 있고, 남은 포인트가 모자라면 있는 만큼만 씁니다. 어디에 찍느냐가 곧 승진 갈래를 정합니다 — 연출·기획은 연출 라인, 평판은 관리 라인, 섭외·감각은 스타 라인, 운과 딴짓은 병맛 라인 쪽입니다.</div>'+
+    '<details class="fold"><summary>스탯 포인트는 어떻게 쓰나요?</summary>'+
+    '<div class="pnote">스탯 포인트 1점당 <b>+3</b>. 레벨업마다 5점이 들어옵니다. <b>+10 / +100</b>으로 한 번에 부을 수 있고, 남은 포인트가 모자라면 있는 만큼만 씁니다. 어디에 찍느냐가 곧 승진 갈래를 정합니다 — 연출·기획은 연출 라인, 평판은 관리 라인, 섭외·감각은 스타 라인, 운과 딴짓은 병맛 라인 쪽입니다.</div></details>'+
    '</div></div>');
 }
 
@@ -2711,7 +2963,7 @@ function promoChance(id){
   if(nd2.l==='crime')c+=S.risk/6;
   if(nd2.l==='meme')c+=S.scandal*2;
   if(S.risk>=55&&nd2.l!=='crime')c-=14;
-  c-=Math.min(60,(S.mark||0)*20);
+  c-=Math.min(60,(S.mark||0)*20)*(mods().markSoft||1);
   c-=(nd2.t-1)*3.2;                       /* 위로 갈수록 좁아지는 문 */
   c-=debtPenalty();                        /* 사채가 있으면 인사팀이 안다 */
   if(nd2.star)c=Math.max(5,Math.min(55,20+S.lv/5+S.smash*1.4-(S.star||0)*5));
@@ -2811,19 +3063,84 @@ function itemCard(id,shop){
   return '<div class="icard r'+it.r+(own?' empty':'')+'"><div class="sitem"><div>'+body+'</div>'+
     '<button data-buy="'+id+'"'+((own||S.money<it.p)?' disabled':'')+'>'+(own?'보유':num(it.p)+'만')+'</button></div></div>';
 }
+const RKEY=['N','R','E','U','L'];
+function effLines(it){
+  const e=it.e||{},out=[];
+  const pc=v=>(v>=1?'+':'−')+Math.round(Math.abs(v-1)*100)+'%';
+  if(e.qMul)out.push(['완성도 획득',pc(e.qMul),e.qMul>=1]);
+  if(e.editQ)out.push(['편집실 밤샘 완성도',pc(e.editQ),e.editQ>=1]);
+  if(e.expMul)out.push(['경험치',pc(e.expMul),e.expMul>=1]);
+  if(e.gAll)out.push(['모든 능력치 성장',pc(e.gAll),e.gAll>=1]);
+  if(e.g)for(const k in e.g)out.push([GKEY[k]+' 성장',pc(e.g[k]),e.g[k]>=1]);
+  if(e.staCost)out.push(['체력 소모',pc(e.staCost),e.staCost<=1]);
+  if(e.menGain)out.push(['멘탈 회복',pc(e.menGain),e.menGain>=1]);
+  if(e.ratingMul)out.push(['시청률',pc(e.ratingMul),e.ratingMul>=1]);
+  if(e.riskMul)out.push(['의혹 자연 감소',pc(e.riskMul),e.riskMul>=1]);
+  if(e.riskAdd)out.push(['매달 의혹',(e.riskAdd>0?'+':'')+e.riskAdd,e.riskAdd<0]);
+  if(e.moneyAdd)out.push(['월 수입',(e.moneyAdd>0?'+':'−')+num(Math.abs(e.moneyAdd))+'만',e.moneyAdd>0]);
+  if(e.promo)out.push(['승진 확률',(e.promo>0?'+':'')+e.promo+'%p',e.promo>0]);
+  if(e.shield)out.push(['감사·수사 방어',e.shield+'회 (소모)',true]);
+  if(e.negSoft)out.push(['평판·멘탈 손실',pc(e.negSoft),e.negSoft<=1]);
+  if(e.peek)out.push(['방영 전 예상 시청률','공개',true]);
+  if(e.reroll)out.push(['폭망 시 재추첨','1회',true]);
+  if(e.prShield)out.push(['스캔들 완화','있음',true]);
+  if(e.luk)out.push(['운','+'+e.luk,true]);
+  return out;
+}
+function itemTile(k){
+  const it=ITEMS[k],off=!!(S.off&&S.off[k]);
+  return '<button class="itile r'+it.r+(off?' off':'')+'" data-info="'+k+'">'+
+    '<span class="ir" style="color:var(--r'+RKEY[it.r]+')">'+RN[it.r]+'</span>'+
+    '<span class="inm">'+esc(it.n)+'</span>'+
+    (it.warn?'<span class="iw">양날</span>':'')+
+    (off?'<span class="ioff">비활성</span>':'')+
+  '</button>';
+}
+function itemPopup(k){
+  const it=ITEMS[k],off=!!(S.off&&S.off[k]),lines=effLines(it);
+  const shieldLeft=(it.e&&it.e.shield)?(it.e.shield-((S.shieldUse||{})[k]||0)):null;
+  showModal({tag:RN[it.r],title:it.n,img:'doc',noResult:true,
+    story:it.d,
+    html:'<div class="ipop">'+
+      '<div class="iprow"><span>등급</span><b style="color:var(--r'+RKEY[it.r]+')">'+RN[it.r]+(it.warn?' · 양날':'')+'</b></div>'+
+      '<div class="iprow"><span>상태</span><b style="color:'+(off?'var(--onair)':'var(--rate)')+'">'+(off?'비활성 — 효과 없음':'활성 — 효과 적용 중')+'</b></div>'+
+      (shieldLeft!=null?'<div class="iprow"><span>남은 방어</span><b>'+shieldLeft+'회</b></div>':'')+
+      '<div class="iprow"><span>처분가</span><b>'+num(sellPrice(k))+'만원</b></div>'+
+      '<div class="ipeff">'+(lines.length?lines.map(l=>
+        '<div class="ipe"><span>'+l[0]+'</span><b class="'+(l[2]?'up':'dn')+'">'+l[1]+'</b></div>').join('')
+        :'<div class="ipe"><span>특수 효과</span><b>'+esc(it.d)+'</b></div>')+'</div>'+
+    '</div>',
+    opts:[
+      {t:off?'활성화한다':'비활성화한다',
+       d:off?'다시 효과가 적용됩니다.':'가방에 두되 효과만 끕니다. 디메리트 장비를 잠시 재울 때 쓰세요.',
+       f:S2=>{S2.off=S2.off||{};
+         if(off)delete S2.off[k];else S2.off[k]=1;
+         pushLog(it.n+' '+(off?'활성화':'비활성화'),'');
+         toast('<b>'+it.n+'</b> '+(off?'활성화':'비활성화'),'');
+         return it.n+'을(를) '+(off?'다시 켰다.':'껐다.')+'\n효과가 '+(off?'적용됩니다.':'적용되지 않습니다.');}},
+      {t:'처분한다 · +'+num(sellPrice(k))+'만원',d:'되사기 불가. 영구 삭제됩니다.',
+       f:S2=>{const v=sellPrice(k);
+         delete S2.items[k];if(S2.off)delete S2.off[k];if(S2.shieldUse)delete S2.shieldUse[k];
+         if(it.e&&it.e.luk)S2.luk=Math.max(0,S2.luk-it.e.luk);
+         S2.money+=v;
+         pushLog(it.n+'을(를) 처분했다. +'+num(v)+'만원');
+         return it.n+'을(를) 처분했다.\n+'+num(v)+'만원';}},
+      {t:'닫는다',f:()=>null}]});
+}
 function renderBagTab(){
   S.newItem=0;S.newDex=0;
   const own=Object.keys(ITEMS).filter(k=>S.items[k]);
   const cnt=[0,0,0,0,0];own.forEach(k=>cnt[ITEMS[k].r]++);
   const total=[0,0,0,0,0];Object.keys(ITEMS).forEach(k=>total[ITEMS[k].r]++);
+  const offN=own.filter(k=>S.off&&S.off[k]).length;
   setHTML('tab-bag',
-    '<div class="rarbar">'+RN.map((n,i)=>'<span class="rarchip r'+i+'" style="border-color:var(--r'+['N','R','E','U','L'][i]+');color:var(--r'+['N','R','E','U','L'][i]+')">'+n+' '+cnt[i]+'/'+total[i]+'</span>').join('')+
-      '<span class="rarchip">합계 '+own.length+' / '+Object.keys(ITEMS).length+'</span></div>'+
-    (own.length?'<div class="igrid">'+own.sort((a,b)=>ITEMS[b].r-ITEMS[a].r).map(k=>itemCard(k,false)).join('')+'</div>'
+    '<div class="rarbar">'+RN.map((n,i)=>'<span class="rarchip r'+i+'" style="border-color:var(--r'+RKEY[i]+');color:var(--r'+RKEY[i]+')">'+n+' '+cnt[i]+'/'+total[i]+'</span>').join('')+
+      '<span class="rarchip">합계 '+own.length+' / '+Object.keys(ITEMS).length+'</span>'+
+      (offN?'<span class="rarchip" style="border-color:var(--onair);color:var(--onair)">비활성 '+offN+'</span>':'')+'</div>'+
+    (own.length?'<div class="itiles">'+own.sort((a,b)=>ITEMS[b].r-ITEMS[a].r).map(itemTile).join('')+'</div>'
       :'<div class="prow">아직 아무것도 없다. 이벤트에서 줍거나 상점에서 사면 된다.</div>')+
-    '<div class="sec-label mt">획 득 · 처 분</div>'+
-    '<div class="pnote">이벤트 종료 시 낮은 확률로 드롭 · 대박 방영과 승진 시 확률 상승 · 운 스탯이 높을수록 상위 등급.<br>'+
-    '<b>양날</b> 표시는 이득과 손해가 같이 붙은 물건입니다. 안 맞으면 우측 버튼으로 처분해 현금화하세요 (되사기 불가).</div>'+
+    '<div class="pnote" style="margin-top:9px">장비를 <b>누르면</b> 성능·처분가가 뜨고, 거기서 <b>활성/비활성</b>을 켜고 끌 수 있습니다.<br>'+
+    '<b>양날</b>은 이득과 손해가 같이 붙은 물건입니다. 팔지 않고 잠시 꺼둘 수도 있습니다.</div>'+
     dexHTML());
   paintDex();
 }
@@ -3296,6 +3613,7 @@ function renderTab(){
   else if(tab==='show')renderShowTab();
   else if(tab==='bag')renderBagTab();
   else if(tab==='shop')renderShopTab();
+  else if(tab==='card')renderCardTab();
   else if(tab==='rank')renderRankTab();
   else if(tab==='set')renderSetTab();
   else renderLogTab();
@@ -3321,7 +3639,7 @@ function tick(){
   }
   g(S,d);
   if(a.id==='idle'){S.idleM++;if(S.idleM>=60)ach(S,'idle60');}
-  S.money+=node().pay-livingCost()+M.moneyAdd;
+  S.money+=Math.round(node().pay*(1+(M.cardMoney||0)))-livingCost()+M.moneyAdd;
   loanTick();
   if(S.money<=-1800&&!S.debt&&!S.loanSeen&&S.m-(S.loanLast||-99)>8){
     const ev=EVENTS.find(x=>x.id==='loan0');
@@ -4062,7 +4380,7 @@ function showModal(cfg){
       }
       const res=o.f(S);
       refresh();
-      if(res){$('m-result').innerHTML=esc(res).replace(/\n/g,'<br>')+deltaHTML(snap0);$('m-result').hidden=false;pushLog('['+cfg.title+'] '+res,'');}
+      if(res){$('m-result').innerHTML=esc(res).replace(/\n/g,'<br>')+(cfg.noDelta?'':deltaHTML(snap0));$('m-result').hidden=false;pushLog('['+cfg.title+'] '+res,'');}
       if(S.dropNow!==undefined&&S.dropNow){const it=ITEMS[S.dropNow];S.dropNow=null;S.newItem=1;
         $('m-drop').innerHTML='<div class="dropbox r'+it.r+'"><div class="lb" style="color:var(--r'+['N','R','E','U','L'][it.r]+')">'+RN[it.r]+' 획득</div>'+
           '<div class="nm">'+it.n+'</div><div class="ds">'+it.d+'</div></div>';}
@@ -4201,6 +4519,7 @@ document.addEventListener('click',e=>{
     const k=gb.dataset.goal;
     if(k==='mail')openInbox();
     else if(k==='promo'){const rp=readyPromos();if(rp.length&&!S.busy)runPromo(rp);else switchTab('promo');}
+    else if(k==='card')switchTab('card');
     return;
   }
   const hb=$('helpbox');
@@ -4246,6 +4565,10 @@ document.querySelector('.panelwrap').addEventListener('click',e=>{
   if(e.target.closest('[data-refresh]')){BOARD=null;renderRankTab();pushBoard(true);loadBoard();return;}
   const sl=e.target.closest('[data-sell]');
   if(sl){sellItem(sl.dataset.sell);return;}
+  const rb=e.target.closest('[data-reborn]');
+  if(rb&&!S.busy){doReborn();return;}
+  const inf=e.target.closest('[data-info]');
+  if(inf&&!S.busy){itemPopup(inf.dataset.info);return;}
   const ga=e.target.closest('[data-gacha]');
   if(ga&&!ga.disabled){doGacha(+ga.dataset.gacha);return;}
   const sr=e.target.closest('[data-scratch]');
