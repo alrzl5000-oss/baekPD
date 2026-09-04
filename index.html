@@ -475,6 +475,12 @@ body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.
 .mword.good{color:#3FD6A0;border-color:#3FD6A0}
 .mword.bad2{color:#FF5A4C;border-color:#FF5A4C}
 .mstep{font-size:11px;letter-spacing:.14em;color:var(--ink-3);margin-top:8px}
+.mcell.wk{font-size:13px;font-weight:800;letter-spacing:.06em;transition:background .08s,border-color .08s}
+.mcell.wk.lit{background:rgba(63,214,160,.32);border-color:#3FD6A0;color:#DFFBF0;box-shadow:0 0 18px rgba(63,214,160,.4)}
+.mcell.wk.bad{background:rgba(255,90,76,.32);border-color:#FF5A4C;color:#FFDDD9;box-shadow:0 0 18px rgba(255,90,76,.4)}
+.fall{position:relative;height:230px;border:1px solid var(--line);background:#07090C;overflow:hidden;
+  margin:6px 0 2px;touch-action:none;cursor:crosshair}
+.fall canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
 .mrname{font-size:17px;font-weight:800;color:var(--ink-0);margin:6px 0 6px;letter-spacing:.02em}
 .mrhow{font-size:12.5px;line-height:1.75;color:var(--ink-2);background:#07090C;border:1px solid var(--line);padding:10px 12px;text-align:left}
 .mrctl{font-size:11.5px;color:var(--onair-soft);margin-top:7px;letter-spacing:.05em}
@@ -3899,29 +3905,89 @@ const QBANK={
   {q:'출연자가 방송 중 아무 말도 안 하고 40초를 버텼다.\n편집자로서 최선은?',
     a:['통편집 없이 그대로 둔다. 그게 이 프로그램이다','전부 잘라낸다','자막으로 채운다','배경음악을 깐다'],c:0}]
 };
+/* 라인마다 4종 풀에서 매번 랜덤 — 같은 라인이라도 시험이 달라진다 */
+const PEXAM={
+ com:[
+  {k:'quiz',t:'기본 소양 심사',img:'doc',s:'인사팀 대리가 종이 한 장을 밀었다.\n"어렵진 않아요. 그냥 상식이에요."',
+   o:k=>({q:pick(QBANK.com),sec:Math.max(9,24-k*2),mdesc:'제한 시간 안에 하나만 고른다.'})},
+  {k:'falling',t:'현장 안전 교육',img:'clash',s:'세트장 천장에서 뭔가 계속 떨어진다.\n"막내는 이거 피하는 것부터 배웁니다."',
+   o:k=>({dur:5.5+k*0.35,spd:0.075+k*0.010,rate:Math.max(300,660-k*38),lives:Math.max(1,4-Math.floor(k/3)),
+     mdesc:'화면을 좌우로 끌어 낙하물을 피해라. 흰 종이컵은 주우면 목숨이 는다.'})},
+  {k:'whack',t:'잡무 처리 속도 심사',img:'doc',s:'책상 위에 서류가 쏟아진다.\n"이거 오늘까지요." 아홉 군데서 동시에 부른다.',
+   o:k=>({dur:6.5+k*0.3,goal:6+k,up:Math.max(480,1000-k*62),badp:0.24+k*0.02,lives:3,
+     mdesc:'초록 [승인]만 두드려라. 빨간 [반려]를 치면 목숨이 깎인다.'})},
+  {k:'rhythm',t:'큐 사인 테스트',img:'tv',s:'부조에서 신호가 온다.\n"타이밍만 보겠습니다. 세 번."',
+   o:k=>({rounds:3,need:2,zone:Math.max(10,24-k*1.8),speed:0.055+k*0.010})}
+ ],
+ dir:[
+  {k:'seq',t:'콘티 순서 심사',img:'doc',s:'심사위원이 콘티 보드를 켰다.\n"순서 기억해. 한 번만 보여준다."',
+   o:k=>({len:Math.min(7,2+Math.ceil(k*0.62)),sp:Math.max(300,700-k*48),
+     mdesc:'불이 들어온 순서 그대로 다시 누른다. 한 번 틀리면 끝.'})},
+  {k:'rhythm',t:'편집점 리듬 심사',img:'doc',s:'컷을 세 번 끊어야 한다.\n"음악 박자에 맞춰. 밀리면 티 나."',
+   o:k=>({rounds:3,need:2,zone:Math.max(8,22-k*1.9),speed:0.062+k*0.012})},
+  {k:'timing',t:'편집점 정밀 심사',img:'doc',s:'프레임 단위로 잡아야 한다.\n"딱 거기서 끊어."',
+   o:k=>({zone:Math.max(7,20-k*1.7),speed:0.05+k*0.011,mdesc:'초록 구간에서 정확히 멈춰라. 한 번뿐이다.'})},
+  {k:'falling',t:'현장 진두지휘',img:'clash',s:'조명 리깅이 흔들린다.\n"PD님, 위에요!"',
+   o:k=>({dur:6+k*0.35,spd:0.08+k*0.011,rate:Math.max(290,640-k*40),lives:Math.max(1,4-Math.floor(k/3)),
+     mdesc:'떨어지는 장비를 피해라. 흰 종이컵은 주우면 목숨이 는다.'})}
+ ],
+ mgr:[
+  {k:'quiz',t:'서류·판단 심사',img:'doc',s:'심사위원 셋이 서류를 넘긴다.\n"관리자는 판단으로 증명하는 자리야."',
+   o:k=>({q:pick(QBANK.mgr),sec:Math.max(8,22-k*2),mdesc:'제한 시간 안에 하나만 고른다.'})},
+  {k:'whack',t:'결재 러시',img:'doc',s:'결재판이 아홉 개 동시에 올라온다.\n"오늘 안에 다 봐야 합니다."',
+   o:k=>({dur:7+k*0.3,goal:7+k,up:Math.max(430,980-k*66),badp:0.26+k*0.022,lives:3,
+     mdesc:'초록 [승인]만 두드려라. 빨간 [반려]를 치면 목숨이 깎인다.'})},
+  {k:'audit',t:'예산 감사 대응',img:'police',s:'감사팀이 집행 내역을 펼쳤다.\n"관리자면 이 정도는 직접 걸러내셔야죠."',
+   o:k=>({bad:3,sec:Math.max(7,13-Math.floor(k/2)),
+     mdesc:'규정 위반 건만 골라내라. 정상 건을 건드리면 즉시 실패.'})},
+  {k:'dodge',t:'리스크 회피 심사',img:'police',s:'"어디서 멈출 줄 아는가."\n그게 관리자의 일이라고 했다.',
+   o:k=>({zone:Math.max(9,22-k*1.7),zones:Math.min(4,1+Math.floor(k/2)),speed:0.055+k*0.011,
+     mdesc:'초록에서 멈춰라. 빗금은 리스크다.'})}
+ ],
+ star:[
+  {k:'hold',t:'현장 장악 심사',img:'crowd',s:'모의 생방송 세트다. 카메라 세 대가 돌고 있다.\n"현장 텐션, 네가 끌고 가 봐."',
+   o:k=>({band:Math.max(9,24-k*1.9),need:1.6+k*0.24,drift:0.009+k*0.0028,limit:11000,
+     mdesc:'버튼을 눌러 게이지를 올리고, 초록 구간 안에 붙잡아 둬라.'})},
+  {k:'rhythm',t:'생방송 큐 사인',img:'tv',s:'생방 3분 전.\n"큐는 네가 줘. 세 번 다 봐야 해."',
+   o:k=>({rounds:3,need:2,zone:Math.max(9,23-k*1.8),speed:0.06+k*0.011})},
+  {k:'mash',t:'섭외 전화 돌리기',img:'crowd',s:'명단은 스무 명, 시간은 없다.\n"몇 명이나 잡을 수 있나 봅시다."',
+   o:k=>({goal:16+k*3,dur:3.6,mdesc:'시간 안에 목표만큼 전화를 돌려라.'})},
+  {k:'falling',t:'팬 몰림 현장 통제',img:'crowd',s:'출입구가 터졌다.\n날아오는 게 한둘이 아니다.',
+   o:k=>({dur:6+k*0.3,spd:0.085+k*0.011,rate:Math.max(280,620-k*40),lives:3,goal:3+Math.floor(k/2),
+     mdesc:'날아오는 걸 피하면서 흰 종이컵을 목표만큼 주워라.'})}
+ ],
+ crime:[
+  {k:'dodge',t:'내부 감사 통과',img:'police',s:'인사위원회 옆방에 감사팀이 앉아 있다.\n"자, 어디서 멈출 건데?"',
+   o:k=>({zone:Math.max(9,22-k*1.7),zones:Math.min(4,1+Math.floor(k/2)),speed:0.055+k*0.011,
+     mdesc:'초록에서 멈춰라. 빗금은 감사팀 눈이다.'})},
+  {k:'defend',t:'진술 방어 심사',img:'police',s:'모의 조사실이다. 검사 역할은 법무팀장이 맡았다.\n"실전처럼 하겠습니다."',
+   o:k=>({rounds:3,need:2,sec:Math.max(4,8-Math.floor(k/2)),
+     mdesc:'질문 세 개. 두 개 이상 막아내야 한다.'})},
+  {k:'audit',t:'장부 정리 심사',img:'doc',s:'"이 중에 걸릴 건 몇 개죠?"\n먼저 찾아내는 쪽이 사는 자리다.',
+   o:k=>({bad:3,sec:Math.max(6,12-Math.floor(k/2)),
+     mdesc:'규정 위반 건만 골라내라. 정상 건을 건드리면 즉시 실패.'})},
+  {k:'falling',t:'잠복 취재 심사',img:'clash',s:'현장에서 정체가 들켰다.\n뭔가 날아오기 시작했다.',
+   o:k=>({dur:6.5+k*0.35,spd:0.09+k*0.012,rate:Math.max(260,600-k*42),lives:Math.max(1,3-Math.floor(k/4)),
+     mdesc:'화면을 좌우로 끌어 피해라. 흰 종이컵은 주우면 목숨이 는다.'})}
+ ],
+ meme:[
+  {k:'roulette',t:'기획 룰렛 심사',img:'tv',s:'심사위원장이 말했다. "우린 이걸로 뽑아."\n그가 룰렛을 돌렸다. 아무도 이상하게 여기지 않았다.',
+   o:k=>({hard:Math.floor(k*0.85),mdesc:'멈춘 단어가 곧 심사 결과다. 이 회사는 원래 이렇다.'})},
+  {k:'falling',t:'똥 피 하 기 심사',img:'clash',s:'심사위원장이 말했다.\n"이게 우리 회사 실무예요. 위에서 뭐가 떨어지는지 몰라요."\n\n아무도 웃지 않았다.',
+   o:k=>({dur:6+k*0.4,spd:0.085+k*0.012,rate:Math.max(250,600-k*44),lives:Math.max(1,4-Math.floor(k/3)),
+     mdesc:'위에서 떨어지는 걸 피해라. 흰 종이컵(커피)은 주우면 목숨이 하나 는다.'})},
+  {k:'mash',t:'무한 드립 심사',img:'tv',s:'"3초 안에 드립 스무 개."\n진심으로 요구하고 있었다.',
+   o:k=>({goal:18+k*3,dur:3.4,mdesc:'시간 안에 목표만큼 두들겨라.'})},
+  {k:'whack',t:'아무거나 승인 심사',img:'doc',s:'"기획안 아홉 개 중에 되는 것만 골라요."\n기준은 아무도 안 알려줬다.',
+   o:k=>({dur:6.5+k*0.3,goal:6+k,up:Math.max(420,940-k*64),badp:0.30+k*0.022,lives:3,
+     mdesc:'초록 [승인]만 두드려라. 빨간 [반려]를 치면 목숨이 깎인다.'})}
+ ]
+};
 function promoMini(nd2){
-  const ln=(!nd2.l||nd2.l==='com')?'com':nd2.l,t=nd2.t||1,k=Math.min(8,t);
-  if(ln==='dir')return {kind:'seq',t:'콘티 순서 심사',img:'doc',
-    s:'심사위원이 콘티 보드를 켰다.\n"순서 기억해. 한 번만 보여준다."',
-    opt:{len:Math.min(7,2+Math.ceil(k*0.62)),sp:Math.max(300,700-k*48),
-      mdesc:'불이 들어온 순서 그대로 다시 누른다. 한 번 틀리면 끝.'}};
-  if(ln==='mgr')return {kind:'quiz',t:'서류·판단 심사',img:'doc',
-    s:'심사위원 셋이 서류를 넘긴다.\n"관리자는 판단으로 증명하는 자리야."',
-    opt:{q:pick(QBANK.mgr),sec:Math.max(8,22-k*2),mdesc:'제한 시간 안에 하나만 고른다.'}};
-  if(ln==='star')return {kind:'hold',t:'현장 장악 심사',img:'crowd',
-    s:'모의 생방송 세트다. 카메라 세 대가 돌고 있다.\n"현장 텐션, 네가 끌고 가 봐."',
-    opt:{band:Math.max(9,24-k*1.9),need:1.6+k*0.24,drift:0.009+k*0.0028,limit:11000,
-      mdesc:'버튼을 눌러 게이지를 올리고, 초록 구간 안에 붙잡아 둬라.'}};
-  if(ln==='crime')return {kind:'dodge',t:'내부 감사 통과',img:'police',
-    s:'인사위원회 옆방에 감사팀이 앉아 있다.\n"자, 어디서 멈출 건데?"',
-    opt:{zone:Math.max(9,22-k*1.7),zones:Math.min(4,1+Math.floor(k/2)),speed:0.055+k*0.011,
-      mdesc:'초록에서 멈춰라. 빗금은 감사팀 눈이다.'}};
-  if(ln==='meme')return {kind:'roulette',t:'기획 룰렛 심사',img:'tv',
-    s:'심사위원장이 말했다. "우린 이걸로 뽑아."\n그가 룰렛을 돌렸다. 아무도 이상하게 여기지 않았다.',
-    opt:{hard:Math.floor(k*0.85),mdesc:'멈춘 단어가 곧 심사 결과다. 이 회사는 원래 이렇다.'}};
-  return {kind:'quiz',t:'기본 소양 심사',img:'doc',
-    s:'인사팀 대리가 종이 한 장을 밀었다.\n"어렵진 않아요. 그냥 상식이에요."',
-    opt:{q:pick(QBANK.com),sec:Math.max(10,26-k*2),mdesc:'제한 시간 안에 하나만 고른다.'}};
+  const ln=(!nd2.l||nd2.l==='com')?'com':nd2.l,k=Math.min(8,nd2.t||1);
+  const pool=PEXAM[ln]||PEXAM.com;
+  const e=pick(pool);
+  return {kind:e.k,t:e.t,img:e.img,s:e.s,opt:e.o(k)};
 }
 function judgePromo(id){
   if(!reqOk(id)||nextIds().indexOf(id)<0)return;
@@ -4106,8 +4172,12 @@ function countTo(target){
 
 /* ══ 미니게임 ══ */
 const SYMS=['★','◆','●','▲','✦'];
-let _miniRAF=null;
-function stopMini(){if(_miniRAF){cancelAnimationFrame(_miniRAF);_miniRAF=null;}}
+let _miniRAF=null,_miniINT=[];
+function mInt(fn,ms){const id=setInterval(fn,ms);_miniINT.push(id);return id;}
+function stopMini(){
+  if(_miniRAF){cancelAnimationFrame(_miniRAF);_miniRAF=null;}
+  _miniINT.forEach(clearInterval);_miniINT=[];
+}
 const MINFO={
  timing:{n:'타이밍 정지',how:'막대가 좌우로 움직인다. 초록 구간에서 STOP.',ctl:'STOP 버튼 1회'},
  mash:{n:'연타',how:'제한 시간 안에 목표 횟수만큼 버튼을 두들긴다.',ctl:'버튼 연타'},
@@ -4119,7 +4189,10 @@ const MINFO={
  hold:{n:'현장 텐션 유지',how:'버튼을 누르면 게이지가 오르고 떼면 내려간다. 움직이는 초록 밴드 안에 정해진 시간만큼 붙잡아 둔다.',ctl:'버튼을 길게 누르고 조절'},
  roulette:{n:'기획 룰렛',how:'단어가 돌아간다. STOP을 눌러 멈춘 단어가 곧 결과다.',ctl:'STOP 버튼 1회'},
  audit:{n:'영수증 대조',how:'제작비 영수증 아홉 장 중 규정 위반 건만 골라낸다. 정상 건을 건드리면 즉시 실패.',ctl:'해당 영수증만 터치'},
- defend:{n:'검찰 진술 방어',how:'검사가 세 번 묻는다. 각 질문마다 제한 시간이 있고, 두 개 이상 방어하면 성공.',ctl:'질문당 답변 1회'}
+ defend:{n:'검찰 진술 방어',how:'검사가 세 번 묻는다. 각 질문마다 제한 시간이 있고, 두 개 이상 방어하면 성공.',ctl:'질문당 답변 1회'},
+ falling:{n:'낙하물 피하기',how:'화면을 좌우로 끌어 떨어지는 것을 피한다. 흰 종이컵(커피)은 주우면 목숨이 하나 는다.',ctl:'화면을 좌우로 드래그'},
+ rhythm:{n:'큐 사인 3연속',how:'신호가 초록 구간에 들어올 때 누른다. 세 번 중 두 번 이상 맞혀야 한다. 뒤로 갈수록 빨라지고 좁아진다.',ctl:'CUE 버튼 · 라운드당 1회'},
+ whack:{n:'결재 러시',how:'칸에 뜨는 초록 [승인]만 빠르게 두드린다. 빨간 [반려]를 치면 목숨이 깎이고, 목표 개수를 채우면 통과.',ctl:'뜨는 칸을 연타'}
 };
 function runMini(kind,opt,done){
   stopTimer();stopMini();
@@ -4251,7 +4324,7 @@ function miniCore(kind,opt,wrap,finish){
     };
     btns.forEach(b2=>b2.onclick=()=>pickA(b2));
     if(opt.sec){let left=opt.sec;const stp=wrap.querySelector('#mstp');
-      tid=setInterval(()=>{left--;stp.textContent='제 한 '+left+'초';
+      tid=mInt(()=>{left--;stp.textContent='제 한 '+left+'초';
         if(left<=0){clearInterval(tid);if(!done2){done2=true;btns.forEach(x=>x.disabled=true);finish(false);}}},1000);}
   }
   else if(kind==='dodge'){                   /* 범죄 라인 · 감사 회피 */
@@ -4336,7 +4409,7 @@ function miniCore(kind,opt,wrap,finish){
       '<div class="mstep" id="mstp">남 은 시 간 '+sec+'초 · 0 / '+badIdx.length+'</div>';
     const cs=[...wrap.querySelectorAll('.rc')],stp=wrap.querySelector('#mstp');
     let got=0,over=false,left=sec;
-    const tid=setInterval(()=>{left--;stp.textContent='남 은 시 간 '+left+'초 · '+got+' / '+badIdx.length;
+    const tid=mInt(()=>{left--;stp.textContent='남 은 시 간 '+left+'초 · '+got+' / '+badIdx.length;
       if(left<=0){clearInterval(tid);if(!over){over=true;cs.forEach(c=>c.disabled=true);finish(false);}}},1000);
     cs.forEach(c=>c.onclick=()=>{
       if(over)return;
@@ -4370,7 +4443,7 @@ function miniCore(kind,opt,wrap,finish){
         '<div class="mstep" id="mstp">제 한 '+sec+'초</div>';
       const bs=[...wrap.querySelectorAll('.mopt')],stp=wrap.querySelector('#mstp');
       let ans=false,left=sec;
-      tid=setInterval(()=>{left--;stp.textContent='제 한 '+left+'초';
+      tid=mInt(()=>{left--;stp.textContent='제 한 '+left+'초';
         if(left<=0){clearInterval(tid);if(!ans){ans=true;bs.forEach(x=>{x.disabled=true;if(+x.dataset.i===q.c)x.classList.add('ok');});
           setTimeout(()=>{ri++;draw();},780);}}},1000);
       bs.forEach(b2=>b2.onclick=()=>{
@@ -4380,6 +4453,135 @@ function miniCore(kind,opt,wrap,finish){
         if(!good)b2.classList.add('no');
         setTimeout(()=>{ri++;draw();},680);
       });
+    };
+    draw();
+  }
+  else if(kind==='falling'){                 /* 떨어지는 것 피하기 */
+    const dur=(opt.dur||6.5)*1000,spd=opt.spd||0.085,rate=opt.rate||620,
+          maxLife=opt.lives||3,goal=opt.goal||0;
+    wrap.innerHTML='<div class="mtitle">'+(goal?'주 우 며 피 하 기':'피 하 기')+'</div><div class="mdesc">'+
+      (opt.mdesc||(goal?'떨어지는 걸 피하면서 흰 종이컵을 '+goal+'개 주워라.':'화면을 좌우로 끌어서 피해라. 흰 종이컵은 주우면 목숨이 는다.'))+'</div>'+
+      '<div class="fall"><canvas id="fcv"></canvas></div>'+
+      '<div class="mstep" id="mstp">목 숨 '+maxLife+(goal?' · 주움 0 / '+goal:'')+' · '+(dur/1000).toFixed(1)+'초</div>';
+    const box=wrap.querySelector('.fall'),cv2=wrap.querySelector('#fcv'),cx=cv2.getContext('2d');
+    const W=box.clientWidth||330,H=230;
+    cv2.width=W*2;cv2.height=H*2;cx.scale(2,2);
+    const stp=wrap.querySelector('#mstp');
+    let px=W/2,tx=W/2,life=maxLife,obs=[],t0=performance.now(),acc2=0,over=false,elapsed=0,got=0;
+    const hud=()=>{stp.textContent='목 숨 '+life+(goal?' · 주움 '+got+' / '+goal:'')+' · 남은 '+Math.max(0,((dur-elapsed)/1000)).toFixed(1)+'초';};
+    const setX=e=>{const r=box.getBoundingClientRect();tx=Math.max(12,Math.min(W-12,e.clientX-r.left));};
+    box.addEventListener('pointerdown',e=>{e.preventDefault();setX(e);});
+    box.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch'){e.preventDefault();setX(e);}});
+    const done2=win=>{if(over)return;over=true;stopMini();setTimeout(()=>finish(win),420);};
+    (function step(t){
+      const dt=Math.min(48,t-t0);t0=t;elapsed+=dt;acc2+=dt;
+      if(acc2>=rate){acc2=0;
+        const good=Math.random()<(goal?0.42:0.18);
+        const aimed=!good&&Math.random()<(opt.aim!=null?opt.aim:0.5);
+        const ox=aimed?Math.max(14,Math.min(W-14,px+(Math.random()*36-18)))
+                      :14+Math.random()*(W-28);
+        obs.push({x:ox,y:-10,g:good,a:aimed,v:spd*(good?0.8:1)*(0.85+Math.random()*0.4)});}
+      px+=(tx-px)*0.22;
+      cx.clearRect(0,0,W,H);
+      /* 바닥선 */
+      cx.fillStyle='#141A22';cx.fillRect(0,H-6,W,6);
+      for(let i=obs.length-1;i>=0;i--){
+        const o=obs[i];o.y+=o.v*dt;
+        if(o.g){cx.fillStyle='#DCE2EA';cx.fillRect(o.x-5,o.y-6,10,8);
+          cx.fillStyle='#3A2A18';cx.fillRect(o.x-3,o.y-4,6,5);
+          cx.fillStyle='#8A93A2';cx.fillRect(o.x-6,o.y+2,12,2);}
+        else{
+          if(o.a){cx.fillStyle='rgba(255,90,76,.16)';cx.fillRect(o.x-9,o.y,18,H-o.y-6);}
+          cx.fillStyle='#6B4A22';cx.fillRect(o.x-6,o.y-3,12,6);
+          cx.fillStyle='#8A5F2C';cx.fillRect(o.x-4,o.y-6,8,4);
+          cx.fillStyle='#4A3216';cx.fillRect(o.x-6,o.y+3,12,2);}
+        if(o.y>H-24&&o.y<H-2&&Math.abs(o.x-px)<13){
+          obs.splice(i,1);
+          if(o.g){got++;if(!goal&&life<maxLife)life++;
+            cx.fillStyle='rgba(63,214,160,.28)';cx.fillRect(0,0,W,H);
+            if(goal&&got>=goal){hud();done2(true);return;}}
+          else{life--;
+            cx.fillStyle='rgba(255,90,76,.35)';cx.fillRect(0,0,W,H);
+            if(life<=0){done2(false);return;}}
+          hud();
+          continue;
+        }
+        if(o.y>H+12)obs.splice(i,1);
+      }
+      /* 플레이어 */
+      cx.fillStyle='#C9A227';cx.fillRect(px-9,H-20,18,4);
+      cx.fillStyle='#E8C9A0';cx.fillRect(px-7,H-16,14,10);
+      cx.fillStyle='#20262F';cx.fillRect(px-4,H-13,3,3);cx.fillRect(px+2,H-13,3,3);
+      cx.fillStyle='#4A5563';cx.fillRect(px-10,H-6,20,4);
+      /* 남은 시간 바 */
+      cx.fillStyle='#1E252F';cx.fillRect(0,0,W,3);
+      cx.fillStyle='#4A9BE8';cx.fillRect(0,0,W*Math.max(0,1-elapsed/dur),3);
+      if(elapsed%200<dt)hud();
+      if(elapsed>=dur){done2(goal?got>=goal:true);return;}
+      _miniRAF=requestAnimationFrame(step);
+    })(performance.now());
+  }
+  else if(kind==='whack'){                   /* 결재판 두드리기 */
+    const dur=(opt.dur||7)*1000,goal=opt.goal||8,life0=opt.lives||3,
+          life=[life0],up=(opt.up||900),badP=opt.badp||0.30;
+    wrap.innerHTML='<div class="mtitle">결 재 러 시</div><div class="mdesc">'+
+      (opt.mdesc||'초록 <b>승인</b>만 두드려라. 빨간 <b>반려</b>를 치면 목숨이 깎인다.')+'</div>'+
+      '<div class="mgrid" id="wg">'+Array.from({length:9},(_,i)=>'<button class="mcell wk" data-i="'+i+'"></button>').join('')+'</div>'+
+      '<div class="mstep" id="mstp">승 인 0 / '+goal+' · 목숨 '+life0+'</div>';
+    const cells=[...wrap.querySelectorAll('.wk')],stp=wrap.querySelector('#mstp');
+    let hit=0,over=false,t0=Date.now(),tid=null,live={};
+    const hud=()=>{stp.textContent='승 인 '+hit+' / '+goal+' · 목숨 '+life[0]+' · 남은 '+Math.max(0,((dur-(Date.now()-t0))/1000)).toFixed(1)+'초';};
+    const end=w=>{if(over)return;over=true;clearInterval(tid);
+      cells.forEach(c=>c.disabled=true);setTimeout(()=>finish(w),420);};
+    const pop=()=>{
+      if(over)return;
+      const free=cells.map((c,i)=>i).filter(i=>!live[i]);
+      if(!free.length)return;
+      const i=free[Math.floor(Math.random()*free.length)];
+      const bad=Math.random()<badP;
+      live[i]=1;
+      const c=cells[i];
+      c.textContent=bad?'반려':'승인';
+      c.classList.add(bad?'bad':'lit');
+      setTimeout(()=>{if(over)return;delete live[i];c.textContent='';c.classList.remove('lit','bad');},up);
+    };
+    cells.forEach((c,i)=>c.onclick=()=>{
+      if(over||!live[i])return;
+      const bad=c.classList.contains('bad');
+      delete live[i];c.classList.remove('lit','bad');c.textContent='';
+      if(bad){life[0]--;c.classList.add('tap');setTimeout(()=>c.classList.remove('tap'),200);
+        if(life[0]<=0){hud();end(false);return;}}
+      else{hit++;if(hit>=goal){hud();end(true);return;}}
+      hud();
+    });
+    tid=mInt(()=>{
+      if(over)return;
+      if(Date.now()-t0>=dur){hud();end(hit>=goal);return;}
+      pop();hud();
+    },Math.max(260,up*0.45));
+    pop();pop();
+  }
+  else if(kind==='rhythm'){                  /* 3연속 큐 사인 */
+    const rounds=opt.rounds||3,need=opt.need||2;
+    let zw=opt.zone||20,spd=opt.speed||0.075,ri=0,ok=0;
+    const draw=()=>{
+      if(ri>=rounds){finish(ok>=need,ok);return;}
+      const z=Math.max(7,zw-ri*3),zx=10+Math.random()*(80-z);
+      wrap.innerHTML='<div class="mtitle">큐 사 인</div><div class="mdesc">'+(opt.mdesc||'신호가 초록에 들어올 때 눌러라. 연속 세 번이다.')+'</div>'+
+        '<div class="mstep" style="margin:0 0 7px">'+(ri+1)+' / '+rounds+' 큐 · 성공 '+ok+'회 (기준 '+need+'회)</div>'+
+        '<div class="mbar"><i class="zone'+(z<=12?' small':'')+'" style="left:'+zx+'%;width:'+z+'%"></i><i class="cur" style="left:0%"></i></div>'+
+        '<button class="mbtn">C U E</button>';
+      const cur=wrap.querySelector('.cur');let x=0,dr=1,t0=performance.now();
+      (function st(t){const dt=t-t0;t0=t;x+=dr*(spd+ri*0.018)*dt;
+        if(x>=100){x=100;dr=-1;}if(x<=0){x=0;dr=1;}
+        cur.style.left=x+'%';_miniRAF=requestAnimationFrame(st);})(performance.now());
+      wrap.querySelector('.mbtn').onclick=function(){
+        this.disabled=true;stopMini();
+        const hit=(x>=zx&&x<=zx+z);
+        if(hit)ok++;
+        cur.style.background=hit?'#3FD6A0':'#FF5A4C';
+        ri++;setTimeout(draw,560);
+      };
     };
     draw();
   }
