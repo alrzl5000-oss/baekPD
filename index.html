@@ -571,6 +571,46 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
   color:#04120C;font-family:inherit;font-size:15px;font-weight:800;letter-spacing:.06em;padding:11px;cursor:pointer}
 .sellbtn2:active{transform:translateY(1px)}
 .sellbtn2:disabled{opacity:.4}
+/* ── 책상 수확 ── */
+.croplayer{position:absolute;inset:0;pointer-events:none;z-index:4}
+.crop{position:absolute;transform:translate(-50%,-50%);background:none;border:none;padding:3px;margin:0;
+  cursor:pointer;pointer-events:auto;line-height:0;animation:cpop .42s cubic-bezier(.2,1.5,.4,1) both, cbob 2.6s ease-in-out infinite}
+.crop canvas{display:block;image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.55))}
+.crop:after{content:'';position:absolute;inset:-3px;border:1px solid transparent;transition:.15s}
+.crop:hover:after,.crop:active:after{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.07)}
+.crop.r1 canvas{filter:drop-shadow(0 0 5px rgba(74,155,232,.65)) drop-shadow(0 2px 0 rgba(0,0,0,.55))}
+.crop.r2 canvas{filter:drop-shadow(0 0 6px rgba(176,123,232,.7)) drop-shadow(0 2px 0 rgba(0,0,0,.55))}
+.crop.r3 canvas{filter:drop-shadow(0 0 8px rgba(232,163,60,.85)) drop-shadow(0 2px 0 rgba(0,0,0,.55))}
+.crop.r4 canvas{filter:drop-shadow(0 0 11px rgba(255,210,74,.95)) drop-shadow(0 2px 0 rgba(0,0,0,.55))}
+.crop.shine{animation:cpop .42s cubic-bezier(.2,1.5,.4,1) both, cbob 2.2s ease-in-out infinite, cglow 1.5s ease-in-out infinite}
+.crop .cnew{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-style:normal;
+  font-size:8px;font-weight:800;letter-spacing:.08em;color:#0B0E13;background:#FFD24A;padding:1px 3px;line-height:1.3}
+@keyframes cpop{from{transform:translate(-50%,-50%) scale(0) rotate(-25deg);opacity:0}
+  to{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}}
+@keyframes cbob{0%,100%{margin-top:0}50%{margin-top:-3px}}
+@keyframes cglow{0%,100%{opacity:1}50%{opacity:.72}}
+.crgain{position:absolute;transform:translate(-50%,-50%);font-size:12px;font-weight:800;color:#3FD6A0;
+  text-shadow:0 2px 6px #000;pointer-events:none;animation:crup 1.1s ease-out forwards;white-space:nowrap;z-index:6}
+.crgain.big{font-size:15px;color:#FFD24A}
+.crgain b{display:block;font-size:9px;color:#FFD24A;letter-spacing:.1em;margin-top:1px}
+@keyframes crup{0%{opacity:0;margin-top:6px}18%{opacity:1}100%{opacity:0;margin-top:-26px}}
+
+/* 도감 */
+.dexbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center}
+.dexgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.dcard{border:1px solid var(--line);background:var(--surface-2);padding:9px 6px 8px;text-align:center;position:relative}
+.dcard.got.r1{border-color:rgba(74,155,232,.5)}
+.dcard.got.r2{border-color:rgba(176,123,232,.5)}
+.dcard.got.r3{border-color:rgba(232,163,60,.6)}
+.dcard.got.r4{border-color:#FFD24A;background:linear-gradient(180deg,rgba(255,210,74,.10),rgba(0,0,0,0))}
+.dcard canvas{display:block;margin:0 auto 5px;image-rendering:pixelated}
+.dcard.lock canvas{filter:brightness(0) opacity(.28)}
+.dcard .dn{font-size:11px;font-weight:700;color:var(--ink-1);line-height:1.3;min-height:28px;display:flex;align-items:center;justify-content:center}
+.dcard.lock .dn{color:#4A5563}
+.dcard .dc{font-size:10px;color:var(--ink-3);margin-top:3px;font-variant-numeric:tabular-nums}
+.dcard .dr{position:absolute;top:4px;left:5px;font-size:8.5px;font-weight:800;letter-spacing:.06em}
+.dcard .dd{font-size:10px;color:var(--ink-3);line-height:1.45;margin-top:4px;display:none}
+.dcard.got:hover .dd{display:block}
 .savenote{font-size:11.5px;line-height:1.75;color:var(--ink-3);border-left:2px solid var(--line);padding:2px 0 2px 11px;margin-top:11px}
 .savenote b{color:var(--ink-2)}
 .linkbtn{background:none;border:none;padding:0;margin-top:5px;color:var(--onair-soft);font-family:inherit;
@@ -750,6 +790,7 @@ kbd{font-family:'Nanum Gothic Coding',monospace;font-size:11px;border:1px solid 
         <button class="pausebtn" id="btn-pause">❚❚ 일시정지</button>
         <div class="hypelab" id="hype-lab"><span>열 정</span><b id="hype-n">효율 +0%</b></div>
         <div class="hypewrap"><div class="hypebar"><i id="hype-fill" style="width:0%"></i></div></div>
+        <div class="croplayer" id="croplayer"></div>
         <div class="fx" id="fx"></div>
       </div>
       <div id="checklist" hidden></div>
@@ -1165,6 +1206,9 @@ const ACHS={
  rich100:{t:'100억',d:'순자산 100억 돌파'},
  lotto:{t:'로또 1등',d:'그런 일이 실제로 일어났다'},
  degen:{t:'투기의 맛',d:'복권·코인에 30번 손을 댔다'},
+ dex8:{t:'수집벽',d:'책상 도감 8종을 채웠다'},
+ dex18:{t:'책상 고고학자',d:'책상 도감 18종을 채웠다'},
+ dexall:{t:'전 부 다 주 웠 다',d:'책상 도감을 전부 채웠다'},
  jackpot:{t:'인 생 역 전',d:'한 방에 500배 이상을 먹었다'},
  rugged:{t:'전재산 증발',d:'풀매수 한 방에 −90%를 봤다'},
  legendary:{t:'전설 등급',d:'레전더리 아이템 획득'},
@@ -1821,6 +1865,211 @@ function toast(html,cls){
   host.appendChild(d);
   setTimeout(()=>{d.style.transition='opacity .4s';d.style.opacity='0';setTimeout(()=>d.remove(),400);},2700);
 }
+/* ══════════════ 책상 위 수확 · 도감 ══════════════
+   8x8 픽셀맵. '.'=투명, 나머지 문자는 pal 키.                      */
+const CROPS={
+ /* ── 노말 ── */
+ coffee:{n:'식은 커피',r:0,w:2400,v:9,d:'세 시간 전에 탔다. 아직 반이나 남았다.',
+   pal:{1:'#DCE2EA',2:'#3A2A18',3:'#8A93A2'},
+   p:['.111111.','.122221.','.122221.','.111111.','..1111..','..3333..','...11...','........']},
+ cup:{n:'컵라면 국물',r:0,w:2200,v:7,d:'면은 없고 국물만 남았다. 그래도 못 버린다.',
+   pal:{1:'#E8E2D4',2:'#C2481F',3:'#8A7F6E'},
+   p:['11111111','12222221','12222221','.122221.','.122221.','..1111..','..3333..','........']},
+ usb:{n:'편집본 USB',r:0,w:1900,v:14,d:'라벨이 없다. 뭐가 들었는지는 꽂아봐야 안다.',
+   pal:{1:'#4A5563',2:'#C9A227',3:'#20262F'},
+   p:['..1111..','..1331..','..1111..','..1111..','..1111..','.122221.','.122221.','..2222..']},
+ slate:{n:'슬레이트',r:0,w:1700,v:16,d:'딱! 소리가 그렇게 좋다.',
+   pal:{1:'#20262F',2:'#DCE2EA',3:'#454F5E'},
+   p:['.2.2.2.2','2.2.2.2.','11111111','13333311','11111111','13333311','11111111','........']},
+ memo:{n:'포스트잇 뭉치',r:0,w:2100,v:6,d:'마흔 장 중 두 장만 살아남았다.',
+   pal:{1:'#E8D14A','2':'#C9B23C',2:'#C9B23C',3:'#8A7F2E'},
+   p:['........','.111111.','.111111.','.111111.','.122222.','.222223.','..3333..','........']},
+
+ /* ── 레어 ── */
+ batt:{n:'여분 배터리',r:1,w:900,v:34,d:'현장에서 이거 없으면 아무것도 못 한다.',
+   pal:{1:'#2E7D5B',2:'#3FD6A0',3:'#20262F'},
+   p:['..3..3..','.111111.','.122221.','.122221.','.122221.','.111111.','.111111.','..1111..']},
+ conti:{n:'콘티 뭉치',r:1,w:820,v:40,d:'세 번째 수정본. 아직 국장은 안 봤다.',
+   pal:{1:'#E7EAF0',2:'#8A93A2',3:'#C2481F'},
+   p:['1111111.','1222221.','1222331.','1222221.','1222221.','1111111.','.111111.','..1111..']},
+ lunch:{n:'스태프 도시락',r:1,w:860,v:28,d:'식은 지 두 시간. 그래도 이게 오늘 첫 끼다.',
+   pal:{1:'#B8402E',2:'#E8E2D4',3:'#3FD6A0',4:'#C9A227'},
+   p:['11111111','12222221','12324221','12222221','12242321','12222221','11111111','........']},
+ tape:{n:'마스킹 테이프',r:1,w:780,v:22,d:'현장의 만능 해결사.',
+   pal:{1:'#C9A227',2:'#E8D14A',3:'#8A7F2E'},
+   p:['..1111..','.122221.','1233332.','1232321.','1233332.','.122221.','..1111..','........']},
+ phone:{n:'꺼진 업무폰',r:1,w:700,v:30,d:'부재중 47통. 켜기 싫다.',
+   pal:{1:'#20262F',2:'#4A5563',3:'#C2481F'},
+   p:['.111111.','.122221.','.122221.','.122221.','.122221.','.122321.','.111111.','........']},
+
+ /* ── 에픽 ── */
+ stamp:{n:'국장 결재도장',r:2,w:300,v:120,d:'이게 찍히면 그날은 퇴근할 수 있다.',
+   pal:{1:'#8A5A2E',2:'#C2481F',3:'#E8B04A'},
+   p:['..1111..','..1331..','..1111..','.111111.','.111111.','22222222','.222222.','........']},
+ graph:{n:'시청률 그래프',r:2,w:280,v:150,d:'올라가는 그림만 쓸모가 있다.',
+   pal:{1:'#141A22',2:'#3FD6A0',3:'#4A5563'},
+   p:['11111111','1......1','1.....21','1....2.1','1..22..1','1.2....1','1333333 ','11111111']},
+ mic:{n:'무선 마이크',r:2,w:260,v:130,d:'배터리 없이 두 시간을 버틴 전설의 물건.',
+   pal:{1:'#8A93A2',2:'#20262F',3:'#C2481F'},
+   p:['..1111..','.122221.','.122221.','..1111..','...11...','...11...','..1331..','..1111..']},
+ badge:{n:'출입증',r:2,w:290,v:110,d:'사진이 5년 전 거다. 아무도 안 본다.',
+   pal:{1:'#E7EAF0',2:'#4A5563',3:'#C2481F',4:'#8A93A2'},
+   p:['...44...','.111111.','.122221.','.121121.','.122221.','.133331.','.111111.','........']},
+
+ /* ── 유니크 ── */
+ trophy:{n:'미니 상패',r:3,w:80,v:520,d:'책상 구석에서 먼지를 쓰고 있다. 그래도 상은 상이다.',
+   pal:{1:'#C9A227',2:'#E8D14A',3:'#8A5A2E'},
+   p:['.111111.','.122221.','.122221.','..1221..','...22...','...11...','..3333..','.333333.']},
+ lens:{n:'단렌즈',r:3,w:70,v:640,d:'조리개 1.4. 이걸 쓰면 아무나 배우로 보인다.',
+   pal:{1:'#20262F',2:'#4A9BE8',3:'#8A93A2',4:'#DCE2EA'},
+   p:['.333333.','.111111.','12222221','12244221','12244221','12222221','.111111.','.333333.']},
+ script:{n:'대본 초고',r:3,w:75,v:580,d:'표지에 「기획: 백PD」라고 적혀 있다.',
+   pal:{1:'#E8E2D4',2:'#8A93A2',3:'#C2481F',4:'#4A5563'},
+   p:['11111111','13333331','12222221','14444441','12222221','14444441','12222221','11111111']},
+
+ /* ── 레전더리 ── */
+ gold:{n:'황금 슬레이트',r:4,w:12,v:4200,d:'국민예능을 낸 PD에게만 준다는 물건. 진짜 금은 아니다.',
+   pal:{1:'#C9A227',2:'#E8D14A',3:'#8A5A2E',4:'#FFF4C2'},
+   p:['.4.2.4.2','2.4.2.4.','11111111','13333311','11141111','13333311','11111111','..3333..']},
+ cat:{n:'편집실 고양이',r:4,w:14,v:3800,d:'아무도 어디서 왔는지 모른다. 새벽 3시에만 나타난다.',
+   pal:{1:'#3A424E',2:'#20262F',3:'#3FD6A0',4:'#E7EAF0'},
+   p:['1.....1.','11...11.','1111111.','1313131.','1111111.','.11111..','.1...1..','44....44']},
+ crown:{n:'편성표 왕관',r:4,w:10,v:5200,d:'금요일 밤 10시를 가진 자에게 주어진다.',
+   pal:{1:'#C9A227',2:'#E8D14A',3:'#C2481F',4:'#4A9BE8'},
+   p:['1.....1.','1.1.1.1.','1.1.1.1.','1111111.','1232321.','1444441.','1111111.','........']},
+
+ /* ── 조건부 · 도감을 깊게 만드는 것들 ── */
+ env:{n:'흰 봉투',r:3,w:120,v:900,cond:S=>S.risk>=40,d:'두께가 애매하다. 열어보진 않았다.',
+   pal:{1:'#E7EAF0',2:'#C9C4B8',3:'#C2481F'},
+   p:['........','11111111','12222221','12333221','12222221','12222221','11111111','........']},
+ notice:{n:'내용증명',r:2,w:400,v:60,cond:S=>(S.debt||0)>0,d:'빨간 글씨가 눈에 먼저 들어온다.',
+   pal:{1:'#E8E2D4',2:'#C2481F',3:'#8A93A2'},
+   p:['11111111','12222221','13333331','12222221','13333331','12222221','11111111','...22...']},
+ chicken:{n:'고무 닭',r:2,w:420,v:80,cond:S=>S.line==='meme',d:'왜 스튜디오에 있는지 아무도 설명 못 한다.',
+   pal:{1:'#E8D14A','2':'#C2481F',2:'#C2481F',3:'#C9A227'},
+   p:['..11....','.1121...','..111...','.11111..','.11111..','.11111..','..3.3...','..3.3...']},
+ sunglass:{n:'실내용 선글라스',r:2,w:400,v:95,cond:S=>S.line==='star',d:'실내에서도 벗지 않는 사람들이 있다.',
+   pal:{1:'#20262F',2:'#4A5563',3:'#8A93A2'},
+   p:['........','33333333','11111111','12211221','12211221','11111111','.1....1.','........']},
+ file:{n:'대외비 파일',r:3,w:130,v:820,cond:S=>S.line==='crime',d:'표지에 「대외비」 도장이 두 번 찍혀 있다.',
+   pal:{1:'#8A5A2E',2:'#E8E2D4',3:'#C2481F'},
+   p:['1111....','11111111','12222221','12333221','12222221','12222221','11111111','........']},
+ reel:{n:'35mm 필름 릴',r:3,w:128,v:830,cond:S=>S.line==='dir',d:'요즘 아무도 안 쓰는데 책상엔 늘 하나 있다.',
+   pal:{1:'#4A5563',2:'#20262F',3:'#8A93A2',4:'#C9A227'},
+   p:['.111111.','12222221','12311321','12144121','12144121','12311321','12222221','.111111.']},
+ sched:{n:'편성표 원본',r:3,w:125,v:840,cond:S=>S.line==='mgr',d:'이 종이 한 장이 수백억을 움직인다.',
+   pal:{1:'#E7EAF0',2:'#4A9BE8',3:'#8A93A2',4:'#C2481F'},
+   p:['11111111','12222221','13333331','12242221','13333331','12222421','13333331','11111111']},
+ award:{n:'대상 트로피',r:4,w:11,v:6000,cond:S=>S.awards>=1,d:'받아본 사람만 아는 무게가 있다.',
+   pal:{1:'#E8D14A',2:'#C9A227',3:'#8A5A2E',4:'#FFF4C2'},
+   p:['1.....1.','1111111.','1244421.','1222221.','.12221..','..121...','..222...','.33333..']}
+};
+const CROPR=['#8A93A2','#4A9BE8','#B07BE8','#E8A33C','#FFD24A'];
+function cropCanvas(id,px){
+  const c=CROPS[id];const cv2=document.createElement('canvas');
+  const S2=px||4;cv2.width=8*S2;cv2.height=8*S2;
+  const g2=cv2.getContext('2d');
+  for(let y=0;y<8;y++){
+    const row=c.p[y]||'';
+    for(let x=0;x<8;x++){
+      const ch=row[x];if(!ch||ch==='.'||ch===' ')continue;
+      const col=c.pal[ch];if(!col)continue;
+      g2.fillStyle=col;g2.fillRect(x*S2,y*S2,S2,S2);
+    }
+  }
+  return cv2;
+}
+function cropPool(){
+  return Object.keys(CROPS).filter(k=>!CROPS[k].cond||CROPS[k].cond(S));
+}
+function rollCrop(){
+  const pool=cropPool(),l=eff(S.luk)/100;
+  const w=pool.map(k=>CROPS[k].w*(1+l*CROPS[k].r*0.30));
+  const tot=w.reduce((a,b)=>a+b,0);
+  let r2=Math.random()*tot;
+  for(let i=0;i<pool.length;i++){r2-=w[i];if(r2<=0)return pool[i];}
+  return pool[0];
+}
+let _cropT=0;
+function cropTick(dt){
+  if(!S||S.busy||paused||disguised)return;
+  S.crop=S.crop||[];
+  _cropT+=dt;
+  const every=4200+Math.random()*2600;
+  if(_cropT<every)return;
+  _cropT=0;
+  if(S.crop.length>=4)return;
+  spawnCrop();
+}
+function spawnCrop(){
+  S.crop=S.crop||[];
+  const id=rollCrop();
+  let x=0,y=0,ok=false;
+  for(let i=0;i<14&&!ok;i++){
+    x=11+Math.random()*78;y=59+Math.random()*19;
+    ok=!S.crop.some(c=>Math.abs(c.x-x)<13&&Math.abs(c.y-y)<11);
+  }
+  S.crop.push({k:id,x:x,y:y,t:Date.now()+S.crop.length});
+  renderCrops();
+}
+function renderCrops(){
+  const layer=$('croplayer');if(!layer||!S)return;
+  S.crop=S.crop||[];
+  const have={};
+  [...layer.children].forEach(el=>{if(el.dataset.cid)have[el.dataset.cid]=el;});
+  S.crop.forEach(c=>{
+    const key=String(c.t);
+    if(have[key]){delete have[key];return;}
+    const c2=CROPS[c.k];if(!c2)return;
+    const b2=document.createElement('button');
+    b2.className='crop r'+c2.r+(c2.r>=3?' shine':'');
+    b2.dataset.cid=key;
+    b2.style.left=c.x+'%';b2.style.top=c.y+'%';
+    b2.style.animationDelay=(Math.random()*1.2).toFixed(2)+'s';
+    b2.appendChild(cropCanvas(c.k,4));
+    if(!S.dex||!S.dex[c.k]){const nw=document.createElement('i');nw.className='cnew';nw.textContent='NEW';b2.appendChild(nw);}
+    layer.appendChild(b2);
+  });
+  Object.keys(have).forEach(k=>have[k].remove());
+}
+function harvest(cid){
+  if(!S||S.busy)return;
+  S.crop=S.crop||[];
+  const idx=S.crop.findIndex(x=>String(x.t)===String(cid));
+  if(idx<0)return;
+  const c=S.crop[idx];
+  const def=CROPS[c.k];if(!def){S.crop.splice(idx,1);renderCrops();return;}
+  S.crop.splice(idx,1);
+  S.dex=S.dex||{};
+  const first=!S.dex[c.k];
+  S.dex[c.k]=(S.dex[c.k]||0)+1;
+  const gain=Math.round(def.v*(0.8+Math.random()*0.5)*tmul());
+  const xp=Math.round(3+def.r*7);
+  S.money+=gain;addExp(S,xp);
+  const n=Object.keys(S.dex).length;
+  if(n>=8)ach(S,'dex8');
+  if(n>=18)ach(S,'dex18');
+  if(n>=Object.keys(CROPS).length)ach(S,'dexall');
+  /* 이펙트 */
+  const layer=$('croplayer');
+  if(layer){
+    const sp=document.createElement('span');
+    sp.className='crgain'+(def.r>=3?' big':'');
+    sp.innerHTML='+'+num(gain)+'만'+(first?'<b>NEW</b>':'');
+    sp.style.left=c.x+'%';sp.style.top=c.y+'%';
+    layer.appendChild(sp);setTimeout(()=>sp.remove(),1100);
+  }
+  if(first){
+    toast('<b>도감 등록</b> · '+def.n+' ('+n+'/'+Object.keys(CROPS).length+')',def.r>=3?'gold':'blue');
+    pushLog('책상에서 「'+def.n+'」을(를) 주웠다 — 도감 '+n+'/'+Object.keys(CROPS).length,def.r>=3?'up':'hi');
+    S.newDex=1;
+  }
+  if(def.r>=4){flash('gold',600);shake(false);toast('<b>'+def.n+'</b> · +'+num(gain)+'만원','gold');}
+  else if(def.r===3)flash('gold',260);
+  renderCrops();renderStrip();renderTabs();
+  if(tab==='bag')renderBagTab();
+  save();
+}
 function fx(text,color){
   const el=document.createElement('span');el.textContent=text;el.style.color=color||'#E7EAF0';
   el.style.left=(20+Math.random()*54)+'%';el.style.top=(28+Math.random()*40)+'%';
@@ -1937,7 +2186,7 @@ function newGame(name){
     lv:1,exp:0,sp:0,dir:6,plan:5,sense:9,cast:4,rep:5,luk:5,
     sta:82,men:78,risk:0,money:r(150,400),
     hype:0,act:'edit',prog:null,hits:0,smash:0,flops:0,streakFlop:0,awards:0,idleM:0,
-    mark:0,dirty:0,scandal:0,shieldUsed:0,shieldUse:{},debt:0,thug:0,loanSeen:0,loanLast:-99,best:0,bestT:'',oj:{},bet:{in:0,out:0,best:0,jack:0,n:0},promoFail:0,promoCd:0,pause:0,nextSlot:0,
+    mark:0,dirty:0,scandal:0,shieldUsed:0,shieldUse:{},debt:0,thug:0,loanSeen:0,loanLast:-99,best:0,bestT:'',oj:{},bet:{in:0,out:0,best:0,jack:0,n:0},dex:{},crop:[],newDex:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
     items:{},flags:{},ach:{},cool:{},seen:{intern:1},hist:[],log:[],inbox:[],pity:0,gacha:0,busy:false,saved:Date.now()};
 }
 function save(){if(!S)return;S.saved=Date.now();try{localStorage.setItem('bpd_save',JSON.stringify(S));}catch(e){}if(typeof pushSave==='function')pushSave(false);}
@@ -1946,7 +2195,7 @@ function load(){try{const v=localStorage.getItem('bpd_save');if(!v)return null;c
   if(o.v===7){o.v=8;o.debt=0;o.thug=0;o.loanSeen=0;o.loanLast=-99;o.best=0;o.bestT='';o.shieldUse=o.shieldUse||{};
     if(o.prog&&!o.prog.slot)o.prog.slot=SLOTS[1];}
   if(o.v!==8)return null;
-  o.debt=o.debt||0;o.best=o.best||0;o.shieldUse=o.shieldUse||{};o.oj=o.oj||{};o.bet=o.bet||{in:0,out:0,best:0,jack:0,n:0};
+  o.debt=o.debt||0;o.best=o.best||0;o.shieldUse=o.shieldUse||{};o.oj=o.oj||{};o.bet=o.bet||{in:0,out:0,best:0,jack:0,n:0};o.dex=o.dex||{};o.crop=o.crop||[];
   return o;}catch(e){return null;}}
 
 /* ══════════════ 캔버스 ══════════════ */
@@ -2219,7 +2468,7 @@ function renderTabs(){
     let dot='';
     if(x[0]==='stat'&&S.sp>0)dot='<span class="dot"></span>';
     if(x[0]==='promo'&&nxt)dot='<span class="dot"></span>';
-    if(x[0]==='bag'&&S.newItem)dot='<span class="dot"></span>';
+    if(x[0]==='bag'&&(S.newItem||S.newDex))dot='<span class="dot"></span>';
     return '<button data-t="'+x[0]+'" class="'+(tab===x[0]?'on':'')+'">'+x[1]+dot+'</button>';
   }).join(''));
   TABS.forEach(x=>{const el=$('tab-'+x[0]);if(el)el.hidden=(tab!==x[0]);});
@@ -2563,7 +2812,7 @@ function itemCard(id,shop){
     '<button data-buy="'+id+'"'+((own||S.money<it.p)?' disabled':'')+'>'+(own?'보유':num(it.p)+'만')+'</button></div></div>';
 }
 function renderBagTab(){
-  S.newItem=0;
+  S.newItem=0;S.newDex=0;
   const own=Object.keys(ITEMS).filter(k=>S.items[k]);
   const cnt=[0,0,0,0,0];own.forEach(k=>cnt[ITEMS[k].r]++);
   const total=[0,0,0,0,0];Object.keys(ITEMS).forEach(k=>total[ITEMS[k].r]++);
@@ -2574,7 +2823,37 @@ function renderBagTab(){
       :'<div class="prow">아직 아무것도 없다. 이벤트에서 줍거나 상점에서 사면 된다.</div>')+
     '<div class="sec-label mt">획 득 · 처 분</div>'+
     '<div class="pnote">이벤트 종료 시 낮은 확률로 드롭 · 대박 방영과 승진 시 확률 상승 · 운 스탯이 높을수록 상위 등급.<br>'+
-    '<b>양날</b> 표시는 이득과 손해가 같이 붙은 물건입니다. 안 맞으면 우측 버튼으로 처분해 현금화하세요 (되사기 불가).</div>');
+    '<b>양날</b> 표시는 이득과 손해가 같이 붙은 물건입니다. 안 맞으면 우측 버튼으로 처분해 현금화하세요 (되사기 불가).</div>'+
+    dexHTML());
+  paintDex();
+}
+function dexHTML(){
+  S.dex=S.dex||{};
+  const keys=Object.keys(CROPS);
+  const got=keys.filter(k=>S.dex[k]);
+  const cnt=[0,0,0,0,0],tot=[0,0,0,0,0];
+  keys.forEach(k=>{tot[CROPS[k].r]++;if(S.dex[k])cnt[CROPS[k].r]++;});
+  const total=got.reduce((a,k)=>a+S.dex[k],0);
+  return '<div class="sec-label mt">책 상 도 감 · '+got.length+' / '+keys.length+'</div>'+
+    '<div class="pnote" style="margin-bottom:10px">위쪽 <b>업무 화면</b>에 물건이 하나씩 돋아납니다. 눌러서 주우면 돈과 경험치가 들어오고 도감에 등록됩니다.<br>'+
+    '운 스탯이 높을수록 귀한 게 자주 나오고, 일부는 <b>특정 라인·상황</b>에서만 나타납니다. 누적 수확 '+num(total)+'개.</div>'+
+    '<div class="dexbar">'+RN.map((n,i)=>'<span class="rarchip r'+i+'" style="border-color:'+CROPR[i]+';color:'+CROPR[i]+'">'+n+' '+cnt[i]+'/'+tot[i]+'</span>').join('')+'</div>'+
+    '<div class="dexgrid">'+keys.map(k=>{
+      const c=CROPS[k],g2=S.dex[k];
+      return '<div class="dcard '+(g2?'got':'lock')+' r'+c.r+'" data-dex="'+k+'">'+
+        '<span class="dr" style="color:'+CROPR[c.r]+'">'+RN[c.r].slice(0,2)+'</span>'+
+        '<div class="dcv" data-cv="'+k+'"></div>'+
+        '<div class="dn">'+(g2?esc(c.n):'???')+'</div>'+
+        (g2?'<div class="dc">'+g2+'개 · '+num(c.v)+'만 기준</div><div class="dd">'+esc(c.d)+'</div>'
+           :'<div class="dc">'+(c.cond?'조건부':'미발견')+'</div>')+
+      '</div>';
+    }).join('')+'</div>';
+}
+function paintDex(){
+  document.querySelectorAll('#tab-bag [data-cv]').forEach(el=>{
+    if(el.firstChild)return;
+    el.appendChild(cropCanvas(el.dataset.cv,5));
+  });
 }
 function renderShopTab(){
   const g1=1400,g10=12600;
@@ -2938,6 +3217,7 @@ const TUT=[
  {t:'여기는 방송국이야',d:'너는 오늘부터 막내 PD야.\n일을 하나씩 하다 보면 점점 높은 자리로 올라가.\n\n어렵지 않아. 천천히 알려줄게.'},
  {el:'.stage',t:'이게 너야',d:'화면 속에서 일하고 있는 사람이 바로 너야.\n무슨 일을 고르느냐에 따라 그림이 바뀌어.\n\n술자리를 고르면 술을 마시고, 쉬기를 고르면 엎드려 자.'},
  {el:'.stage .hypewrap',t:'화면을 두드려 봐',d:'일하는 화면을 손가락으로 마구 두드리면\n<열정>이 차올라.\n\n열정이 가득하면 일이 최대 1.5배 빨라져.\n손을 멈추면 천천히 식어.'},
+ {el:'.stage',t:'책상에 뭐가 자라나',d:'가만히 두면 책상 위에 물건이 하나씩 돋아나.\n커피, 콘티, 도장, 가끔은 고양이도.\n\n눌러서 주우면 돈이랑 경험치가 들어오고\n<가방> 탭 아래 <책상 도감>에 등록돼.\n\n귀한 건 반짝여. 그건 꼭 주워.'},
  {el:'#goalbar',t:'★ 여기만 보면 돼',d:'지금 뭘 해야 하는지 항상 여기에 떠 있어.\n\n<다음 목표>에는 승진에 필요한 조건이 숫자로 나와.\n조건을 다 채우면 이 칸이 빨간 버튼으로 바뀌고,\n그걸 누르면 바로 승진 심사로 가.\n\n헷갈리면 이 칸만 따라가면 돼.'},
  {el:'#checklist',t:'처음이라면 이것부터',d:'네 칸짜리 할 일 목록이야.\n네 개를 다 하면 알아서 사라져.\n\n지금 할 차례인 항목만 설명이 붙어 있어.'},
  {el:'#acts',t:'일을 하나만 골라',d:'여기 여덟 개 중에 하나만 누르면 돼.\n그러면 알아서 그 일을 계속 해.\n\n아무것도 안 눌러도 시간은 계속 흘러가. 그냥 놔둬도 돼.'},
@@ -3852,7 +4132,7 @@ function loop(t){
     acc+=dt;let guard=0;
     while(acc>=MONTH_MS&&guard<20){acc-=MONTH_MS;guard++;tick();if(S.busy)break;}
   }
-  if(S){HYPET+=dt*((S.hype||0)/100)*1.25;drawScene(t+HYPET);}
+  if(S){HYPET+=dt*((S.hype||0)/100)*1.25;drawScene(t+HYPET);cropTick(dt);}
   requestAnimationFrame(loop);
 }
 function renderPause(){const b=$('btn-pause');b.textContent=paused?'▶  재개':'❚❚ 일시정지';b.classList.toggle('on',paused);}
@@ -3980,6 +4260,8 @@ $('btn-pause').onclick=()=>{paused=!paused;renderPause();};
 let _clk=[];
 document.querySelector('.stage').addEventListener('pointerdown',e=>{
   if(!S||S.busy||e.target.closest('#btn-pause'))return;
+  const cr=e.target.closest('.crop');
+  if(cr){e.preventDefault();e.stopPropagation();harvest(cr.dataset.cid);return;}
   const now=Date.now();
   _clk=_clk.filter(t=>now-t<1000);
   if(_clk.length>=12)return;
