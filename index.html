@@ -683,6 +683,21 @@ body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.
   .cardsum{grid-template-columns:repeat(2,1fr)}
   .tabbar button{min-width:72px;font-size:12px;padding-left:6px;padding-right:6px}
 }
+/* ── 진로 발견 ── */
+.pcard.locked{opacity:.62;border-style:dashed}
+.pcard.locked .ln{color:#4A5563;letter-spacing:.26em}
+.pcard.locked .nm{color:#3E4A59;letter-spacing:.18em}
+.pcard.locked .dsc{color:#4A5563}
+.lockhint{margin-top:11px;padding-top:9px;border-top:1px dashed var(--line);
+  font-size:11px;line-height:1.6;color:var(--ink-3);text-align:center}
+.lockhint b{color:#8A93A2}
+.pcard.secret{border-color:#5A3A6E;background:linear-gradient(180deg,rgba(176,123,232,.08),rgba(0,0,0,0))}
+.secretbox{border:1px dashed #4A4256;background:linear-gradient(180deg,rgba(120,100,160,.07),rgba(0,0,0,0));
+  padding:13px 13px 11px;margin:11px 0 0}
+.secretbox .st{font-size:10.5px;letter-spacing:.22em;color:#9B8AC0;font-weight:700}
+.secretbox .sd{font-size:11.5px;color:var(--ink-3);line-height:1.7;margin-top:7px}
+.secretbox .shint{font-size:11.5px;color:#B0A2D0;line-height:1.7;margin-top:9px;
+  border-left:2px solid #4A4256;padding-left:10px;font-style:italic}
 .savenote{font-size:11.5px;line-height:1.75;color:var(--ink-3);border-left:2px solid var(--line);padding:2px 0 2px 11px;margin-top:11px}
 .savenote b{color:var(--ink-2)}
 .linkbtn{background:none;border:none;padding:0;margin-top:5px;color:var(--onair-soft);font-family:inherit;
@@ -1787,7 +1802,8 @@ Object.keys(TREE).forEach(k=>{(TREE[k].next||[]).forEach(n=>{if(n!==k&&!PARENT[n
 function markSeen(){
   if(!S.seen)S.seen={};
   S.seen[S.rank]=1;
-  (TREE[S.rank].next||[]).forEach(id=>{S.seen[id]=1;});
+  S.revealed=S.revealed||{};
+  S.revealed[S.rank]=1;
 }
 function seenCount(){return S.seen?Object.keys(S.seen).length:0;}
 function tr(S){return TREE[S.rank]?TREE[S.rank].t:0;}
@@ -2428,7 +2444,7 @@ function newGame(name){
     lv:1,exp:0,sp:0,dir:6,plan:5,sense:9,cast:4,rep:5,luk:5,
     sta:82,men:78,risk:0,money:r(150,400),
     hype:0,act:'edit',prog:null,hits:0,smash:0,flops:0,streakFlop:0,awards:0,idleM:0,
-    mark:0,dirty:0,scandal:0,shieldUsed:0,shieldUse:{},debt:0,thug:0,loanSeen:0,loanLast:-99,best:0,bestT:'',oj:{},bet:{in:0,out:0,best:0,jack:0,n:0},dex:{},crop:[],newDex:0,off:{},cards:{},reborn:0,promoFail:0,promoCd:0,pause:0,nextSlot:0,
+    mark:0,dirty:0,scandal:0,shieldUsed:0,shieldUse:{},debt:0,thug:0,loanSeen:0,loanLast:-99,best:0,bestT:'',oj:{},bet:{in:0,out:0,best:0,jack:0,n:0},dex:{},crop:[],newDex:0,off:{},cards:{},reborn:0,scout:{},revealed:{},promoFail:0,promoCd:0,pause:0,nextSlot:0,
     items:{},flags:{},ach:{},cool:{},seen:{intern:1},hist:[],log:[],inbox:[],pity:0,gacha:0,busy:false,saved:Date.now()};
 }
 function save(){if(!S)return;S.saved=Date.now();try{localStorage.setItem('bpd_save',JSON.stringify(S));}catch(e){}if(typeof pushSave==='function')pushSave(false);}
@@ -2437,7 +2453,7 @@ function load(){try{const v=localStorage.getItem('bpd_save');if(!v)return null;c
   if(o.v===7){o.v=8;o.debt=0;o.thug=0;o.loanSeen=0;o.loanLast=-99;o.best=0;o.bestT='';o.shieldUse=o.shieldUse||{};
     if(o.prog&&!o.prog.slot)o.prog.slot=SLOTS[1];}
   if(o.v!==8)return null;
-  o.debt=o.debt||0;o.best=o.best||0;o.shieldUse=o.shieldUse||{};o.oj=o.oj||{};o.bet=o.bet||{in:0,out:0,best:0,jack:0,n:0};o.dex=o.dex||{};o.crop=o.crop||[];o.off=o.off||{};o.cards=o.cards||{};o.reborn=o.reborn||0;
+  o.debt=o.debt||0;o.best=o.best||0;o.shieldUse=o.shieldUse||{};o.oj=o.oj||{};o.bet=o.bet||{in:0,out:0,best:0,jack:0,n:0};o.dex=o.dex||{};o.crop=o.crop||[];o.off=o.off||{};o.cards=o.cards||{};o.reborn=o.reborn||0;o.scout=o.scout||{};o.revealed=o.revealed||{};
   return o;}catch(e){return null;}}
 
 /* ══════════════ 캔버스 ══════════════ */
@@ -2952,7 +2968,8 @@ function reqRows(nd2){
 }
 function reqOk(id){return reqRows(TREE[id]).every(x=>x[1]>=x[2]);}
 function nextIds(){const n=node();return (n.next||[]).filter(x=>x!==S.rank||n.star);}
-function readyPromos(){if(!S||S.promoCd>0)return [];return nextIds().filter(reqOk);}
+function readyPromos(){if(!S||S.promoCd>0)return [];
+  return nextIds().filter(id=>reqOk(id)&&(!isSecretLine(TREE[id].l)||scoutOk(TREE[id].l)));}
 function promoChance(id){
   const nd2=TREE[id],rows=reqRows(nd2);
   let over=0,cnt=0;
@@ -2969,14 +2986,68 @@ function promoChance(id){
   if(nd2.star)c=Math.max(5,Math.min(55,20+S.lv/5+S.smash*1.4-(S.star||0)*5));
   return Math.max(5,Math.min(95,c));
 }
+/* ══ 진로 발견 ══ */
+const SECRET={
+ crime:{n:'의혹을 안고 사는 길',hint:'"위에서 시키는 대로만 하면 저 자리엔 못 가."\n의혹을 어느 정도 짊어져야 보이는 길이 있다는 얘기가 돈다.'},
+ meme :{n:'아무도 이해 못 하는 길',hint:'"그 기획이 어떻게 통과됐는지 아무도 몰라."\n논란을 겪거나 대놓고 딴짓을 해본 사람만 안다는 자리가 있다.'}
+};
+function nodeFit(id){
+  const rows=reqRows(TREE[id]);
+  if(!rows.length)return 1;
+  let sum=0;rows.forEach(x=>{sum+=Math.min(1,x[2]>0?x[1]/x[2]:1);});
+  return sum/rows.length;
+}
+function isSecretLine(l){return l==='crime'||l==='meme';}
+function scoutOk(l){
+  if(!S)return false;
+  if(S.scout&&S.scout[l])return true;
+  if(l==='crime')return S.risk>=45||(S.dirty||0)>=1;
+  if(l==='meme')return (S.scandal||0)>=2||(S.idleM||0)>=10||S.luk>=45;
+  return true;
+}
+function scoutTick(){
+  if(!S)return;
+  S.scout=S.scout||{};
+  ['crime','meme'].forEach(l=>{
+    if(S.scout[l])return;
+    if(!scoutOk(l))return;
+    S.scout[l]=1;
+    pushLog('숨겨진 진로를 하나 찾아냈다 — '+LINES[l].n+' 라인','up');
+    toast('<b>숨겨진 진로 발견</b> · '+LINES[l].n+' 라인','gold');
+    flash('gold',420);
+  });
+}
+/* 다음 단계에서 이 노드를 보여줄지 */
+function nodeShown(id,ranked){
+  S.revealed=S.revealed||{};
+  if(S.revealed[id])return true;              /* 한 번 드러난 길은 계속 보인다 */
+  const nd2=TREE[id];
+  let ok;
+  if(isSecretLine(nd2.l))ok=scoutOk(nd2.l);
+  else if(ranked.length<=2)ok=true;           /* 갈래가 둘 이하면 다 보여준다 */
+  else ok=(nodeFit(id)>=0.55)||ranked.indexOf(id)<2;   /* 가장 가까운 두 갈래 */
+  if(ok){
+    S.revealed[id]=1;S.seen[id]=1;
+    if(!S._rq)S._rq={};
+    if(!S._rq[id]&&S.m>0){S._rq[id]=1;
+      pushLog('새 진로가 보이기 시작했다 — 「'+nd2.n+'」','hi');}
+  }
+  return ok;
+}
 function renderPromoTab(){
   markSeen();
-  const ids=nextIds();
+  const all=nextIds();
+  const openIds=all.filter(id=>!isSecretLine(TREE[id].l));
+  const ranked=openIds.slice().sort((a,b)=>nodeFit(b)-nodeFit(a));
+  const ids=all.filter(id=>nodeShown(id,ranked));
+  const hiddenN=all.length-ids.length;
+  const undiscovered=['crime','meme'].filter(l=>
+    all.some(id=>TREE[id].l===l)&&!scoutOk(l));
   const cards=ids.map(id=>{
     const nd2=TREE[id],L=LINES[nd2.l],ok=reqOk(id),ch=promoChance(id);
     const rows=reqRows(nd2),done=rows.filter(x=>x[1]>=x[2]).length;
     const pct=Math.round(done/rows.length*100);
-    return '<div class="pcard'+(ok?' ready':'')+'">'+
+    return '<div class="pcard'+(ok?' ready':'')+(isSecretLine(nd2.l)?' secret':'')+'">'+
       '<div class="ln '+L.cls+'">'+L.n+' 라인 · T'+nd2.t+'</div>'+
       '<div class="nm han">'+nd2.n+'</div>'+
       '<div class="dsc">'+nd2.d+'</div>'+
@@ -2989,7 +3060,25 @@ function renderPromoTab(){
         : '<div style="margin-top:9px"><div class="track"><span class="fill f-men" style="width:'+pct+'%"></span></div>'+
           '<div class="prow no" style="justify-content:center;margin-top:5px">조건 '+done+' / '+rows.length+' 달성</div></div>')+
       '</div>';
-  }).join('');
+  }).join('')
+  + Array.from({length:hiddenN},(_,i)=>{
+      const rest=all.filter(id=>ids.indexOf(id)<0);
+      const f=rest.length>i?nodeFit(rest[i]):0;
+      return '<div class="pcard locked">'+
+        '<div class="ln">? ? ?</div>'+
+        '<div class="nm han">? ? ?</div>'+
+        '<div class="dsc">아직 이쪽 길은 보이지 않는다.</div>'+
+        '<div class="lockhint">능력치를 한쪽으로 더 몰아야 드러난다<br>'+
+        '<b>'+(f>=0.4?'가까워지는 중':'아직 멀었다')+'</b></div>'+
+      '</div>';
+    }).join('');
+
+  const secretBox=undiscovered.length
+    ? '<div class="secretbox"><div class="st">소 문 으 로 만 도 는 길</div>'+
+      '<div class="sd">공식 인사 라인 말고도 길이 '+undiscovered.length+'개 더 있다고 한다.<br>아무도 대놓고 알려주진 않는다. 조건을 채우면 그때 드러난다.</div>'+
+      undiscovered.map(l=>'<div class="shint">'+SECRET[l].hint.replace(/\n/g,'<br>')+'</div>').join('')+
+      '</div>'
+    : '';
 
   const path=[];let cur=S.rank;while(cur){path.unshift(cur);cur=PARENT[cur];}
   const nodeHtml=(id)=>{
@@ -3010,8 +3099,9 @@ function renderPromoTab(){
       '<b style="color:var(--onair)">인사 기록에 오점이 '+S.mark+'개 있습니다.</b> 승진 확률이 '+Math.min(60,S.mark*20)+'% 깎입니다.<br>'+
       '시청률 <b>히트(8.5%) 이상</b>인 작품을 내면 오점이 하나씩 지워집니다.</div>':'')+
     '<div class="promo-grid">'+(cards||'<div class="prow">더 오를 곳이 없다.</div>')+'</div>'+
-    '<div class="pnote">조건을 채우면 <b>인사 발령 통지</b>가 편지로 옵니다. 도전할지 미룰지는 직접 정합니다.<br>'+
-    '두 갈래 이상이 동시에 열리면 그 자리에서 <b>진로를 고릅니다.</b> 어떤 스탯을 찍었는지가 곧 갈래를 정합니다.</div>'+
+    secretBox+
+    '<div class="pnote">지금 <b>가장 가까운 갈래</b>만 보입니다. 능력치를 한쪽으로 몰수록 그쪽 길이 먼저 드러나고, 나머지는 <b>???</b>로 남습니다.<br>'+
+    '조건을 채우면 <b>인사 발령 통지</b>가 편지로 옵니다. 두 갈래 이상이 동시에 열리면 그 자리에서 <b>진로를 고릅니다.</b></div>'+
     '<div class="sec-label mt">커 리 어 로 드 맵 · 발견 <span class="num">'+seenCount()+'</span> / '+total+'</div>'+
     '<div class="tree">'+
       '<div class="tlane"><div class="lab ln-com">공통</div><div class="trow">'+
@@ -3659,7 +3749,7 @@ function tick(){
   afterTick();
 }
 function afterTick(){
-  checkAch();
+  checkAch();scoutTick();
   dangerMode(S.risk>=68||S.sta<=18||S.men<=18);
   if(tr(S)>=3&&!S.prog&&S.m>=S.nextSlot&&!hasInbox('plan')){pushInbox({kind:'plan'});S.nextSlot=S.m+10;}
   if(S.prog&&S.m>=S.prog.air&&!hasInbox('air')){pushInbox({kind:'air'});S.prog.air=S.m+9999;}
@@ -3755,7 +3845,7 @@ function autoPromo(){
   if(ready.length)pushInbox({kind:'promo',ids:ready});
 }
 function runPromo(ids){
-  ids=(ids||[]).filter(id=>reqOk(id)&&nextIds().indexOf(id)>=0);
+  ids=(ids||[]).filter(id=>reqOk(id)&&nextIds().indexOf(id)>=0&&(!isSecretLine(TREE[id].l)||scoutOk(TREE[id].l)));
   if(!ids.length)return;
   S.busy=true;
   const multi=ids.length>1;
