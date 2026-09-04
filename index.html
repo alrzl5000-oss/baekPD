@@ -29,7 +29,7 @@ h1,h2,h3{margin:0;text-wrap:balance}
 button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible{outline:2px solid var(--onair);outline-offset:2px}
 .wrap{max-width:1180px;margin:0 auto;position:relative;z-index:1;
-  padding:14px 14px calc(78px + env(safe-area-inset-bottom,0px))}
+  padding:14px 14px calc(72px + env(safe-area-inset-bottom,0px))}
 body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:900;
   background:repeating-linear-gradient(180deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
 
@@ -147,13 +147,42 @@ body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.
 .tabbar::-webkit-scrollbar{display:none}
 .tabbar button{padding-top:11px;padding-bottom:11px}
 .panelwrap{border-top:1px solid var(--line)}
-.tabbar button{flex:1;min-width:96px;background:transparent;border:none;border-right:1px solid var(--line-soft);
-  padding:11px 6px 10px;font-size:13.5px;font-weight:700;color:var(--ink-3);position:relative;white-space:nowrap}
-.tabbar button:last-child{border-right:none}
-.tabbar button.on{color:var(--ink);background:linear-gradient(180deg,#1A212A,#121820);
-  box-shadow:inset 0 -3px 0 var(--onair), 0 0 18px rgba(255,74,61,.18)}
-.tabbar button:hover{color:var(--ink)}
-.tabbar .dot{position:absolute;top:7px;right:calc(50% - 42px);width:7px;height:7px;border-radius:50%;background:var(--onair)}
+.tabbar button{flex:1 1 0;min-width:0;background:transparent;border:none;
+  padding:7px 2px 6px;font-size:11px;font-weight:700;color:var(--ink-3);position:relative;white-space:nowrap;
+  display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;justify-content:center}
+.tabbar button .ti{font-style:normal;font-size:16px;line-height:1;opacity:.8}
+.tabbar button.on{color:var(--onair-soft);background:linear-gradient(180deg,rgba(255,74,61,.10),rgba(0,0,0,0))}
+.tabbar button.on .ti{opacity:1;color:var(--onair)}
+.tabbar button.on:after{content:'';position:absolute;left:22%;right:22%;top:0;height:2px;background:var(--onair);
+  box-shadow:0 0 10px var(--onair)}
+.tabbar .dot{position:absolute;top:6px;right:24%;width:7px;height:7px;border-radius:50%;background:var(--onair);
+  box-shadow:0 0 8px var(--onair)}
+
+/* 더보기 시트 */
+#sheet{position:fixed;inset:0;z-index:95}
+#sheet[hidden]{display:none}
+#sheet-bg{position:absolute;inset:0;background:rgba(6,8,11,.72)}
+#sheet-card{position:absolute;left:0;right:0;bottom:calc(52px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(180deg,#161C24,#0D1116);border-top:2px solid var(--onair);
+  box-shadow:0 -14px 40px rgba(0,0,0,.7);padding:12px 12px 14px;
+  max-width:1180px;margin:0 auto;animation:shup .18s ease-out}
+@keyframes shup{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.shhead{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;letter-spacing:.2em;
+  color:var(--ink-3);font-weight:700;padding:0 2px 9px}
+.shhead button{background:none;border:none;color:var(--ink-3);font-size:16px;line-height:1;padding:2px 4px;cursor:pointer}
+.shrow{display:block;width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--line);
+  padding:11px 13px;margin-bottom:7px;cursor:pointer;font-family:inherit}
+.shrow:hover{border-color:var(--onair)}
+.shrow.on{border-color:var(--onair);background:linear-gradient(180deg,#26191A,#181114)}
+.shrow .sn{display:block;font-size:14px;font-weight:800;color:var(--ink-0)}
+.shrow.on .sn{color:var(--onair-soft)}
+.shrow .sd{display:block;font-size:11px;color:var(--ink-3);margin-top:2px}
+.shrow .sdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--onair);
+  box-shadow:0 0 8px var(--onair);vertical-align:2px}
+.shfoot{display:flex;gap:7px;margin-top:3px}
+.shfoot .ghost{flex:1;padding:9px;font-size:12px}
+.sdot2{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--onair);
+  box-shadow:0 0 7px var(--onair);margin-left:5px;vertical-align:1px}
 .panelwrap{border:1px solid var(--line);border-top:none;background:linear-gradient(180deg,#11151B,#0C1014);padding:16px 16px 22px;min-height:330px}
 .tabpane[hidden]{display:none}
 
@@ -347,7 +376,7 @@ body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.
 @media (max-width:600px){ .acts{grid-template-columns:repeat(2,1fr)} .tabbar button{min-width:80px;font-size:12.5px} }
 
 /* 편지함 */
-#inbox{position:fixed;right:14px;bottom:calc(62px + env(safe-area-inset-bottom,0px));z-index:88;display:flex;align-items:center;gap:11px;
+#inbox{position:fixed;right:14px;bottom:calc(60px + env(safe-area-inset-bottom,0px));z-index:88;display:flex;align-items:center;gap:11px;
   background:linear-gradient(180deg,#1B2029,#111519);border:1px solid var(--onair);border-left-width:4px;
   padding:10px 16px 10px 13px;box-shadow:0 10px 30px rgba(0,0,0,.6), 0 0 22px rgba(255,74,61,.22);text-align:left;border-radius:3px}
 #inbox[hidden]{display:none}
@@ -867,10 +896,7 @@ body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.
       </div>
       <div class="pfexp"><i id="pf-fill" style="width:0%"></i><b id="pf-exp"></b></div>
     </div>
-    <div class="pfbtns">
-      <button class="ghost mini" id="btn-tut" title="튜토리얼">?</button>
-      <button class="ghost mini" id="btn-reset" hidden title="초기화">↺</button>
-    </div>
+
   </div>
 
   <section id="screen-title">
@@ -931,12 +957,22 @@ body,.wrap,.stage,.acts,.tabbar,.panelwrap,button,.crop,.opt,.act,.chip,.scell,.
     </div>
 
     <div class="tabbar" id="tabbar"></div>
+    <div id="sheet" hidden>
+      <div id="sheet-bg"></div>
+      <div id="sheet-card">
+        <div class="shhead"><span>더 보 기</span><button id="sheet-x">✕</button></div>
+        <div id="sheet-list"></div>
+        <div class="shfoot">
+          <button class="ghost" id="btn-tut">튜토리얼 다시 보기</button>
+          <button class="ghost" id="btn-reset" hidden>처음 화면으로</button>
+        </div>
+      </div>
+    </div>
     <div class="panelwrap">
       <div class="tabpane" id="tab-stat" hidden></div>
       <div class="tabpane" id="tab-promo" hidden></div>
       <div class="tabpane" id="tab-show" hidden></div>
-      <div class="tabpane" id="tab-bag" hidden></div>
-      <div class="tabpane" id="tab-shop" hidden></div>
+      <div class="tabpane" id="tab-item" hidden></div>
       <div class="tabpane" id="tab-rank" hidden></div>
       <div class="tabpane" id="tab-card" hidden></div>
       <div class="tabpane" id="tab-set" hidden></div>
@@ -2369,7 +2405,7 @@ function harvest(cid){
   if(def.r>=4){flash('gold',600);shake(false);toast('<b>'+def.n+'</b> · +'+num(gain)+'만원','gold');}
   else if(def.r===3)flash('gold',260);
   renderCrops();renderStrip();renderTabs();
-  if(tab==='bag')renderBagTab();
+  if(tab==='item')renderItemTab();
   save();
 }
 function fx(text,color){
@@ -2763,19 +2799,35 @@ function drawIllust(kind,host){
 }
 
 /* ══════════════ 렌더 ══════════════ */
-const TABS=[['stat','능력치'],['promo','승진'],['show','작품'],['bag','가방'],['shop','상점'],['card','환생'],['rank','랭킹'],['log','일지'],['set','설정']];
+const TABS=[['stat','육성','⌁'],['promo','승진','↗'],['show','작품','▣'],['item','아이템','▤']];
+const MORE=[['rank','랭킹','다른 사람들과 겨루는 순위표'],
+            ['card','환생','유산 카드와 ★ 승계'],
+            ['log','일지','지금까지 일어난 일'],
+            ['set','설정','저장·초기화·튜토리얼']];
+const ALLTABS=TABS.concat(MORE);
+function inMore(t){return MORE.some(x=>x[0]===t);}
+function moreDot(){return rebornReady();}
 function renderTabs(){
   const nxt=readyPromos().length>0;
   setHTML('tabbar',TABS.map(x=>{
     let dot='';
     if(x[0]==='stat'&&S.sp>0)dot='<span class="dot"></span>';
     if(x[0]==='promo'&&nxt)dot='<span class="dot"></span>';
-    if(x[0]==='bag'&&(S.newItem||S.newDex))dot='<span class="dot"></span>';
-    if(x[0]==='card'&&rebornReady())dot='<span class="dot"></span>';
-    return '<button data-t="'+x[0]+'" class="'+(tab===x[0]?'on':'')+'">'+x[1]+dot+'</button>';
-  }).join(''));
-  TABS.forEach(x=>{const el=$('tab-'+x[0]);if(el)el.hidden=(tab!==x[0]);});
+    if(x[0]==='item'&&(S.newItem||S.newDex))dot='<span class="dot"></span>';
+    return '<button data-t="'+x[0]+'" class="'+(tab===x[0]?'on':'')+'">'+
+      '<i class="ti">'+x[2]+'</i><span>'+x[1]+'</span>'+dot+'</button>';
+  }).join('')+
+  '<button data-more="1" class="'+(inMore(tab)?'on':'')+'"><i class="ti">≡</i><span>더보기</span>'+
+    (moreDot()?'<span class="dot"></span>':'')+'</button>');
+  ALLTABS.forEach(x=>{const el=$('tab-'+x[0]);if(el)el.hidden=(tab!==x[0]);});
+  const mb=$('sheet-list');
+  if(mb)setHTML('sheet-list',MORE.map(x=>
+    '<button class="shrow'+(tab===x[0]?' on':'')+'" data-t="'+x[0]+'">'+
+      '<span class="sn">'+x[1]+(x[0]==='card'&&rebornReady()?' <i class="sdot"></i>':'')+'</span>'+
+      '<span class="sd">'+x[2]+'</span></button>').join(''));
 }
+function openSheet(){$('sheet').hidden=false;renderTabs();}
+function closeSheet(){$('sheet').hidden=true;}
 /* ══════════════ 목표 배너 · 체크리스트 · 용어 도움말 ══════════════ */
 const HELP={
  sta:{t:'체력',d:'일할 수 있는 몸 상태입니다.\n낮아지면 업무 효율이 떨어져 모든 성장이 느려지고, 0에 가까우면 쓰러져서 3개월 강제 병가를 갑니다.\n\n▶ 낮아지면 <체력 관리>를 고르세요.'},
@@ -3267,22 +3319,19 @@ function itemPopup(k){
          return it.n+'을(를) 처분했다.\n+'+num(v)+'만원';}},
       {t:'닫는다',f:()=>null}]});
 }
-function renderBagTab(){
-  S.newItem=0;S.newDex=0;
+function bagHTML(){
   const own=Object.keys(ITEMS).filter(k=>S.items[k]);
   const cnt=[0,0,0,0,0];own.forEach(k=>cnt[ITEMS[k].r]++);
   const total=[0,0,0,0,0];Object.keys(ITEMS).forEach(k=>total[ITEMS[k].r]++);
   const offN=own.filter(k=>S.off&&S.off[k]).length;
-  setHTML('tab-bag',
+  return (
     '<div class="rarbar">'+RN.map((n,i)=>'<span class="rarchip r'+i+'" style="border-color:var(--r'+RKEY[i]+');color:var(--r'+RKEY[i]+')">'+n+' '+cnt[i]+'/'+total[i]+'</span>').join('')+
       '<span class="rarchip">합계 '+own.length+' / '+Object.keys(ITEMS).length+'</span>'+
       (offN?'<span class="rarchip" style="border-color:var(--onair);color:var(--onair)">비활성 '+offN+'</span>':'')+'</div>'+
     (own.length?'<div class="itiles">'+own.sort((a,b)=>ITEMS[b].r-ITEMS[a].r).map(itemTile).join('')+'</div>'
       :'<div class="prow">아직 아무것도 없다. 이벤트에서 줍거나 상점에서 사면 된다.</div>')+
     '<div class="pnote" style="margin-top:9px">장비를 <b>누르면</b> 성능·처분가가 뜨고, 거기서 <b>활성/비활성</b>을 켜고 끌 수 있습니다.<br>'+
-    '<b>양날</b>은 이득과 손해가 같이 붙은 물건입니다. 팔지 않고 잠시 꺼둘 수도 있습니다.</div>'+
-    dexHTML());
-  paintDex();
+    '<b>양날</b>은 이득과 손해가 같이 붙은 물건입니다. 팔지 않고 잠시 꺼둘 수도 있습니다.</div>');
 }
 function dexHTML(){
   S.dex=S.dex||{};
@@ -3291,7 +3340,7 @@ function dexHTML(){
   const cnt=[0,0,0,0,0],tot=[0,0,0,0,0];
   keys.forEach(k=>{tot[CROPS[k].r]++;if(S.dex[k])cnt[CROPS[k].r]++;});
   const total=got.reduce((a,k)=>a+S.dex[k],0);
-  return '<div class="sec-label mt">책 상 도 감 · '+got.length+' / '+keys.length+'</div>'+
+  return '<div class="sec-label">책 상 도 감 · '+got.length+' / '+keys.length+'</div>'+
     '<div class="pnote" style="margin-bottom:10px">위쪽 <b>업무 화면</b>에 물건이 하나씩 돋아납니다. 눌러서 주우면 돈과 경험치가 들어오고 도감에 등록됩니다.<br>'+
     '운 스탯이 높을수록 귀한 게 자주 나오고, 일부는 <b>특정 라인·상황</b>에서만 나타납니다. 누적 수확 '+num(total)+'개.</div>'+
     '<div class="dexbar">'+RN.map((n,i)=>'<span class="rarchip r'+i+'" style="border-color:'+CROPR[i]+';color:'+CROPR[i]+'">'+n+' '+cnt[i]+'/'+tot[i]+'</span>').join('')+'</div>'+
@@ -3307,14 +3356,14 @@ function dexHTML(){
     }).join('')+'</div>';
 }
 function paintDex(){
-  document.querySelectorAll('#tab-bag [data-cv]').forEach(el=>{
+  document.querySelectorAll('#tab-item [data-cv]').forEach(el=>{
     if(el.firstChild)return;
     el.appendChild(cropCanvas(el.dataset.cv,5));
   });
 }
-function renderShopTab(){
+function shopHTML(){
   const g1=1400,g10=12600;
-  setHTML('tab-shop',
+  return (
     '<div class="sec-label">협 찬 사 랜 덤 박 스</div>'+
     '<div class="gbox"><div class="gtitle han">심야 협찬 뽑기</div>'+
     '<div class="gsub">협찬사에서 보내온 정체불명의 박스. 안에 뭐가 들었는지는 열어봐야 안다.<br>이미 가진 물건이 나오면 그 자리에서 현금으로 바꿔줍니다.</div>'+
@@ -3368,6 +3417,18 @@ function renderShopTab(){
     '<div class="sec-label mt">장 비 상 점 · 보유 '+money(S.money)+'</div>'+
     '<div class="igrid">'+Object.keys(ITEMS).filter(k=>ITEMS[k].p).map(k=>itemCard(k,true)).join('')+'</div>'+
     '<div class="pnote">상점 장비는 영구 지속입니다. 뽑기 전용 아이템 31종은 상점에서 팔지 않습니다.</div>');
+}
+/* ── 아이템 탭 (가방 · 상점 · 도감) ── */
+let ITSUB='bag';
+function renderItemTab(){
+  S.newItem=0;
+  if(ITSUB==='dex')S.newDex=0;
+  const subs=[['bag','가방'],['shop','상점'],['dex','도감']];
+  setHTML('tab-item',
+    '<div class="subtabs">'+subs.map(x=>'<button data-isub="'+x[0]+'" class="'+(ITSUB===x[0]?'on':'')+'">'+x[1]+
+      (x[0]==='dex'&&S.newDex?'<i class="sdot2"></i>':'')+'</button>').join('')+'</div>'+
+    (ITSUB==='bag'?bagHTML():ITSUB==='shop'?shopHTML():dexHTML()));
+  if(ITSUB==='dex')paintDex();
 }
 /* ══════════════ 투기장 · 즉석복권 / 밈코인 ══════════════ */
 function betBase(){return Math.max(200,Math.round(180*tmul()));}   /* 복권 1장 값 */
@@ -3674,7 +3735,7 @@ const TUT=[
  {t:'여기는 방송국이야',d:'너는 오늘부터 막내 PD야.\n일을 하나씩 하다 보면 점점 높은 자리로 올라가.\n\n어렵지 않아. 천천히 알려줄게.'},
  {el:'.stage',t:'이게 너야',d:'화면 속에서 일하고 있는 사람이 바로 너야.\n무슨 일을 고르느냐에 따라 그림이 바뀌어.\n\n술자리를 고르면 술을 마시고, 쉬기를 고르면 엎드려 자.'},
  {el:'.stage .hypewrap',t:'화면을 두드려 봐',d:'일하는 화면을 손가락으로 마구 두드리면\n<열정>이 차올라.\n\n열정이 가득하면 일이 최대 1.5배 빨라져.\n손을 멈추면 천천히 식어.'},
- {el:'.stage',t:'책상에 뭐가 자라나',d:'가만히 두면 책상 위에 물건이 하나씩 돋아나.\n커피, 콘티, 도장, 가끔은 고양이도.\n\n눌러서 주우면 돈이랑 경험치가 들어오고\n<가방> 탭 아래 <책상 도감>에 등록돼.\n\n귀한 건 반짝여. 그건 꼭 주워.'},
+ {el:'.stage',t:'책상에 뭐가 자라나',d:'가만히 두면 책상 위에 물건이 하나씩 돋아나.\n커피, 콘티, 도장, 가끔은 고양이도.\n\n눌러서 주우면 돈이랑 경험치가 들어오고\n<아이템 → 도감>에 등록돼.\n\n귀한 건 반짝여. 그건 꼭 주워.'},
  {el:'#goalbar',t:'★ 여기만 보면 돼',d:'지금 뭘 해야 하는지 항상 여기에 떠 있어.\n\n<다음 목표>에는 승진에 필요한 조건이 숫자로 나와.\n조건을 다 채우면 이 칸이 빨간 버튼으로 바뀌고,\n그걸 누르면 바로 승진 심사로 가.\n\n헷갈리면 이 칸만 따라가면 돼.'},
  {el:'#checklist',t:'처음이라면 이것부터',d:'네 칸짜리 할 일 목록이야.\n네 개를 다 하면 알아서 사라져.\n\n지금 할 차례인 항목만 설명이 붙어 있어.'},
  {el:'#acts',t:'일을 하나만 골라',d:'여기 여덟 개 중에 하나만 누르면 돼.\n그러면 알아서 그 일을 계속 해.\n\n아무것도 안 눌러도 시간은 계속 흘러가. 그냥 놔둬도 돼.'},
@@ -3686,13 +3747,12 @@ const TUT=[
  {el:'.tabbar button[data-t="promo"]',tab:'promo',t:'위로 갈수록 무서워져',d:'직급이 올라가면 돈도 크게 벌지만\n변호사비, 추징금, 제작비도 같이 커져.\n\n한 번 잘못하면 잃는 것도 그만큼 커.'},
  {el:'.tabbar button[data-t="show"]',tab:'show',t:'네 프로그램',d:'PD가 되면 네 방송을 만들어.\n편성 회의에서 <기획안>을 고르고,\n그다음 <방송 시간대>를 골라.\n\n주말 밤은 시청률이 크게 나오지만 제작비도 비싸고\n망하면 크게 다쳐. 심야는 반대야.'},
  {el:'.tabbar button[data-t="show"]',tab:'show',t:'제작비랑 사채',d:'기획안마다 제작비가 달라.\n돈이 모자라면 사채를 써서라도 만들게 돼.\n\n사채는 매달 이자가 붙고,\n많이 쌓이면 사람이 찾아와서 방해를 해.\n승진 확률도 깎여.'},
- {el:'.tabbar button[data-t="shop"]',tab:'shop',t:'돈으로 장비 사기',d:'모은 돈으로 좋은 장비를 살 수 있어.\n뽑기도 있어서 운이 좋으면 아주 좋은 걸 얻어.'},
- {el:'.tabbar button[data-t="rank"]',tab:'rank',t:'다른 사람과 겨루기',d:'네 점수가 다른 사람들과 나란히 줄을 서.\n종합, 시청률, 돈, 업적 네 가지로 볼 수 있어.\n\n시청률 랭킹은 네가 만든 방송 중\n제일 잘 나온 기록으로 겨뤄.'},
- {el:'.tabbar button[data-t="set"]',tab:'set',t:'설정',d:'처음부터 다시 하고 싶거나\n화면이 이상할 때 여기로 오면 돼.'},
- {el:'#btn-tut',t:'다 됐어!',d:'이 단추를 누르면 언제든 다시 볼 수 있어.\n\n이제 일을 하나 고르고 기다리기만 하면 돼.\n편지가 오면 꼭 눌러줘!'}
+ {el:'.tabbar button[data-t="item"]',tab:'item',t:'아이템 · 상점 · 도감',d:'여기 하나에 다 있어.\n위쪽 <가방 / 상점 / 도감>을 눌러서 바꿔.\n\n가방에서 장비를 누르면 성능이 뜨고,\n상점에는 뽑기랑 복권도 있어.'},
+ {el:'.tabbar button[data-more]',tab:'rank',t:'나머지는 여기 <더보기>',d:'랭킹, 환생, 일지, 설정은\n오른쪽 끝 <더보기>를 누르면 나와.\n\n랭킹은 종합·시청률·돈·업적 네 가지로 겨루고,\n설정에서 초기화랑 튜토리얼을 다시 볼 수 있어.'},
+ {el:'.tabbar button[data-more]',t:'다 됐어!',d:'<더보기> 안에 <튜토리얼 다시 보기>가 있어.\n언제든 다시 볼 수 있어.\n\n이제 일을 하나 고르고 기다리기만 하면 돼.\n편지가 오면 꼭 눌러줘!'}
 ];
 let TSTEP=0;
-function tutStart(){
+function tutStart(){try{closeSheet();}catch(e){}
   if(!S)return;
   TSTEP=0;paused=true;renderPause();
   $('tut').hidden=false;tutShow();
@@ -3751,8 +3811,7 @@ function renderTab(){
   if(tab==='stat')renderStatTab();
   else if(tab==='promo')renderPromoTab();
   else if(tab==='show')renderShowTab();
-  else if(tab==='bag')renderBagTab();
-  else if(tab==='shop')renderShopTab();
+  else if(tab==='item')renderItemTab();
   else if(tab==='card')renderCardTab();
   else if(tab==='rank')renderRankTab();
   else if(tab==='set')renderSetTab();
@@ -4851,7 +4910,12 @@ function snapPanel(){
 }
 function switchTab(t){tab=t;refresh();snapPanel();}
 $('tabbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  tab=b.dataset.t;refresh();snapPanel();});
+  if(b.dataset.more){openSheet();return;}
+  closeSheet();tab=b.dataset.t;refresh();snapPanel();});
+$('sheet-list').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;
+  closeSheet();tab=b.dataset.t;refresh();snapPanel();});
+$('sheet-bg').onclick=closeSheet;
+$('sheet-x').onclick=closeSheet;
 $('help-x').onclick=()=>{$('helpbox').hidden=true;};
 document.addEventListener('click',e=>{
   const qh=e.target.closest('[data-help]');
@@ -4903,6 +4967,8 @@ document.querySelector('.panelwrap').addEventListener('click',e=>{
     }
     return;
   }
+  const isub=e.target.closest('[data-isub]');
+  if(isub){ITSUB=isub.dataset.isub;renderItemTab();return;}
   const so=e.target.closest('[data-sort]');
   if(so){BOARDSORT=so.dataset.sort;BOARD=null;renderRankTab();loadBoard();return;}
   if(e.target.closest('[data-refresh]')){BOARD=null;renderRankTab();pushBoard(true);loadBoard();return;}
@@ -4950,13 +5016,13 @@ function renderHype(){
   const l=$('hype-lab');if(l)l.classList.toggle('hot',h>=70);
   const stg=document.querySelector('.stage');if(stg)stg.classList.toggle('hot',h>=50);
 }
-$('btn-tut').onclick=()=>{if(!S){toast('게임을 시작한 뒤에 볼 수 있습니다','');return;}tutStart();};
+$('btn-tut').onclick=()=>{if(!S){toast('게임을 시작한 뒤에 볼 수 있습니다','');return;}closeSheet();tutStart();};
 $('tut-next').onclick=()=>{if(TSTEP>=TUT.length-1){tutEnd();return;}TSTEP++;tutShow();};
 $('tut-prev').onclick=()=>{if(TSTEP>0){TSTEP--;tutShow();}};
 $('tut-skip').onclick=tutEnd;
 window.addEventListener('resize',()=>{if(!$('tut').hidden)tutShow();});
 $('inbox').onclick=openInbox;
-$('btn-reset').onclick=()=>{
+$('btn-reset').onclick=()=>{closeSheet();
   if(!confirm('저장을 지우고 처음부터 시작할까요?'))return;
   try{localStorage.removeItem('bpd_save');}catch(e){}
   S=null;$('inbox').hidden=true;$('screen-game').hidden=true;$('screen-title').hidden=false;
